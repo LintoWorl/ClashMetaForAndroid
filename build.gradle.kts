@@ -116,7 +116,7 @@ subprojects {
                         keystore.inputStream().use(this::load)
                     }
 
-                    storeFile = rootProject.file("release.keystore")
+                    storeFile = rootProject.file("release.keystore.jks")
                     storePassword = prop.getProperty("keystore.password")!!
                     keyAlias = prop.getProperty("key.alias")!!
                     keyPassword = prop.getProperty("key.password")!!

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="launch_name">Clash Meta</string>
-    <string name="application_name">Clash Meta for Android</string>
+    <string name="launch_name">MiBox V2</string>
+    <string name="application_name">MiBoxer</string>
     <string name="stopped">중지됨</string>
     <string name="tap_to_start">연결하려면 터치</string>
     <string name="running">연결중</string>
@@ -163,7 +163,7 @@
     <string name="select_none">모두 해제</string>
     <string name="import_from_clipboard">클립보드에서 가져오기</string>
     <string name="export_to_clipboard">클립보드로 내보내기</string>
-    <string name="clash_meta_for_android">Clash Meta for Android</string>
+    <string name="clash_meta_for_android">MiBoxer</string>
     <string name="document">문서</string>
     <string name="feedback">피드백</string>
     <string name="sources">소스</string>

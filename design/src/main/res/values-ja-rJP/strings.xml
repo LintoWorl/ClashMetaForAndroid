@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="launch_name">Clash Meta</string>
-    <string name="application_name">Clash Meta for Android</string>
+    <string name="launch_name">MiBox V2</string>
+    <string name="application_name">MiBoxer</string>
     <string name="stopped">停止中</string>
     <string name="tap_to_start">タップしてスタート</string>
     <string name="running">実行中</string>
@@ -163,7 +163,7 @@
     <string name="select_none">クリア</string>
     <string name="import_from_clipboard">クリップボードからインポート</string>
     <string name="export_to_clipboard">クリップボードにエクスポート</string>
-    <string name="clash_meta_for_android">Clash Meta for Android</string>
+    <string name="clash_meta_for_android">MiBoxer</string>
     <string name="document">ドキュメント</string>
     <string name="feedback">フィードバック</string>
     <string name="sources">ソース</string>
