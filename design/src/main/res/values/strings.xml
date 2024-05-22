@@ -320,4 +320,8 @@
     <string name="force_dns_mapping">Force DNS Mapping</string>
     <string name="parse_pure_ip">Parse Pure IP</string>
     <string name="override_destination">Override Destination</string>
+
+    <string name="tab_name_home">Home</string>
+    <string name="tab_name_billing">Subscribe</string>
+    <string name="tab_name_mine">Mine</string>
 </resources>
