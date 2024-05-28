@@ -34,7 +34,7 @@ subprojects {
     extensions.configure<BaseExtension> {
         defaultConfig {
             if (isApp) {
-                applicationId = "app.miv2.speed"
+                applicationId = "xyz.fenghuolun"
             }
 
             minSdk = 21
