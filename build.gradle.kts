@@ -143,6 +143,10 @@ subprojects {
             dataBinding {
                 isEnabled = name != "hideapi"
             }
+
+            viewBinding {
+                isEnabled = name != "hideapi"
+            }
         }
 
         if (isApp) {

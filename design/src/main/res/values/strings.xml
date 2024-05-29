@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PluralsCandidate">
-    <string name="launch_name">MiBox V2</string>
-    <string name="application_name">MiBoxer</string>
+    <string name="launch_name">Hot Wheels</string>
+    <string name="application_name">Hot Wheels</string>
 
     <string name="stopped">Stopped</string>
     <string name="tap_to_start">Tap to start</string>

@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PluralsCandidate">
-    <string name="launch_name">MiBox V2</string>
+    <string name="launch_name">风火轮加速器</string>
     <string name="application_name">MiBoxer</string>
 
     <string name="stopped">Остановлен</string>

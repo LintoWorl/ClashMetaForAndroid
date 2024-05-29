@@ -3,7 +3,6 @@ package com.github.kr328.clash.design
 import android.content.Context
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.root
@@ -16,7 +15,7 @@ class MainDesignV2(context: Context) : Design<MainDesignV2.Request>(context) {
         Mine
     }
 
-    private val binding = DesignMainV2Binding
+    val binding = DesignMainV2Binding
         .inflate(context.layoutInflater, context.root, false)
 
     override val root: View
@@ -42,7 +41,6 @@ class MainDesignV2(context: Context) : Design<MainDesignV2.Request>(context) {
     }
 
     fun updateContent(content: String) {
-        binding.message.text = content
-        Toast.makeText(context, content, Toast.LENGTH_SHORT).show()
+
     }
 }
