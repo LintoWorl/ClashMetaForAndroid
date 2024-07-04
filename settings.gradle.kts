@@ -6,6 +6,7 @@ include(":service")
 include(":design")
 include(":common")
 include(":hideapi")
+include(":network")
 
 pluginManagement {
     repositories {
@@ -23,7 +24,7 @@ dependencyResolutionManagement {
             val ksp = "$kotlin-1.0.9"
             val golang = "1.0.4"
             val coroutine = "1.7.3"
-            val coreKtx = "1.8.0"
+            val coreKtx = "1.10.0"
             val activity = "1.7.0"
             val fragment = "1.5.0"
             val appcompat = "1.6.1"
@@ -35,6 +36,7 @@ dependencyResolutionManagement {
             val kaidl = "1.15"
             val room = "2.4.2"
             val multiprocess = "1.0.0"
+            val retrofit = "2.9.0"
 
             library("build-android", "com.android.tools.build:gradle:$agp")
             library("build-kotlin-common", "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin")
@@ -57,6 +59,11 @@ dependencyResolutionManagement {
             library("kaidl-compiler", "com.github.kr328.kaidl:kaidl:$kaidl")
             library("kaidl-runtime", "com.github.kr328.kaidl:kaidl-runtime:$kaidl")
             library("rikkax-multiprocess", "dev.rikka.rikkax.preference:multiprocess:$multiprocess")
+            library("androidx-viewmodel-ktx", "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
+            library("retrofit", "com.squareup.retrofit2:retrofit:$retrofit")
+            library("retrofit-converter", "com.squareup.retrofit2:converter-gson:$retrofit")
+            library("logging-interceptor", "com.squareup.okhttp3:logging-interceptor:4.11.0")
+            library("gson", "com.google.code.gson:gson:2.10.1")
         }
     }
 }
