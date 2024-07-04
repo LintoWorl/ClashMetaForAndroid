@@ -1,5 +1,12 @@
 package app.hw.network.api
 
+import app.hw.network.model.AppConfig
+import app.hw.network.model.CheckStat
+import app.hw.network.model.LoginResp
+import app.hw.network.model.UserInfo
+import okhttp3.RequestBody
+import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 /**
@@ -8,75 +15,81 @@ import retrofit2.http.POST
  */
 internal interface UserAccountService {
 
-    /**
-     * 设备激活，游客设备登录
-     */
-    @POST("/aisocial/lgin/visitor")
-    suspend fun loginDevice(): ResponseData<String>
+    @GET("/passport/comm/config")
+    suspend fun getAppConfig(): ResponseData<AppConfig>
 
     /**
-     * 通过Google登录
+     * 校验登录
      */
-    @POST("/aisocial/lgin/google")
-    suspend fun loginGoogle(): ResponseData<String>
+    @GET("/passport/auth/check")
+    suspend fun authCheck(): ResponseData<CheckStat>
 
     /**
-     * 通过Facebook登录
+     * 账号登录
      */
-    @POST("/aisocial/lgin/facebook")
-    suspend fun loginFacebook(): ResponseData<String>
+    @POST("/passport/auth/login")
+    suspend fun authLogin(@Body requestBody: RequestBody): ResponseData<LoginResp>
 
     /**
-     * 将三方平台登录后生成的UserId插入本应用的平台账号体系
+     * 发送邮箱验证码
      */
-    @POST("/social/userinfo/insertAccount")
-    suspend fun submitUserId(): ResponseData<String>
+    @POST("/passport/comm/sendEmailVerify")
+    suspend fun sendEMC(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     /**
-     * 删除用户账号
+     * 注册账号
      */
-    @POST("/aisocial/lgin/closeaccount")
-    suspend fun deleteUserAccount(): ResponseData<String>
+    @POST("/passport/auth/register")
+    suspend fun authRegister(@Body requestBody: RequestBody): ResponseData<LoginResp>
 
     /**
-     * 退出登录用户账号
+     * 重置密码
      */
-    @POST("/aisocial/lgin/loginout")
-    suspend fun logoutUserAccount(): ResponseData<String>
+    @POST("/passport/auth/forget")
+    suspend fun authForget(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     /**
-     * 获取用户基本信息
+     * 退出登录
      */
-    @POST("/social/userinfo/baseinfo")
-    suspend fun queryUserInfo(): ResponseData<String>
+    @GET("/user/logout")
+    suspend fun authLogout(): ResponseData<Boolean>
 
     /**
-     * 更新用户基本信息
+     * 用户账号信息
      */
-    @POST("/social/userinfo/update")
-    suspend fun updateUserInfo(): ResponseData<String>
+    @GET("/user/info")
+    suspend fun userInfo(): ResponseData<UserInfo>
 
     /**
-     * 获取兴趣爱好列表
+     * 获取订阅信息
      */
-    @POST("/social/userinfo/queryHobby")
-    suspend fun queryHobbies(): ResponseData<String>
+    @GET("/user/getSubscribe")
+    suspend fun getSubscribe(): ResponseData<String>
 
     /**
-     * 邮箱发送验证码
+     * 重置订阅链接
      */
-    @POST("/social/userinfo/send/verifyCode")
-    suspend fun sendVerifyCode(): ResponseData<String>
+    @GET("/user/resetSecurity")
+    suspend fun resetSubsLink(): ResponseData<String>
 
     /**
-     * 绑定邮箱
+     * 获取待办事项
      */
-    @POST("/social/userinfo/bindEmail")
-    suspend fun bindEmail(): ResponseData<String>
+    @GET("/user/getStat")
+    suspend fun getStat(): ResponseData<String>
 
     /**
-     * 解除邮箱绑定
+     * 修改秘密
      */
-    @POST("/social/userinfo/unbindEmail")
-    suspend fun unbindEmail(): ResponseData<String>
+    @POST("/user/changePassword")
+    suspend fun changePwd(): ResponseData<String>
+
+    /**
+     * 通知状态
+     */
+    @POST("/user/update")
+    suspend fun updateStat(): ResponseData<String>
+
+    @POST("/user/transfer")
+    suspend fun transferBonus(): ResponseData<String>
 }

@@ -1,6 +1,10 @@
 package app.hw.network.api
 
 import app.hw.network.RetrofitManager
+import app.hw.network.model.AppConfig
+import app.hw.network.model.CheckStat
+import app.hw.network.model.LoginResp
+import app.hw.network.model.UserInfo
 
 /**
  * @Time : created on 2024/4/23 14:10
@@ -13,51 +17,90 @@ object UserAccountApi {
         )
     }
 
-    suspend fun loginDevice(): ResponseData<String> {
-        return service.loginDevice()
+    suspend fun appConfig(): ResponseData<AppConfig> {
+        return service.getAppConfig()
     }
 
-    suspend fun loginGoogle(): ResponseData<String> {
-        return service.loginGoogle()
+    suspend fun checkLogin(): ResponseData<CheckStat> {
+        return service.authCheck()
     }
 
-    suspend fun loginFacebook(): ResponseData<String> {
-        return service.loginFacebook()
+    suspend fun login(mail: String, pwd: String): ResponseData<LoginResp> {
+        val reqBody = RequestParam.Builder().apply {
+            put("email", mail)
+            put("password", pwd)
+        }.build().requestBody
+        return service.authLogin(reqBody)
     }
 
-    suspend fun submitUserId(): ResponseData<String> {
-        return service.submitUserId()
+    suspend fun sendEmailVerifyCode(mail: String): ResponseData<Boolean> {
+        val reqBody = RequestParam.Builder().apply {
+            put("email", mail)
+        }.build().requestBody
+        return service.sendEMC(reqBody)
     }
 
-    suspend fun deleteUserAccount(): ResponseData<String> {
-        return service.deleteUserAccount()
+    /**
+     * 注册账号，参数：
+     *  {
+     *   "email": "xxxx@xx.com",
+     *   "password": "123456789",
+     *   "email_code": 333333,
+     *   "invite_code": "",
+     *   "recaptcha_data": ""
+     * }
+     */
+    suspend fun registerAccount(
+        mail: String,
+        pwd: String,
+        mailCode: String,
+        inviteCode: String = "",
+        verifyCode: String = ""
+    ): ResponseData<LoginResp> {
+        val reqBody = RequestParam.Builder().apply {
+            put("email", mail)
+            put("password", pwd)
+            put("email_code", mailCode)
+            put("invite_code", inviteCode)
+            put("recaptcha_data", verifyCode)
+        }.build().requestBody
+        return service.authRegister(reqBody)
     }
 
-    suspend fun logoutUserAccount(): ResponseData<String> {
-        return service.logoutUserAccount()
+    suspend fun forgetAccount(
+        mail: String,
+        pwd: String,
+        mailCode: String
+    ): ResponseData<Boolean> {
+        val reqBody = RequestParam.Builder().apply {
+            put("email", mail)
+            put("password", pwd)
+            put("email_code", mailCode)
+        }.build().requestBody
+        return service.authForget(reqBody)
     }
 
-    suspend fun queryUserInfo(): ResponseData<String> {
-        return service.queryUserInfo()
+    suspend fun logout(): ResponseData<Boolean> {
+        return service.authLogout()
     }
 
-    suspend fun updateUserInfo(): ResponseData<String> {
-        return service.updateUserInfo()
+    suspend fun userAccountInfo(): ResponseData<UserInfo> {
+        return service.userInfo()
     }
 
-    suspend fun queryHobbies(): ResponseData<String> {
-        return service.queryHobbies()
+    suspend fun getSubscribeInfo(): ResponseData<String> {
+        return service.getSubscribe()
     }
 
-    suspend fun sendVerifyCode(): ResponseData<String> {
-        return service.sendVerifyCode()
+    suspend fun resetSubsLink(): ResponseData<String> {
+        return service.resetSubsLink()
     }
 
-    suspend fun bindEmail(): ResponseData<String> {
-        return service.bindEmail()
+    suspend fun getTodos(): ResponseData<String> {
+        return service.getStat()
     }
 
-    suspend fun unbindEmail(): ResponseData<String> {
-        return service.unbindEmail()
+    suspend fun modifyPassword(): ResponseData<String> {
+        return service.changePwd()
     }
 }
