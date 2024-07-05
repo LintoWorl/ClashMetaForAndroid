@@ -3,6 +3,7 @@ package app.hw.network.api
 import app.hw.network.model.AppConfig
 import app.hw.network.model.CheckStat
 import app.hw.network.model.LoginResp
+import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.UserInfo
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -64,32 +65,39 @@ internal interface UserAccountService {
      * 获取订阅信息
      */
     @GET("/user/getSubscribe")
-    suspend fun getSubscribe(): ResponseData<String>
+    suspend fun getSubscribe(): ResponseData<ProductSubsInfo>
 
     /**
-     * 重置订阅链接
+     * 重置订阅链接，返回一条新的订阅连接
      */
     @GET("/user/resetSecurity")
     suspend fun resetSubsLink(): ResponseData<String>
 
     /**
-     * 获取待办事项
+     * 获取待办事项,返回内容：
+     * {
+     *   "data": [
+     *     0,   //待付订单id
+     *     0,   //代办工单id
+     *     0    //待确认邀请id
+     *   ]
+     * }
      */
     @GET("/user/getStat")
-    suspend fun getStat(): ResponseData<String>
+    suspend fun getStat(): ResponseData<List<Long>>
 
     /**
      * 修改秘密
      */
     @POST("/user/changePassword")
-    suspend fun changePwd(): ResponseData<String>
+    suspend fun changePwd(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     /**
      * 通知状态
      */
     @POST("/user/update")
-    suspend fun updateStat(): ResponseData<String>
+    suspend fun updateStat(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     @POST("/user/transfer")
-    suspend fun transferBonus(): ResponseData<String>
+    suspend fun transferBonus(@Body requestBody: RequestBody): ResponseData<Boolean>
 }

@@ -4,6 +4,7 @@ import app.hw.network.RetrofitManager
 import app.hw.network.model.AppConfig
 import app.hw.network.model.CheckStat
 import app.hw.network.model.LoginResp
+import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.UserInfo
 
 /**
@@ -88,7 +89,7 @@ object UserAccountApi {
         return service.userInfo()
     }
 
-    suspend fun getSubscribeInfo(): ResponseData<String> {
+    suspend fun getSubscribeInfo(): ResponseData<ProductSubsInfo> {
         return service.getSubscribe()
     }
 
@@ -96,11 +97,23 @@ object UserAccountApi {
         return service.resetSubsLink()
     }
 
-    suspend fun getTodos(): ResponseData<String> {
+    suspend fun getTodos(): ResponseData<List<Long>> {
         return service.getStat()
     }
 
-    suspend fun modifyPassword(): ResponseData<String> {
-        return service.changePwd()
+    suspend fun modifyPassword(oldPwd: String, newPwd: String): ResponseData<Boolean> {
+        val reqBody = RequestParam.Builder().apply {
+            put("old_password", oldPwd)
+            put("new_password", newPwd)
+        }.build().requestBody
+        return service.changePwd(reqBody)
+    }
+
+    //TODO 佣金的单位和数量级
+    suspend fun transferBonus(amount: Float): ResponseData<Boolean> {
+        val reqBody = RequestParam.Builder().apply {
+            put("transfer_amount", amount)
+        }.build().requestBody
+        return service.transferBonus(reqBody)
     }
 }
