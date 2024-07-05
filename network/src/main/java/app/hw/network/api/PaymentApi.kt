@@ -1,6 +1,8 @@
 package app.hw.network.api
 
 import app.hw.network.RetrofitManager
+import app.hw.network.model.OrderBean
+import app.hw.network.model.PaymentBean
 import app.hw.network.model.SubsProductBean
 
 /**
@@ -12,5 +14,44 @@ object PaymentApi {
 
     suspend fun getSubsPlan(): ResponseData<List<SubsProductBean>> {
         return service.getProductList()
+    }
+
+    suspend fun getOrderList(): ResponseData<List<OrderBean>> {
+        return service.fetchOrder()
+    }
+
+    suspend fun getPayMethod(): ResponseData<List<PaymentBean>> {
+        return service.getPayWay()
+    }
+
+    suspend fun getOrderInfo(tradeNo: String): ResponseData<OrderBean> {
+        return service.getOrderDetail(tradeNo)
+    }
+
+    suspend fun getOrderStat(tradeNo: String): ResponseData<Int> {
+        return service.checkOrderStat(tradeNo)
+    }
+
+    suspend fun createOrder(cycleName: String, planId: Int): ResponseData<String> {
+        val reqBody = RequestParam.Builder().apply {
+            put("cycle", cycleName)
+            put("plan_id", planId)
+        }.build().requestBody
+        return service.saveOrder(reqBody)
+    }
+
+    suspend fun payOrder(tradeNo: String, method: Int): ResponseData<String> {
+        val reqBody = RequestParam.Builder().apply {
+            put("trade_no", tradeNo)
+            put("method", method)
+        }.build().requestBody
+        return service.checkoutOrder(reqBody)
+    }
+
+    suspend fun cancelOrder(tradeNo: String): ResponseData<Boolean> {
+        val reqBody = RequestParam.Builder().apply {
+            put("trade_no", tradeNo)
+        }.build().requestBody
+        return service.cancelOrder(reqBody)
     }
 }

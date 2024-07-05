@@ -1,8 +1,13 @@
 package app.hw.network.api
 
+import app.hw.network.model.OrderBean
+import app.hw.network.model.PaymentBean
 import app.hw.network.model.SubsProductBean
+import okhttp3.RequestBody
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 
 /**
@@ -15,23 +20,23 @@ internal interface PaymentService {
     suspend fun getProductList(): ResponseData<List<SubsProductBean>>
 
     @GET("/user/order/fetch")
-    suspend fun fetchOrder():ResponseData<String>
+    suspend fun fetchOrder(): ResponseData<List<OrderBean>>
 
     @GET("/user/order/getPaymentMethod")
-    suspend fun getPayWay():ResponseData<String>
+    suspend fun getPayWay(): ResponseData<List<PaymentBean>>
 
-    @GET("/user/order/details?trade_no=")
-    suspend fun getOrderDetail():ResponseData<String>
+    @GET("/user/order/details")
+    suspend fun getOrderDetail(@Query("trade_no") tradeNo: String): ResponseData<OrderBean>
 
-    @GET("/user/order/check?trade_no=")
-    suspend fun checkOrderStat():ResponseData<String>
+    @GET("/user/order/check")
+    suspend fun checkOrderStat(@Query("trade_no") tradeNo: String): ResponseData<Int>
 
     @POST("/user/order/save")
-    suspend fun saveOrder():ResponseData<String>
+    suspend fun saveOrder(@Body requestBody: RequestBody): ResponseData<String>
 
     @POST("/user/order/checkout")
-    suspend fun checkoutOrder():ResponseData<String>
+    suspend fun checkoutOrder(@Body requestBody: RequestBody): ResponseData<String>
 
     @POST("/user/order/cancel")
-    suspend fun cancelOrder():ResponseData<String>
+    suspend fun cancelOrder(@Body requestBody: RequestBody): ResponseData<Boolean>
 }
