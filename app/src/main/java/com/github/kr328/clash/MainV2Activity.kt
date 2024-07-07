@@ -19,15 +19,6 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
     private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
     private val mUserFragment: UserFragment by lazy { UserFragment.newInstance() }
-    private val map by lazy {
-        mapOf(
-            Pair(-1, "mRegisterFragment"),
-            Pair(0, "mLoginFragment"),
-            Pair(1, "mHomeFragment"),
-            Pair(2, "mSubsFragment"),
-            Pair(3, "mUserFragment")
-        )
-    }
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: DesignMainV2Binding
 
@@ -48,17 +39,15 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
         design.initTabNav { menu ->
             when (menu.itemId) {
                 R.id.navigation_home -> {
-                    showFragmentByIndex(1)
+                    showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
                 }
 
                 R.id.navigation_subs -> {
-                    showFragmentByIndex(2)
-                    mSubsFragment.updateView("This is the page of subscription.")
+                    showFragmentByIndex(MainViewModel.IDX_FRAG_SUBS)
                 }
 
                 R.id.navigation_mine -> {
-                    showFragmentByIndex(3)
-                    mUserFragment.updateView("Welcome to User Center!")
+                    showFragmentByIndex(MainViewModel.IDX_FRAG_USER)
                 }
             }
         }
@@ -112,27 +101,27 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
      */
     private fun getFragmentByIndex(index: Int): Fragment? {
         return when (index) {
-            -1 -> {
+            MainViewModel.IDX_FRAG_REGST -> {
                 binding.navigation.hide()
                 mRegisterFragment
             }
 
-            0 -> {
+            MainViewModel.IDX_FRAG_LOGIN -> {
                 binding.navigation.hide()
                 mLoginFragment
             }
 
-            1 -> {
+            MainViewModel.IDX_FRAG_HOME -> {
                 binding.navigation.show()
                 mHomeFragment
             }
 
-            2 -> {
+            MainViewModel.IDX_FRAG_SUBS -> {
                 binding.navigation.show()
                 mSubsFragment
             }
 
-            3 -> {
+            MainViewModel.IDX_FRAG_USER -> {
                 binding.navigation.show()
                 mUserFragment
             }
