@@ -64,6 +64,7 @@ dependencyResolutionManagement {
             library("retrofit-converter", "com.squareup.retrofit2:converter-gson:$retrofit")
             library("logging-interceptor", "com.squareup.okhttp3:logging-interceptor:4.11.0")
             library("gson", "com.google.code.gson:gson:2.10.1")
+            library("fragment-ktx", "androidx.fragment:fragment-ktx:1.6.2")
         }
     }
 }

@@ -1,11 +1,15 @@
 package com.github.kr328.clash
 
+import android.annotation.SuppressLint
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import com.github.kr328.clash.design.MainDesignV2
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.show
+import com.github.kr328.clash.vm.MainViewModel
 
 class MainV2Activity : BaseActivity<MainDesignV2>() {
 
@@ -13,7 +17,7 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
     private val mRegisterFragment: RegisterFragment by lazy { RegisterFragment.newInstance() }
     private val mLoginFragment: LoginFragment by lazy { LoginFragment.newInstance() }
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
-    private val mSubsFragment: UserFragment by lazy { UserFragment.newInstance() }
+    private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
     private val mUserFragment: UserFragment by lazy { UserFragment.newInstance() }
     private val map by lazy {
         mapOf(
@@ -24,6 +28,7 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
             Pair(3, "mUserFragment")
         )
     }
+    private lateinit var viewModel: MainViewModel
     private lateinit var binding: DesignMainV2Binding
 
     override suspend fun main() {
@@ -31,69 +36,109 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
 
         setContentDesign(design)
 
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         binding = design.binding
+
+        initTabEvents(design)
+        showFragmentByIndex(0)//TODO 根据登录状态确定初始状态应该跳转到什么页面
+        initObserver()
+    }
+
+    private fun initTabEvents(design: MainDesignV2) {
         design.initTabNav { menu ->
             when (menu.itemId) {
                 R.id.navigation_home -> {
-                    currentIndex = 1
-                    showFragmentNew()
+                    showFragmentByIndex(1)
                 }
 
                 R.id.navigation_subs -> {
-                    currentIndex = 2
-                    showFragmentNew()
+                    showFragmentByIndex(2)
                     mSubsFragment.updateView("This is the page of subscription.")
                 }
 
                 R.id.navigation_mine -> {
-                    currentIndex = 3
-                    showFragmentNew()
+                    showFragmentByIndex(3)
                     mUserFragment.updateView("Welcome to User Center!")
                 }
             }
         }
-        showFragmentNew()
     }
 
-    private fun showFragmentNew() {
-        val transaction = supportFragmentManager.beginTransaction()
-        val tag = map[currentIndex]
-        val newFragment = supportFragmentManager.findFragmentByTag(tag) ?: when (currentIndex) {
-            1 -> mHomeFragment.apply {
-                transaction.replace(R.id.main_container, this, tag)
-                binding.navigation.show()
-            }
-
-            2 -> mSubsFragment.apply {
-                transaction.replace(R.id.main_container, this, tag)
-                binding.navigation.show()
-            }
-
-            3 -> mUserFragment.apply {
-                transaction.replace(R.id.main_container, this, tag)
-                binding.navigation.show()
-            }
-
-            0 -> mLoginFragment.apply {
-                transaction.replace(R.id.main_container, this, tag)
-                binding.navigation.hide()
-            }
-
-            else -> mRegisterFragment.apply {
-                transaction.replace(R.id.main_container, this, tag)
-                binding.navigation.hide()
-            }
+    private fun initObserver() {
+        viewModel.fragIndex.observe(this) {
+            showFragmentByIndex(it)
         }
-        //setTabStyle(currentIndex)
+    }
+
+    @SuppressLint("CommitTransaction")
+    private fun showFragmentByIndex(index: Int) {
+        currentIndex = index
+        val oldFragment: Fragment? = getCurrentFragment()
+        val newFragment: Fragment = getFragmentByIndex(index) ?: return
+        if (oldFragment == newFragment && oldFragment.isVisible) {
+            return
+        }
+
+        // 新的fragment已经显示了
+        val transaction = supportFragmentManager.beginTransaction()
+        if (oldFragment != null) {
+            transaction.hide(oldFragment)
+            transaction.setMaxLifecycle(oldFragment, Lifecycle.State.STARTED)
+        }
+        if (!newFragment.isAdded) {
+            transaction.add(R.id.main_container, newFragment, newFragment.javaClass.name)
+        }
+
         transaction.setMaxLifecycle(newFragment, Lifecycle.State.RESUMED)
-        transaction.show(newFragment).apply {
-            map.map { outIt ->
-                if (outIt.key != currentIndex) {
-                    supportFragmentManager.findFragmentByTag(outIt.value)?.let { this.hide(it) }
-                }
-            }
-        }.commitAllowingStateLoss()
+        transaction.show(newFragment).commitAllowingStateLoss()
+        //使用此方式在主线程中立即执行事务队列所有事务，同步当前的状态,确保来回快速切换的时候事务不会堆积在队列中异步执行，避免卡顿问题
         supportFragmentManager.executePendingTransactions()
+    }
+
+    /**
+     * 获取当前的fragment
+     */
+    private fun getCurrentFragment(): Fragment? {
+        if (mRegisterFragment.isVisible) return mRegisterFragment
+        if (mLoginFragment.isVisible) return mLoginFragment
+        if (mHomeFragment.isVisible) return mHomeFragment
+        if (mSubsFragment.isVisible) return mSubsFragment
+        if (mUserFragment.isVisible) return mUserFragment
+        return null
+    }
+
+    /**
+     * 根据index获取fragment,index值取1到4
+     */
+    private fun getFragmentByIndex(index: Int): Fragment? {
+        return when (index) {
+            -1 -> {
+                binding.navigation.hide()
+                mRegisterFragment
+            }
+
+            0 -> {
+                binding.navigation.hide()
+                mLoginFragment
+            }
+
+            1 -> {
+                binding.navigation.show()
+                mHomeFragment
+            }
+
+            2 -> {
+                binding.navigation.show()
+                mSubsFragment
+            }
+
+            3 -> {
+                binding.navigation.show()
+                mUserFragment
+            }
+
+            else -> null
+        }
     }
 
 }

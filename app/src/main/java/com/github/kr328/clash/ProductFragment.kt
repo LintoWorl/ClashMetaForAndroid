@@ -9,7 +9,7 @@ import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.design.databinding.FragUserCenterBinding
 import com.github.kr328.clash.vm.MainViewModel
 
-class UserFragment : Fragment() {
+class ProductFragment : Fragment() {
 
     private lateinit var binding: FragUserCenterBinding
     private val viewModel by activityViewModels<MainViewModel>()
@@ -38,6 +38,6 @@ class UserFragment : Fragment() {
 
     companion object {
         @JvmStatic
-        fun newInstance() = UserFragment()
+        fun newInstance() = ProductFragment()
     }
 }

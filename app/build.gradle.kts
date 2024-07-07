@@ -24,6 +24,7 @@ dependencies {
     implementation(libs.androidx.coordinator)
     implementation(libs.androidx.recyclerview)
     implementation(libs.google.material)
+    implementation(libs.fragment.ktx)
 }
 
 tasks.getByName("clean", type = Delete::class) {
