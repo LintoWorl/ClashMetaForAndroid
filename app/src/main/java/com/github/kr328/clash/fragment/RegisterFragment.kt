@@ -1,4 +1,4 @@
-package com.github.kr328.clash
+package com.github.kr328.clash.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,20 +6,20 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.github.kr328.clash.design.databinding.FragUserCenterBinding
+import com.github.kr328.clash.design.databinding.FragRegisterAccountBinding
+import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.vm.MainViewModel
 
-class ProductFragment : Fragment() {
-
-    private lateinit var binding: FragUserCenterBinding
+class RegisterFragment : Fragment() {
+    private lateinit var binding: FragRegisterAccountBinding
     private val viewModel by activityViewModels<MainViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        binding = FragUserCenterBinding.inflate(inflater, container, false)
+    ): View {
+        binding = FragRegisterAccountBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -29,15 +29,17 @@ class ProductFragment : Fragment() {
     }
 
     private fun initView() {
-
-    }
-
-    fun updateView(content: String) {
-        binding.tvDescription.text = content
+        binding.titleBar.titleBarText.text = "注册"
+        binding.btnRegister.onClickNew {
+            //调注册用户的API
+        }
+        binding.titleBar.titleBarGoback.onClickNew {
+            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
+        }
     }
 
     companion object {
         @JvmStatic
-        fun newInstance() = ProductFragment()
+        fun newInstance() = RegisterFragment()
     }
 }

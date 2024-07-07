@@ -9,23 +9,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="20dp"
         android:src="@drawable/icon_app_logo" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:text="欢迎使用 风火轮"
+        android:text="脚踏风火轮  网上自由行"
         android:textColor="@color/color_clash_dark"
-        android:textSize="24sp" />
+        android:textSize="22sp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="32dp"
-        android:text="邮箱"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+        android:text="邮箱" />
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/edit_email"
         android:layout_width="match_parent"
@@ -41,21 +40,17 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp">
+        android:layout_marginTop="16dp">
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="密码"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+            style="@style/CommonTextLabel"
+            android:layout_centerVertical="true"
+            android:text="密码" />
         <TextView
             android:id="@+id/tv_forget_pwd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            style="@style/CommonTextLabel"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="16dp"
+            android:paddingVertical="4dp"
             android:text="忘记密码?"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             android:textColor="@color/color_clash_light" />
     </RelativeLayout>
     <androidx.appcompat.widget.AppCompatEditText
@@ -63,7 +58,6 @@
         android:layout_width="match_parent"
         android:layout_height="44dp"
         android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="4dp"
         android:background="@drawable/bg_edit_text"
         android:gravity="center_vertical"
         android:inputType="textPassword"
@@ -99,7 +93,7 @@
         android:paddingVertical="8dp"
         android:text="登  录"
         android:textColor="@color/white"
-        android:textSize="24sp" />
+        android:textSize="18sp" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -112,7 +106,7 @@
             android:paddingVertical="8dp"
             android:text="游客进入"
             android:textColor="@color/color_clash_dark"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
         <TextView
             android:id="@+id/btn_enter_register"
             android:layout_width="wrap_content"
@@ -122,7 +116,7 @@
             android:paddingVertical="8dp"
             android:text="新用户注册"
             android:textColor="@color/color_clash"
-            android:textSize="20sp" />
+            android:textSize="16sp" />
     </RelativeLayout>
 
     <View
@@ -133,6 +127,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginVertical="44dp"
-        android:text="Copyright 2024 @ 风火轮" />
+        android:layout_marginVertical="50dp"
+        android:text="Copyright 2024 @ 风火轮"
+        android:textColor="@color/color_666"
+        android:textSize="12sp" />
 </LinearLayout>

@@ -1,4 +1,4 @@
-package com.github.kr328.clash
+package com.github.kr328.clash.fragment
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -41,6 +41,7 @@ class LoginFragment : Fragment() {
         }
         binding.tvForgetPwd.onClickNew {
             //重置密码
+            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REPWD
         }
     }
 

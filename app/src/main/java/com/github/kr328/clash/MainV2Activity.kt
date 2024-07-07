@@ -9,12 +9,19 @@ import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.show
+import com.github.kr328.clash.fragment.HomeFragment
+import com.github.kr328.clash.fragment.LoginFragment
+import com.github.kr328.clash.fragment.ProductFragment
+import com.github.kr328.clash.fragment.RegisterFragment
+import com.github.kr328.clash.fragment.ResetPwdFragment
+import com.github.kr328.clash.fragment.UserFragment
 import com.github.kr328.clash.vm.MainViewModel
 
 class MainV2Activity : BaseActivity<MainDesignV2>() {
 
     private var currentIndex = 0
     private val mRegisterFragment: RegisterFragment by lazy { RegisterFragment.newInstance() }
+    private val mResetPwdFragment: ResetPwdFragment by lazy { ResetPwdFragment.newInstance() }
     private val mLoginFragment: LoginFragment by lazy { LoginFragment.newInstance() }
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
     private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
@@ -89,6 +96,7 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
      */
     private fun getCurrentFragment(): Fragment? {
         if (mRegisterFragment.isVisible) return mRegisterFragment
+        if (mResetPwdFragment.isVisible) return mResetPwdFragment
         if (mLoginFragment.isVisible) return mLoginFragment
         if (mHomeFragment.isVisible) return mHomeFragment
         if (mSubsFragment.isVisible) return mSubsFragment
@@ -104,6 +112,11 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
             MainViewModel.IDX_FRAG_REGST -> {
                 binding.navigation.hide()
                 mRegisterFragment
+            }
+
+            MainViewModel.IDX_FRAG_REPWD -> {
+                binding.navigation.hide()
+                mResetPwdFragment
             }
 
             MainViewModel.IDX_FRAG_LOGIN -> {
