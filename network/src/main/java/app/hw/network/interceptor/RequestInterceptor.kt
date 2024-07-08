@@ -32,7 +32,7 @@ class RequestInterceptor : Interceptor {
         builder.addHeader("language", Locale.getDefault().language)
         //builder.addHeader("isoCountryCode", Utils.getNetWorkCountryISO())
         //builder.addHeader("appId", Constants.bid)//FIXME
-        builder.addHeader("appType", "8007") //社交8007
+        builder.addHeader("appType", "8007")//区分app
         builder.addHeader("region", Locale.getDefault().country)
         //builder.addHeader("traceCode", Utils.createTraceCode())
         //builder.addHeader("setLanguage", MultiLanguageUtil.getCurrentLanguageCode())//FIXME
