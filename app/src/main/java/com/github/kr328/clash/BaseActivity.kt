@@ -34,7 +34,7 @@ abstract class BaseActivity<D : Design<*>> : AppCompatActivity(),
     Broadcasts.Observer {
     
     protected val uiStore by lazy { UiStore(this) }
-    protected val events = Channel<Event>(Channel.UNLIMITED)
+    val events = Channel<Event>(Channel.UNLIMITED)
     protected var activityStarted: Boolean = false
     protected val clashRunning: Boolean
         get() = Remote.broadcasts.clashRunning

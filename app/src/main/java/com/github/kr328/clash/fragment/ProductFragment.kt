@@ -35,10 +35,9 @@ import java.util.concurrent.TimeUnit
 class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Observer {
 
     private lateinit var design: ProfilesDesign
-    private lateinit var binding: FragUserCenterBinding
-    private val viewModel by activityViewModels<MainViewModel>()
     private val events = Channel<BaseActivity.Event>(Channel.UNLIMITED)
     private var activityStarted: Boolean = false
+    private val viewModel by activityViewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
