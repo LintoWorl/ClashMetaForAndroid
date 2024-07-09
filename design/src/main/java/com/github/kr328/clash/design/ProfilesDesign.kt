@@ -70,7 +70,8 @@ class ProfilesDesign(context: Context) : Design<ProfilesDesign.Request>(context)
     init {
         binding.self = this
 
-        binding.activityBarLayout.applyFrom(context)
+        //binding.activityBarLayout.applyFrom(context)
+        binding.titleBar.root.hide()
 
         binding.mainList.recyclerList.also {
             it.bindAppBarElevation(binding.activityBarLayout)

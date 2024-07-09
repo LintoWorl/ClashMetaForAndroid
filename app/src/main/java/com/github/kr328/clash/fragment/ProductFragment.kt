@@ -38,10 +38,23 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
     private lateinit var binding: FragUserCenterBinding
     private val viewModel by activityViewModels<MainViewModel>()
     private val events = Channel<BaseActivity.Event>(Channel.UNLIMITED)
+    private var activityStarted: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         design = ProfilesDesign(requireContext())
+    }
+
+    override fun onStart() {
+        super.onStart()
+        activityStarted = true
+        events.trySend(BaseActivity.Event.ActivityStart)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        activityStarted = false
+        events.trySend(BaseActivity.Event.ActivityStop)
     }
 
     override fun onCreateView(
@@ -55,71 +68,71 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        launch {
-            initView()
-        }
+        initView()
     }
 
-    private suspend fun initView() {
-        val ticker = coroutineScope { ticker(TimeUnit.MINUTES.toMillis(1)) }
-        while (isActive) {
-            select<Unit> {
-                events.onReceive {
-                    when (it) {
-                        BaseActivity.Event.ActivityStart, BaseActivity.Event.ProfileChanged -> {
-                            design.fetch()
+    private fun initView() {
+        launch {
+            val ticker = ticker(TimeUnit.MINUTES.toMillis(1))
+            while (isActive) {
+                select<Unit> {
+                    events.onReceive {
+                        when (it) {
+                            BaseActivity.Event.ActivityStart, BaseActivity.Event.ProfileChanged -> {
+                                design.fetch()
+                            }
+
+                            else -> Unit
                         }
-
-                        else -> Unit
                     }
-                }
-                design.requests.onReceive {
-                    when (it) {
-                        ProfilesDesign.Request.Create ->
-                            startActivity(NewProfileActivity::class.intent)
+                    design.requests.onReceive {
+                        when (it) {
+                            ProfilesDesign.Request.Create ->
+                                startActivity(NewProfileActivity::class.intent)
 
-                        ProfilesDesign.Request.UpdateAll ->
-                            withProfile {
-                                try {
-                                    queryAll().forEach { p ->
-                                        if (p.imported && p.type != Profile.Type.File)
-                                            update(p.uuid)
+                            ProfilesDesign.Request.UpdateAll ->
+                                withProfile {
+                                    try {
+                                        queryAll().forEach { p ->
+                                            if (p.imported && p.type != Profile.Type.File)
+                                                update(p.uuid)
+                                        }
+                                    } finally {
+                                        withContext(Dispatchers.Main) {
+                                            design.finishUpdateAll();
+                                        }
                                     }
-                                } finally {
-                                    withContext(Dispatchers.Main) {
-                                        design.finishUpdateAll();
-                                    }
+                                }
+
+                            is ProfilesDesign.Request.Update ->
+                                withProfile { update(it.profile.uuid) }
+
+                            is ProfilesDesign.Request.Delete ->
+                                withProfile { delete(it.profile.uuid) }
+
+                            is ProfilesDesign.Request.Edit ->
+                                startActivity(PropertiesActivity::class.intent.setUUID(it.profile.uuid))
+
+                            is ProfilesDesign.Request.Active -> {
+                                withProfile {
+                                    if (it.profile.imported)
+                                        setActive(it.profile)
+                                    else
+                                        design.requestSave(it.profile)
                                 }
                             }
 
-                        is ProfilesDesign.Request.Update ->
-                            withProfile { update(it.profile.uuid) }
+                            is ProfilesDesign.Request.Duplicate -> {
+                                val uuid = withProfile { clone(it.profile.uuid) }
 
-                        is ProfilesDesign.Request.Delete ->
-                            withProfile { delete(it.profile.uuid) }
-
-                        is ProfilesDesign.Request.Edit ->
-                            startActivity(PropertiesActivity::class.intent.setUUID(it.profile.uuid))
-
-                        is ProfilesDesign.Request.Active -> {
-                            withProfile {
-                                if (it.profile.imported)
-                                    setActive(it.profile)
-                                else
-                                    design.requestSave(it.profile)
+                                startActivity(PropertiesActivity::class.intent.setUUID(uuid))
                             }
                         }
-
-                        is ProfilesDesign.Request.Duplicate -> {
-                            val uuid = withProfile { clone(it.profile.uuid) }
-
-                            startActivity(PropertiesActivity::class.intent.setUUID(uuid))
-                        }
                     }
-                }
-                if (isAdded) {
-                    ticker.onReceive {
-                        design.updateElapsed()
+                    if (activityStarted) {
+                        ticker.onReceive {
+                            design.updateElapsed()
+                        }
                     }
                 }
             }
@@ -171,7 +184,7 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
             withProfile {
                 name = queryByUUID(uuid)?.name
             }
-            design?.showToast(
+            design.showToast(
                 getString(R.string.toast_profile_updated_failed, name, reason),
                 ToastDuration.Long
             ) {

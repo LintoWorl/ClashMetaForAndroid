@@ -32,6 +32,7 @@
                 android:paddingEnd="@dimen/item_tailing_margin">
 
                 <include
+                    android:id="@+id/title_bar"
                     layout="@layout/common_activity_bar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
