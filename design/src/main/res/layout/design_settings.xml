@@ -79,7 +79,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="@{self.surface.insets.top}"
-            android:paddingEnd="@dimen/item_tailing_margin">
+            android:paddingEnd="@dimen/item_tailing_margin"
+            android:visibility="gone">
 
             <include layout="@layout/common_activity_bar" />
         </com.github.kr328.clash.design.view.ActivityBarLayout>

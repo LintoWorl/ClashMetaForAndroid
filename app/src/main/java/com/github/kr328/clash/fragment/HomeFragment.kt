@@ -96,11 +96,8 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                             HomeDesign.Request.OpenProxy ->
                                 startActivity(ProxyActivity::class.intent)
 
-                            HomeDesign.Request.OpenProviders ->
-                                startActivity(ProvidersActivity::class.intent)
-
-                            HomeDesign.Request.OpenSettings ->
-                                startActivity(SettingsActivity::class.intent)
+//                            HomeDesign.Request.OpenProviders ->
+//                                startActivity(ProvidersActivity::class.intent)
                         }
                     }
                     if (clashRunning) {
