@@ -1,23 +1,20 @@
 package com.github.kr328.clash.fragment
 
-import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.BaseActivity
-import com.github.kr328.clash.NewProfileActivity
 import com.github.kr328.clash.PropertiesActivity
 import com.github.kr328.clash.R
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.setUUID
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.design.ProfilesDesign
-import com.github.kr328.clash.design.model.ProfileProvider
 import com.github.kr328.clash.design.ui.ToastDuration
+import com.github.kr328.clash.design.util.showExceptionToast
 import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.util.withProfile
@@ -26,6 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -42,7 +40,7 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        design = ProfilesDesign(requireContext())
+        design = ProfilesDesign(requireActivity())
     }
 
     override fun onStart() {
@@ -90,9 +88,37 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                             ProfilesDesign.Request.Create ->
                                 //startActivity(NewProfileActivity::class.intent)
                                 withProfile {
-                                    val name = getString(R.string.new_profile)
+                                    //val name = getString(R.string.new_profile)
+                                    val name = "default_profile"
                                     val uuid: UUID = create(Profile.Type.Url, name)
-                                    launchProperties(uuid)
+                                    //launchProperties(uuid)
+
+                                    val originProf =
+                                        withProfile { queryByUUID(uuid) } ?: return@withProfile
+                                    val profile =
+                                        originProf.copy(source = "https://s.jiasu01.vip/bd/api/v1/client/subscribe?token=07d0d5175bf41ae8c335128597e20e9e&flag=clash")
+                                    try {
+                                        //design.withProcessing { updateStatus ->
+                                        design.showProgress(true)
+                                            withProfile {
+                                                patch(
+                                                    profile.uuid, profile.name, profile.source, profile.interval
+                                                )
+
+                                                coroutineScope {
+                                                    commit(profile.uuid) {
+                                                        launch {
+                                                            //updateStatus(it)
+                                                        }
+                                                        design.showProgress(false)
+                                                    }
+                                                }
+                                            }
+                                        //}
+                                    } catch (e: Exception) {
+                                        design.showExceptionToast(e)
+                                        design.showProgress(false)
+                                    }
                                 }
 
                             ProfilesDesign.Request.UpdateAll ->
