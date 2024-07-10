@@ -139,8 +139,7 @@ class ProfileWorker : BaseService() {
             .setGroup(STATUS_CHANNEL)
             .build()
 
-        NotificationManagerCompat.from(applicationContext)
-            .notify(id, notification)
+        NotificationManagerCompat.from(applicationContext).notify(id, notification)
         try {
             block()
         } finally {
