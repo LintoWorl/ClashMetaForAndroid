@@ -37,11 +37,6 @@
         android:paddingStart="@{self.surface.insets.start}"
         android:paddingEnd="@{self.surface.insets.end}">
 
-        <!--<ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:scrollbars="none">-->
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"

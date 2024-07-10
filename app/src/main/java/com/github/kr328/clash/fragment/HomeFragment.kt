@@ -12,10 +12,8 @@ import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProfilesActivity
-import com.github.kr328.clash.ProvidersActivity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
-import com.github.kr328.clash.SettingsActivity
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.design.HomeDesign
@@ -95,9 +93,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
                             HomeDesign.Request.OpenProxy ->
                                 startActivity(ProxyActivity::class.intent)
-
-//                            HomeDesign.Request.OpenProviders ->
-//                                startActivity(ProvidersActivity::class.intent)
                         }
                     }
                     if (clashRunning) {

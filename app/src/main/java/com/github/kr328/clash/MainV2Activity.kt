@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import com.github.kr328.clash.design.MainDesignV2
+import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
 import com.github.kr328.clash.design.util.hide
@@ -17,7 +17,7 @@ import com.github.kr328.clash.fragment.ResetPwdFragment
 import com.github.kr328.clash.fragment.UserFragment
 import com.github.kr328.clash.vm.MainViewModel
 
-class MainV2Activity : BaseActivity<MainDesignV2>() {
+class MainV2Activity : BaseActivity<Design<Any>>() {
 
     private var currentIndex = 0
     private val mRegisterFragment: RegisterFragment by lazy { RegisterFragment.newInstance() }
@@ -30,20 +30,17 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
     private lateinit var binding: DesignMainV2Binding
 
     override suspend fun main() {
-        val design = MainDesignV2(this)
-
-        setContentDesign(design)
-
+        binding = DesignMainV2Binding.inflate(layoutInflater)
+        setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        binding = design.binding
 
-        initTabEvents(design)
+        initTabEvents()
         showFragmentByIndex(0)//TODO 根据登录状态确定初始状态应该跳转到什么页面
         initObserver()
     }
 
-    private fun initTabEvents(design: MainDesignV2) {
-        design.initTabNav { menu ->
+    private fun initTabEvents() {
+        binding.navigation.setOnItemSelectedListener { menu ->
             when (menu.itemId) {
                 R.id.navigation_home -> {
                     showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
@@ -57,6 +54,7 @@ class MainV2Activity : BaseActivity<MainDesignV2>() {
                     showFragmentByIndex(MainViewModel.IDX_FRAG_USER)
                 }
             }
+            return@setOnItemSelectedListener true
         }
     }
 
