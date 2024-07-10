@@ -11,10 +11,9 @@ class AppStore(context: Context) {
             .asStoreProvider()
     )
 
-    var updatedAt: Long by store.long(
-        key = "updated_at",
-        defaultValue = -1,
-    )
+    var updatedAt: Long by store.long(key = "updated_at", defaultValue = -1)
+    var enteredHome: Boolean by store.boolean("user_entered_home", false)
+    var hasLoginApp: Boolean by store.boolean("user_has_login", false)
 
     companion object {
         private const val FILE_NAME = "app"

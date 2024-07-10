@@ -15,6 +15,7 @@ import com.github.kr328.clash.fragment.ProductFragment
 import com.github.kr328.clash.fragment.RegisterFragment
 import com.github.kr328.clash.fragment.ResetPwdFragment
 import com.github.kr328.clash.fragment.UserFragment
+import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
@@ -34,8 +35,13 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        // 根据登录状态确定初始状态应该跳转到什么页面
+        if (AppStore(this).enteredHome) {
+            showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
+        } else {
+            showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
+        }
         initTabEvents()
-        showFragmentByIndex(0)//TODO 根据登录状态确定初始状态应该跳转到什么页面
         initObserver()
     }
 
@@ -85,6 +91,9 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
         transaction.setMaxLifecycle(newFragment, Lifecycle.State.RESUMED)
         transaction.show(newFragment).commitAllowingStateLoss()
+        if (index == MainViewModel.IDX_FRAG_HOME) {
+            AppStore(this).enteredHome = true
+        }
         //使用此方式在主线程中立即执行事务队列所有事务，同步当前的状态,确保来回快速切换的时候事务不会堆积在队列中异步执行，避免卡顿问题
         supportFragmentManager.executePendingTransactions()
     }
