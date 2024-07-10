@@ -1,9 +1,11 @@
 package com.github.kr328.clash.fragment
 
+import android.app.Activity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.BaseActivity
@@ -14,7 +16,7 @@ import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.setUUID
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.design.ProfilesDesign
-import com.github.kr328.clash.design.databinding.FragUserCenterBinding
+import com.github.kr328.clash.design.model.ProfileProvider
 import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.service.model.Profile
@@ -24,7 +26,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -87,7 +88,12 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                     design.requests.onReceive {
                         when (it) {
                             ProfilesDesign.Request.Create ->
-                                startActivity(NewProfileActivity::class.intent)
+                                //startActivity(NewProfileActivity::class.intent)
+                                withProfile {
+                                    val name = getString(R.string.new_profile)
+                                    val uuid: UUID = create(Profile.Type.Url, name)
+                                    launchProperties(uuid)
+                                }
 
                             ProfilesDesign.Request.UpdateAll ->
                                 withProfile {
@@ -196,6 +202,10 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
 
     override fun onProfileLoaded() {
 
+    }
+
+    private fun launchProperties(uuid: UUID) {
+        startActivity(PropertiesActivity::class.intent.setUUID(uuid))
     }
 
     companion object {

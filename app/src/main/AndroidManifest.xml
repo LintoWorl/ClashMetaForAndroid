@@ -20,6 +20,7 @@
     <application
         android:name=".MainApplication"
         android:allowBackup="true"
+        android:banner="@mipmap/ic_launcher"
         android:fullBackupContent="@xml/full_backup_content"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
@@ -64,9 +65,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="clash"/>
-                <data android:scheme="clashmeta"/>
-                <data android:host="install-config"/>
+                <data android:scheme="clash" />
+                <data android:scheme="clashmeta" />
+                <data android:host="install-config" />
             </intent-filter>
             <intent-filter>
                 <action android:name="com.github.metacubex.clash.meta.action.START_CLASH" />
