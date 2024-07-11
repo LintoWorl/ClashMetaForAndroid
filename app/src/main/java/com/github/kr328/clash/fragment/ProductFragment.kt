@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.BaseActivity
+import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.PropertiesActivity
 import com.github.kr328.clash.R
 import com.github.kr328.clash.common.util.intent
@@ -16,12 +17,14 @@ import com.github.kr328.clash.design.ProfilesDesign
 import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.design.util.showExceptionToast
 import com.github.kr328.clash.remote.Broadcasts
+import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
@@ -34,25 +37,13 @@ import java.util.concurrent.TimeUnit
 class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Observer {
 
     private lateinit var design: ProfilesDesign
-    private val events = Channel<BaseActivity.Event>(Channel.UNLIMITED)
-    private var activityStarted: Boolean = false
     private val viewModel by activityViewModels<MainViewModel>()
+    private lateinit var activity: MainV2Activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        design = ProfilesDesign(requireActivity())
-    }
-
-    override fun onStart() {
-        super.onStart()
-        activityStarted = true
-        events.trySend(BaseActivity.Event.ActivityStart)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        activityStarted = false
-        events.trySend(BaseActivity.Event.ActivityStop)
+        activity = requireActivity() as MainV2Activity
+        design = ProfilesDesign(activity)
     }
 
     override fun onCreateView(
@@ -61,6 +52,7 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
         savedInstanceState: Bundle?
     ): View {
         //binding = FragUserCenterBinding.inflate(inflater, container, false)
+        Remote.broadcasts.addObserver(this)
         return design.root
     }
 
@@ -69,14 +61,26 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
         initView()
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        Remote.broadcasts.removeObserver(this)
+    }
+
+    override fun onDestroy() {
+        design.cancel()
+        cancel()
+        super.onDestroy()
+    }
+
     private fun initView() {
         launch {
+            design.fetch()//初始化页面数据
             val ticker = ticker(TimeUnit.MINUTES.toMillis(1))
             while (isActive) {
-                select<Unit> {
-                    events.onReceive {
+                select {
+                    activity.events.onReceive {
                         when (it) {
-                            BaseActivity.Event.ActivityStart, BaseActivity.Event.ProfileChanged -> {
+                            BaseActivity.Event.ProfileChanged -> {
                                 design.fetch()
                             }
 
@@ -86,7 +90,6 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                     design.requests.onReceive {
                         when (it) {
                             ProfilesDesign.Request.Create ->
-                                //startActivity(NewProfileActivity::class.intent)
                                 withProfile {
                                     //val name = getString(R.string.new_profile)
                                     val name = "default_profile"
@@ -100,20 +103,23 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                                     try {
                                         //design.withProcessing { updateStatus ->
                                         design.showProgress(true)
-                                            withProfile {
-                                                patch(
-                                                    profile.uuid, profile.name, profile.source, profile.interval
-                                                )
+                                        withProfile {
+                                            patch(
+                                                profile.uuid,
+                                                profile.name,
+                                                profile.source,
+                                                profile.interval
+                                            )
 
-                                                coroutineScope {
-                                                    commit(profile.uuid) {
-                                                        launch {
-                                                            //updateStatus(it)
-                                                        }
+                                            coroutineScope {
+                                                commit(profile.uuid) {
+                                                    launch {
+                                                        //updateStatus(it)
                                                         design.showProgress(false)
                                                     }
                                                 }
                                             }
+                                        }
                                         //}
                                     } catch (e: Exception) {
                                         design.showExceptionToast(e)
@@ -160,7 +166,7 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                             }
                         }
                     }
-                    if (activityStarted) {
+                    if (activity.activityStarted) {
                         ticker.onReceive {
                             design.updateElapsed()
                         }
@@ -189,7 +195,7 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
     }
 
     override fun onProfileChanged() {
-
+        activity.events.trySend(BaseActivity.Event.ProfileChanged)
     }
 
     override fun onProfileUpdateCompleted(uuid: UUID?) {
@@ -200,7 +206,7 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
             withProfile {
                 name = queryByUUID(uuid)?.name
             }
-            design?.showToast(
+            design.showToast(
                 getString(R.string.toast_profile_updated_complete, name),
                 ToastDuration.Long
             )
