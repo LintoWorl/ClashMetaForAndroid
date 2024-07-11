@@ -1,6 +1,5 @@
 package com.github.kr328.clash.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +17,7 @@ import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.design.HomeDesign
 import com.github.kr328.clash.design.ui.ToastDuration
+import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.util.startClashService
 import com.github.kr328.clash.util.stopClashService
@@ -29,21 +29,22 @@ import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
+import java.util.*
 import java.util.concurrent.TimeUnit
 
-class HomeFragment : Fragment(), CoroutineScope by MainScope() {
+class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Observer {
 
     private lateinit var design: HomeDesign
-    private lateinit var context: Context
     private val viewModel by activityViewModels<MainViewModel>()
+    private lateinit var activity: MainV2Activity
 
     val clashRunning: Boolean
         get() = Remote.broadcasts.clashRunning
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        context = requireActivity()
-        design = HomeDesign(context)
+        activity = requireActivity() as MainV2Activity
+        design = HomeDesign(activity)
     }
 
     override fun onCreateView(
@@ -51,17 +52,22 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        Remote.broadcasts.addObserver(this)
         return design.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
         main()
     }
 
-    private fun initView() {
-
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            Remote.broadcasts.removeObserver(this)
+        } else {
+            Remote.broadcasts.addObserver(this)
+        }
     }
 
     fun main() {
@@ -71,7 +77,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
             while (isActive) {
                 select {
-                    (context as MainV2Activity).events.onReceive {
+                    activity.events.onReceive {
                         when (it) {
                             BaseActivity.Event.ActivityStart, BaseActivity.Event.ServiceRecreated,
                             BaseActivity.Event.ClashStop, BaseActivity.Event.ClashStart,
@@ -86,7 +92,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                         when (it) {
                             HomeDesign.Request.ToggleStatus -> {
                                 if (clashRunning)
-                                    context.stopClashService()
+                                    activity.stopClashService()
                                 else
                                     design.startClash()
                             }
@@ -147,21 +153,49 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             return
         }
 
-        val vpnRequest = context.startClashService()
+        val vpnRequest = activity.startClashService()
 
         try {
             if (vpnRequest != null) {
-                val result = (context as MainV2Activity).startActivityForResult(
+                val result = activity.startActivityForResult(
                     ActivityResultContracts.StartActivityForResult(),
                     vpnRequest
                 )
 
                 if (result.resultCode == AppCompatActivity.RESULT_OK)
-                    context.startClashService()
+                    activity.startClashService()
             }
         } catch (e: Exception) {
             design.showToast(R.string.unable_to_start_vpn, ToastDuration.Long)
         }
+    }
+
+    override fun onServiceRecreated() {
+        activity.events.trySend(BaseActivity.Event.ServiceRecreated)
+    }
+
+    override fun onStarted() {
+        activity.events.trySend(BaseActivity.Event.ClashStart)
+    }
+
+    override fun onStopped(cause: String?) {
+        activity.events.trySend(BaseActivity.Event.ClashStop)
+    }
+
+    override fun onProfileChanged() {
+        activity.events.trySend(BaseActivity.Event.ProfileLoaded)
+    }
+
+    override fun onProfileUpdateCompleted(uuid: UUID?) {
+
+    }
+
+    override fun onProfileUpdateFailed(uuid: UUID?, reason: String?) {
+
+    }
+
+    override fun onProfileLoaded() {
+
     }
 
 }

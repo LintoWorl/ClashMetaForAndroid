@@ -61,6 +61,15 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
         initView()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            Remote.broadcasts.removeObserver(this)
+        } else {
+            Remote.broadcasts.addObserver(this)
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         Remote.broadcasts.removeObserver(this)
