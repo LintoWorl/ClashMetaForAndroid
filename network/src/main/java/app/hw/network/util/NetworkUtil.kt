@@ -6,6 +6,7 @@ import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.util.Log
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -258,6 +259,45 @@ object NetworkUtil {
                 (ipInt shr 8 and 0xFF) + "." +
                 (ipInt shr 16 and 0xFF) + "." +
                 (ipInt shr 24 and 0xFF)
+    }
+
+    fun isNetConnected(context: Context): Boolean {
+        val connManager =
+            ContextCompat.getSystemService(context, ConnectivityManager::class.java)
+        val networkCapabilities = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            connManager?.activeNetwork ?: return false
+        } else {
+            TODO("VERSION.SDK_INT < M")
+        }
+        val actNw = connManager.getNetworkCapabilities(networkCapabilities) ?: return false
+        return when {
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            actNw.hasTransport(NetworkCapabilities.TRANSPORT_VPN) -> true
+            else -> false
+        }
+    }
+
+    fun isPureIpAddress(value: String): Boolean {
+        return (isIpv4Address(value) || isIpv6Address(value))
+    }
+
+    private fun isIpv4Address(value: String): Boolean {
+        val regV4 =
+            Regex("^([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])\\.([01]?[0-9]?[0-9]|2[0-4][0-9]|25[0-5])$")
+        return regV4.matches(value)
+    }
+
+    fun isIpv6Address(value: String): Boolean {
+        var addr = value
+        if (addr.indexOf("[") == 0 && addr.lastIndexOf("]") > 0) {
+            addr = addr.drop(1)
+            addr = addr.dropLast(addr.count() - addr.lastIndexOf("]"))
+        }
+        val regV6 =
+            Regex("^((?:[0-9A-Fa-f]{1,4}))?((?::[0-9A-Fa-f]{1,4}))*::((?:[0-9A-Fa-f]{1,4}))?((?::[0-9A-Fa-f]{1,4}))*|((?:[0-9A-Fa-f]{1,4}))((?::[0-9A-Fa-f]{1,4})){7}$")
+        return regV6.matches(addr)
     }
 
 }

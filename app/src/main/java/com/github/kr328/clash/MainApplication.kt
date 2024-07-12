@@ -8,14 +8,12 @@ import com.github.kr328.clash.common.log.Log
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.util.sendServiceRecreated
 import com.github.kr328.clash.util.clashDir
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
-import java.io.InputStream
-import java.io.OutputStream
 
-
-@Suppress("unused")
 class MainApplication : Application() {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
@@ -39,19 +37,24 @@ class MainApplication : Application() {
     }
 
     private fun extractGeoFiles() {
-        clashDir.mkdirs();
+        CoroutineScope(Dispatchers.IO).launch {
+            clashDir.mkdirs()
 
-        val geoipFile = File(clashDir, "geoip.metadb")
-        if(!geoipFile.exists()) {
-            FileOutputStream(geoipFile).use {
-                assets.open("geoip.metadb").copyTo(it);
+            Log.i("start extractGeoFiles:${clashDir.absoluteFile}")
+            val geoipFile = File(clashDir, "geoip.metadb")
+            if (!geoipFile.exists()) {
+                val res = FileOutputStream(geoipFile).use {
+                    assets.open("geoip.metadb").copyTo(it)
+                }
+                Log.d("Copy geoip.metadb: $res")
             }
-        }
 
-        val geositeFile = File(clashDir, "geosite.dat")
-        if(!geositeFile.exists()) {
-            FileOutputStream(geositeFile).use {
-                assets.open("geosite.dat").copyTo(it);
+            val geositeFile = File(clashDir, "geosite.dat")
+            if (!geositeFile.exists()) {
+                val res = FileOutputStream(geositeFile).use {
+                    assets.open("geosite.dat").copyTo(it)
+                }
+                Log.d("Copy geosite.dat: $res")
             }
         }
     }

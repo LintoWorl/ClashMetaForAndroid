@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
  * @Description :网络模块的门户，负责Retrofit库的初始化和网络连接的通用配置
  */
 object RetrofitManager {
-    const val HTTP_TIMEOUT_CONNECT: Long = 10 * 1000L //网络请求连接超时时长
+    private const val HTTP_TIMEOUT_CONNECT: Long = 10 * 1000L //网络请求连接超时时长
     private const val HTTP_TIMEOUT_READ: Long = 30 * 1000L
     private const val HTTP_TIMEOUT_WRITE: Long = 30 * 1000L
     internal lateinit var baseInfo: INetworkBaseInfo

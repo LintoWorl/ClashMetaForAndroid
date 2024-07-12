@@ -1,6 +1,7 @@
 package app.hw.network.interceptor
 
 import android.util.Log
+import app.hw.network.model.Constant.TAG_HTTP
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
@@ -12,7 +13,6 @@ import java.io.IOException
  * @Description :接口请求的响应拦截器
  */
 class ResponseInterceptor : Interceptor {
-    private val TAG = "Http-Res"
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
@@ -32,23 +32,23 @@ class ResponseInterceptor : Interceptor {
                 if (mediaType != null) {
                     if (isText(mediaType)) {
                         val resp = body.string()
-                        Log.i(TAG, "//======================start========================\\\\")
-                        Log.i(TAG, "url=" + clone.request.url)
-                        Log.i(TAG, resp)
-                        Log.i(TAG, "\\\\======================end==========================//")
+                        Log.i(TAG_HTTP, "//======================start========================\\\\")
+                        Log.i(TAG_HTTP, "url=" + clone.request.url)
+                        Log.i(TAG_HTTP, resp)
+                        Log.i(TAG_HTTP, "\\\\======================end==========================//")
                         body = ResponseBody.create(mediaType, resp)
                         return response.newBuilder().body(body).build()
                     } else {
-                        Log.i(TAG, "data:" + " maybe[file part] , too large too print , ignored!")
+                        Log.i(TAG_HTTP, "data:" + " maybe[file part] , too large too print , ignored!")
                     }
                 } else {
-                    Log.i(TAG, "contentType is null")
+                    Log.i(TAG_HTTP, "contentType is null")
                 }
             } else {
-                Log.i(TAG, "body is null")
+                Log.i(TAG_HTTP, "body is null")
             }
         } catch (e: Exception) {
-            e.localizedMessage?.let { Log.i(TAG, it) }
+            e.localizedMessage?.let { Log.i(TAG_HTTP, it) }
         }
         return response
     }

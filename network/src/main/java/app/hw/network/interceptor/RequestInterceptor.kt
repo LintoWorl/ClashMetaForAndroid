@@ -1,6 +1,8 @@
 package app.hw.network.interceptor
 
+import android.content.Context
 import android.os.Build
+import android.telephony.TelephonyManager
 import app.hw.network.RetrofitManager.baseInfo
 import app.hw.network.util.NetworkUtil
 import okhttp3.Interceptor
@@ -22,21 +24,23 @@ class RequestInterceptor : Interceptor {
         builder.addHeader("Content-Type", "application/json;charset=utf-8")
         //builder.addHeader("deviceId", PhoneSystemUtils.getDeviceId())//FIXME
         builder.addHeader("clientIp", NetworkUtil.getIpAddress(baseInfo.getAppContext()))
-        builder.addHeader("appVersion", baseInfo.appVerName())
-        builder.addHeader("versionCode", baseInfo.appVerCode())
+        builder.addHeader("vername", baseInfo.appVerName())
+        builder.addHeader("vercode", baseInfo.appVerCode())
         builder.addHeader("manufacture", Build.MANUFACTURER)
         builder.addHeader("deviceModel", Build.MODEL)
-        builder.addHeader("osVersion", Build.VERSION.RELEASE)
+        builder.addHeader("osVer", Build.VERSION.RELEASE)
         builder.addHeader("clientTime", Date().time.toString())
         builder.addHeader("timezone", TimeZone.getDefault().id)
         builder.addHeader("language", Locale.getDefault().language)
-        //builder.addHeader("isoCountryCode", Utils.getNetWorkCountryISO())
-        //builder.addHeader("appId", Constants.bid)//FIXME
+        val netCountryCode = getNetWorkCountryISO(baseInfo.getAppContext())
+        val localeCountry = Locale.getDefault().country
+        builder.addHeader("loc", "${netCountryCode}_$localeCountry")
         builder.addHeader("appType", "8007")//区分app
-        builder.addHeader("region", Locale.getDefault().country)
-        //builder.addHeader("traceCode", Utils.createTraceCode())
-        //builder.addHeader("setLanguage", MultiLanguageUtil.getCurrentLanguageCode())//FIXME
         return chain.proceed(builder.build())
     }
 
+    private fun getNetWorkCountryISO(context: Context): String {
+        val telManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        return if (telManager.networkCountryIso == null) "US" else telManager.networkCountryIso
+    }
 }

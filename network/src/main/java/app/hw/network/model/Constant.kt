@@ -1,0 +1,13 @@
+package app.hw.network.model
+
+object Constant {
+    const val PROTOCOL_HTTP: String = "http://"
+    const val PROTOCOL_HTTPS: String = "https://"
+    const val DNS_TYPE_V4 = "A"
+    const val DNS_TYPE_V6 = "AAAA"
+    const val DNS_AGENT1 = "1.1.1.1/dns-query"
+    const val DNS_AGENT2 = "223.5.5.5/resolve"
+    const val DNS_AGENT3 = "1.12.12.12/dns-query"
+    const val DNS_V6_AGENT1 = "[2606:4700:4700::1111]/dns-query"
+    const val DNS_V6_AGENT2 = "[2400:3200::1]/resolve"
+}
