@@ -1,22 +1,41 @@
 package com.github.kr328.clash
 
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
+import com.github.kr328.clash.design.databinding.DialogFetchStatusBinding
+import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
+import com.github.kr328.clash.design.dialog.ModelProgressBarScope
+import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.util.hide
+import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.show
+import com.github.kr328.clash.design.util.showExceptionToast
 import com.github.kr328.clash.fragment.HomeFragment
 import com.github.kr328.clash.fragment.LoginFragment
 import com.github.kr328.clash.fragment.ProductFragment
 import com.github.kr328.clash.fragment.RegisterFragment
 import com.github.kr328.clash.fragment.ResetPwdFragment
 import com.github.kr328.clash.fragment.UserFragment
+import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.store.AppStore
+import com.github.kr328.clash.util.subsUrl
+import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.util.*
+import kotlin.coroutines.suspendCoroutine
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
 
@@ -35,6 +54,8 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        fetchProfile()
+
         // 根据登录状态确定初始状态应该跳转到什么页面
         if (AppStore(this).enteredHome) {
             showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
@@ -45,6 +66,83 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         initObserver()
     }
 
+    private suspend fun fetchProfile() {
+        withProfile {
+            val name = getString(R.string.new_profile)
+            //val name = "default_profile"
+            val uuid: UUID = create(Profile.Type.Url, name)
+
+            val originProf = withProfile { queryByUUID(uuid) } ?: return@withProfile
+            val profile = originProf.copy(source = subsUrl)
+
+            defer {
+                withProfile { release(uuid) }
+            }
+
+            delay(2000)
+
+            try {
+                withProcessing { updateStatus ->
+                    withProfile {
+                        patch(profile.uuid, profile.name, profile.source, profile.interval)
+
+                        coroutineScope {
+                            commit(profile.uuid) {
+                                launch {
+                                    updateStatus(it)
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                design?.showExceptionToast(e)
+            }
+        }
+    }
+
+    private fun withProcessing(executeTask: suspend (suspend (FetchStatus) -> Unit) -> Unit) {
+        try {
+            launch(Dispatchers.Main) {
+                withModelProgressBar {
+                    configure {
+                        isIndeterminate = true
+                        text = getString(R.string.initializing)
+                    }
+
+                    executeTask {
+                        configure {
+                            applyFrom(it)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun ModelProgressBarConfigure.applyFrom(status: FetchStatus) {
+        when (status.action) {
+            FetchStatus.Action.FetchConfiguration -> {
+                text = getString(R.string.format_fetching_configuration, status.args[0])
+                isIndeterminate = true
+            }
+            FetchStatus.Action.FetchProviders -> {
+                text = getString(R.string.format_fetching_provider, status.args[0])
+                isIndeterminate = false
+                max = status.max
+                progress = status.progress
+            }
+            FetchStatus.Action.Verifying -> {
+                text = getString(R.string.verifying)
+                isIndeterminate = false
+                max = status.max
+                progress = status.progress
+            }
+        }
+    }
+    
     private fun initTabEvents() {
         binding.navigation.setOnItemSelectedListener { menu ->
             when (menu.itemId) {

@@ -10,3 +10,5 @@ fun Context.unbindServiceSilent(connection: ServiceConnection) {
         // ignore
     }
 }
+
+const val subsUrl = "https://s.jiasu01.vip/bd/api/v1/client/subscribe?token=07d0d5175bf41ae8c335128597e20e9e&flag=clash"
