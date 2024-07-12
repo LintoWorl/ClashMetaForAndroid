@@ -136,7 +136,7 @@ class ProfileManager(private val context: Context) : IProfileManager,
         }
     }
 
-    suspend fun updateFlow(old: Imported) {
+    private suspend fun updateFlow(old: Imported) {
         val client = OkHttpClient()
         try {
             val request = Request.Builder()

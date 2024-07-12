@@ -1,15 +1,10 @@
 package com.github.kr328.clash
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.setUUID
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.design.ProfilesDesign
 import com.github.kr328.clash.design.ui.ToastDuration
-import com.github.kr328.clash.R
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.util.withProfile
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +24,7 @@ class ProfilesActivity : BaseActivity<ProfilesDesign>() {
         val ticker = ticker(TimeUnit.MINUTES.toMillis(1))
 
         while (isActive) {
-            select<Unit> {
+            select {
                 events.onReceive {
                     when (it) {
                         Event.ActivityStart, Event.ProfileChanged -> {

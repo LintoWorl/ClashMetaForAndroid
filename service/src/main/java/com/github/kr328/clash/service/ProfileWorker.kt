@@ -9,7 +9,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.github.kr328.clash.common.compat.getColorCompat
 import com.github.kr328.clash.common.compat.pendingIntentFlags
-import com.github.kr328.clash.common.constants.Components
+import com.github.kr328.clash.common.constants.Components.MAIN_ACTIVITY
 import com.github.kr328.clash.common.constants.Intents
 import com.github.kr328.clash.common.id.UndefinedIds
 import com.github.kr328.clash.common.util.setUUID
@@ -152,9 +152,8 @@ class ProfileWorker : BaseService() {
 
     private fun resultBuilder(id: Int, uuid: UUID): NotificationCompat.Builder {
         val intent = PendingIntent.getActivity(
-            this,
-            id,
-            Intent().setComponent(Components.PROPERTIES_ACTIVITY).setUUID(uuid),
+            this, id,
+            Intent().setComponent(MAIN_ACTIVITY).setUUID(uuid),
             pendingIntentFlags(PendingIntent.FLAG_UPDATE_CURRENT)
         )
 

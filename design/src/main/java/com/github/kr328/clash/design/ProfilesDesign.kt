@@ -6,13 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
-import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.adapter.ProfileAdapter
 import com.github.kr328.clash.design.databinding.DesignProfilesBinding
 import com.github.kr328.clash.design.databinding.DialogProfilesMenuBinding
 import com.github.kr328.clash.design.dialog.AppBottomSheetDialog
-import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
-import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.design.util.*
 import com.github.kr328.clash.service.model.Profile
@@ -49,13 +46,13 @@ class ProfilesDesign(context: Context) : Design<ProfilesDesign.Request>(context)
             patchDataSet(this::profiles, profiles, id = { it.uuid })
         }
 
-        val updatable = withContext(Dispatchers.Default) {
-            profiles.any { it.imported && it.type != Profile.Type.File }
-        }
-
-        withContext(Dispatchers.Main) {
-            binding.updateView.visibility = if (updatable) View.VISIBLE else View.GONE
-        }
+//        val updatable = withContext(Dispatchers.Default) {
+//            profiles.any { it.imported && it.type != Profile.Type.File }
+//        }
+//
+//        withContext(Dispatchers.Main) {
+//            binding.updateView.visibility = if (updatable) View.VISIBLE else View.GONE
+//        }
     }
 
     suspend fun requestSave(profile: Profile) {
@@ -137,52 +134,6 @@ class ProfilesDesign(context: Context) : Design<ProfilesDesign.Request>(context)
         requests.trySend(Request.Delete(profile))
 
         dialog.dismiss()
-    }
-
-    suspend fun withProcessing(executeTask: suspend (suspend (FetchStatus) -> Unit) -> Unit) {
-        try {
-            binding.processing = true
-
-            context.withModelProgressBar {
-                configure {
-                    isIndeterminate = true
-                    text = context.getString(R.string.initializing)
-                }
-
-                executeTask {
-                    configure {
-                        applyFrom(it)
-                    }
-                }
-            }
-        } finally {
-            binding.processing = false
-        }
-    }
-
-    fun showProgress(enable: Boolean) {
-        binding.processing = enable
-    }
-
-    private fun ModelProgressBarConfigure.applyFrom(status: FetchStatus) {
-        when (status.action) {
-            FetchStatus.Action.FetchConfiguration -> {
-                text = context.getString(R.string.format_fetching_configuration, status.args[0])
-                isIndeterminate = true
-            }
-            FetchStatus.Action.FetchProviders -> {
-                text = context.getString(R.string.format_fetching_provider, status.args[0])
-                isIndeterminate = false
-                max = status.max
-                progress = status.progress
-            }
-            FetchStatus.Action.Verifying -> {
-                text = context.getString(R.string.verifying)
-                isIndeterminate = false
-                max = status.max
-                progress = status.progress
-            }
-        }
     }
 
     private fun changeUpdateAllButtonStatus() {

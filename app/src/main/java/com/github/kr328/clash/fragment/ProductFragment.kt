@@ -51,7 +51,6 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //binding = FragUserCenterBinding.inflate(inflater, container, false)
         Remote.broadcasts.addObserver(this)
         return design.root
     }
@@ -98,43 +97,7 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                     }
                     design.requests.onReceive {
                         when (it) {
-                            ProfilesDesign.Request.Create ->
-                                withProfile {
-                                    //val name = getString(R.string.new_profile)
-                                    val name = "default_profile"
-                                    val uuid: UUID = create(Profile.Type.Url, name)
-                                    //launchProperties(uuid)
-
-                                    val originProf =
-                                        withProfile { queryByUUID(uuid) } ?: return@withProfile
-                                    val profile =
-                                        originProf.copy(source = "https://s.jiasu01.vip/bd/api/v1/client/subscribe?token=07d0d5175bf41ae8c335128597e20e9e&flag=clash")
-                                    try {
-                                        //design.withProcessing { updateStatus ->
-                                        design.showProgress(true)
-                                        withProfile {
-                                            patch(
-                                                profile.uuid,
-                                                profile.name,
-                                                profile.source,
-                                                profile.interval
-                                            )
-
-                                            coroutineScope {
-                                                commit(profile.uuid) {
-                                                    launch {
-                                                        //updateStatus(it)
-                                                        design.showProgress(false)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        //}
-                                    } catch (e: Exception) {
-                                        design.showExceptionToast(e)
-                                        design.showProgress(false)
-                                    }
-                                }
+                            ProfilesDesign.Request.Create -> Unit
 
                             ProfilesDesign.Request.UpdateAll ->
                                 withProfile {
@@ -243,10 +206,6 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
 
     override fun onProfileLoaded() {
 
-    }
-
-    private fun launchProperties(uuid: UUID) {
-        startActivity(PropertiesActivity::class.intent.setUUID(uuid))
     }
 
     companion object {

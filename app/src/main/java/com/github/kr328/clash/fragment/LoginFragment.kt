@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
 import com.github.kr328.clash.design.util.onClickNew
+import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 
 class LoginFragment : Fragment() {
@@ -32,6 +33,7 @@ class LoginFragment : Fragment() {
         binding.btnLoginAccount.onClickNew {
             //用账号登录
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
+            AppStore(requireContext()).hasLoginApp = true
         }
         binding.btnEnterTourist.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
