@@ -2,6 +2,8 @@ package com.github.kr328.clash
 
 import android.app.Application
 import android.content.Context
+import app.hw.network.RetrofitManager
+import app.hw.network.api.INetworkBaseInfo
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.currentProcessName
 import com.github.kr328.clash.common.log.Log
@@ -31,6 +33,7 @@ class MainApplication : Application() {
 
         if (processName == packageName) {
             Remote.launch()
+            initNetwork(this)
         } else {
             sendServiceRecreated()
         }
@@ -57,6 +60,26 @@ class MainApplication : Application() {
                 Log.d("Copy geosite.dat: $res")
             }
         }
+    }
+
+    private fun initNetwork(app: Application) {
+        RetrofitManager.init(object : INetworkBaseInfo {
+            override fun getAppContext(): Application {
+                return app
+            }
+
+            override fun baseServerUrl(): String {
+                return "https://user.fenghuolun.vip/api/v1"
+            }
+
+            override fun appVerCode(): String {
+                return BuildConfig.VERSION_CODE.toString()
+            }
+
+            override fun appVerName(): String {
+                return BuildConfig.VERSION_NAME
+            }
+        })
     }
 
     fun finalize() {
