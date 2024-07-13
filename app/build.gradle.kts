@@ -9,6 +9,7 @@ plugins {
 }
 
 dependencies {
+    implementation(files("libs/snakeyaml-1.17.jar"))
     compileOnly(project(":hideapi"))
 
     implementation(project(":core"))

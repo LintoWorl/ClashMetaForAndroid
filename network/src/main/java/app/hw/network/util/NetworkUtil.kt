@@ -267,7 +267,7 @@ object NetworkUtil {
         val networkCapabilities = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             connManager?.activeNetwork ?: return false
         } else {
-            TODO("VERSION.SDK_INT < M")
+            return false
         }
         val actNw = connManager.getNetworkCapabilities(networkCapabilities) ?: return false
         return when {

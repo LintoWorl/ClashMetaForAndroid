@@ -16,6 +16,8 @@ import com.github.kr328.clash.common.log.Log.TAG_HTTP
 import org.json.JSONObject
 import java.net.URL
 import java.net.URLConnection
+import java.util.*
+import javax.net.ssl.HttpsURLConnection
 
 object UrlConnManager {
 
@@ -117,5 +119,23 @@ object UrlConnManager {
         }
 
         return ""
+    }
+
+    fun getUrlContent(urlStr: String): String {
+        Log.d(TAG_HTTP, "it's going to request:$urlStr")
+        val url = URL(urlStr)
+        val conn = url.openConnection() as HttpsURLConnection
+        conn.connectTimeout = 10000
+        conn.readTimeout = 5000
+        conn.setRequestProperty("Connection", "close")
+        conn.useCaches = false
+        return try {
+            conn.inputStream.use {
+                it.bufferedReader().readText()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG_HTTP, "network request fail:${e.message}")
+            ""
+        }
     }
 }
