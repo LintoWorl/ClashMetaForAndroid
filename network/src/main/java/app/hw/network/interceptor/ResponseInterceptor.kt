@@ -1,7 +1,7 @@
 package app.hw.network.interceptor
 
 import android.util.Log
-import app.hw.network.model.Constant.TAG_HTTP
+import com.github.kr328.clash.common.log.Log.TAG_HTTP
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
@@ -39,7 +39,10 @@ class ResponseInterceptor : Interceptor {
                         body = ResponseBody.create(mediaType, resp)
                         return response.newBuilder().body(body).build()
                     } else {
-                        Log.i(TAG_HTTP, "data:" + " maybe[file part] , too large too print , ignored!")
+                        Log.i(
+                            TAG_HTTP,
+                            "data:" + " maybe[file part] , too large too print , ignored!"
+                        )
                     }
                 } else {
                     Log.i(TAG_HTTP, "contentType is null")

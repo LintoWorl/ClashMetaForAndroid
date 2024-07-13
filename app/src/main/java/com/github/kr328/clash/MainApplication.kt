@@ -3,6 +3,7 @@ package com.github.kr328.clash
 import android.app.Application
 import android.content.Context
 import app.hw.network.RetrofitManager
+import app.hw.network.UrlConnManager
 import app.hw.network.api.INetworkBaseInfo
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.currentProcessName
@@ -33,7 +34,13 @@ class MainApplication : Application() {
 
         if (processName == packageName) {
             Remote.launch()
-            initNetwork(this)
+
+            //初始化请求网络配置资源
+            CoroutineScope(Dispatchers.IO).launch {
+                val pastIp = UrlConnManager.dohParse(this@MainApplication, "a1.8jiasu.com")
+                Log.d("get the ip address:$pastIp")
+                initNetwork(pastIp)
+            }
         } else {
             sendServiceRecreated()
         }
@@ -62,14 +69,14 @@ class MainApplication : Application() {
         }
     }
 
-    private fun initNetwork(app: Application) {
+    private fun initNetwork(ip: String) {
         RetrofitManager.init(object : INetworkBaseInfo {
             override fun getAppContext(): Application {
-                return app
+                return this@MainApplication
             }
 
             override fun baseServerUrl(): String {
-                return "https://user.fenghuolun.vip/api/v1"
+                return "https://$ip/api/v1"
             }
 
             override fun appVerCode(): String {
