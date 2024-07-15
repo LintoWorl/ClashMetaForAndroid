@@ -1,13 +1,20 @@
 package app.hw.network
 
+import android.annotation.SuppressLint
 import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
 import app.hw.network.util.GsonHelper
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
+import okhttp3.dnsoverhttps.DnsOverHttps
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 
 /**
  * @Time : created on 2024/4/22 20:19
@@ -20,13 +27,37 @@ object RetrofitManager {
     internal lateinit var baseInfo: INetworkBaseInfo
 
     private val httpClient: OkHttpClient by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+        val trustManager = @SuppressLint("CustomX509TrustManager")
+        object : X509TrustManager {
+
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkClientTrusted(p0: Array<out X509Certificate>?, p1: String?) {
+
+            }
+
+            @SuppressLint("TrustAllX509TrustManager")
+            override fun checkServerTrusted(p0: Array<out X509Certificate>?, p1: String?) {
+
+            }
+
+            override fun getAcceptedIssuers(): Array<X509Certificate> {
+                return arrayOf()
+            }
+        }
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, Array(1) { trustManager }, SecureRandom())
+//        val dns = DnsOverHttps.Builder()
+//            .url("https://1.1.1.1/dns-query".toHttpUrl())
+//            .build()
         OkHttpClient.Builder()
             .followSslRedirects(false)
-            .retryOnConnectionFailure(true)
-            .hostnameVerifier { _, _ -> true }
+            //.retryOnConnectionFailure(true)
+            //.sslSocketFactory(sslContext.socketFactory, trustManager)
+            //.hostnameVerifier { _, _ -> true }
             .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
             .readTimeout(HTTP_TIMEOUT_READ, TimeUnit.MILLISECONDS)
             .writeTimeout(HTTP_TIMEOUT_WRITE, TimeUnit.MILLISECONDS)
+            //.dns(dns)
             .addInterceptor(RequestInterceptor())
             .addInterceptor(ResponseInterceptor())
             .build()

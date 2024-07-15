@@ -5,6 +5,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
+import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
@@ -190,6 +191,10 @@ object NetworkUtil {
             else -> "UNKNOWN"
         }
         return networkType
+    }
+    fun networkCountryISO(context: Context): String {
+        val telManager = context.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        return if (telManager.networkCountryIso == null) "US" else telManager.networkCountryIso
     }
 
     fun getIpAddress(context: Context?): String {

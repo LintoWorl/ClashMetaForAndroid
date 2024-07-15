@@ -15,4 +15,5 @@ dependencies {
     implementation(libs.retrofit.converter)
     implementation(libs.gson)
     implementation(libs.logging.interceptor)
+    implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.9.0")
 }

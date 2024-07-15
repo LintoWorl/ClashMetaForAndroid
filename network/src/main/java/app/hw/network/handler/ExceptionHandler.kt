@@ -80,7 +80,7 @@ class ExceptionHandler {
 
             else -> {
                 responseThrowable = ResponseThrowable(throwable, ERROR_UNKNOWN)
-                responseThrowable.message = "unknown error."
+                responseThrowable.message = "unknown error:$throwable"
                 responseThrowable
             }
         }

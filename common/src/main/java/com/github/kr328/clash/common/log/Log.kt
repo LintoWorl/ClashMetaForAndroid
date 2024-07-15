@@ -3,6 +3,7 @@ package com.github.kr328.clash.common.log
 object Log {
     private const val TAG = "ClashMetaForAndroid"
     const val TAG_HTTP = "Http_Resp"
+    const val TAG_EXP = "Http_Resp"
 
     fun i(message: String, throwable: Throwable? = null) =
         android.util.Log.i(TAG, message, throwable)

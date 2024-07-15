@@ -46,6 +46,8 @@ class MainApplication : Application() {
                 val yamlReader = Yaml().load(configCnt)
                 //val config = yamlReader.read(ServerConfig::class.java)
                 Log.d("got the yaml configs:$yamlReader")
+                //sendConfigInitialized()
+                Global.commEvents.trySend("network_init_succ")
             }
         } else {
             sendServiceRecreated()
