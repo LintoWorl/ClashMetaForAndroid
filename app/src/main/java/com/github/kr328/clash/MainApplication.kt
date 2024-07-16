@@ -41,11 +41,12 @@ class MainApplication : Application() {
             CoroutineScope(Dispatchers.IO).launch {
                 val pastIp = UrlConnManager.dohParse(this@MainApplication, "a1.8jiasu.com")
                 Log.d("get the ip address:$pastIp")
-                initNetwork(pastIp)
-                val configCnt = UrlConnManager.getUrlContent("https://oss.cctvvv.com/mt/android_config_1.2.2.yaml")
-                val yamlReader = Yaml().load(configCnt)
+                //initNetwork(pastIp)
+                initNetwork("a1.8jiasu.com")
+                //val configCnt = UrlConnManager.getUrlContent("https://oss.cctvvv.com/mt/android_config_1.2.2.yaml")
+                //val yamlReader = Yaml().load(configCnt)
                 //val config = yamlReader.read(ServerConfig::class.java)
-                Log.d("got the yaml configs:$yamlReader")
+                //Log.d("got the yaml configs:$yamlReader")
                 //sendConfigInitialized()
                 Global.commEvents.trySend("network_init_succ")
             }
@@ -84,7 +85,8 @@ class MainApplication : Application() {
             }
 
             override fun baseServerUrl(): String {
-                return "https://$ip/api/v1"
+                return "https://$ip"
+                //return "https://oss.cctvvv.com"
             }
 
             override fun appVerCode(): String {

@@ -16,7 +16,8 @@ import retrofit2.http.POST
  */
 internal interface UserAccountService {
 
-    @GET("guest/comm/config")
+    //@GET("guest/comm/config")
+    @GET("/api/v1/guest/comm/config")
     suspend fun getAppConfig(): ResponseData<AppConfig>
 
     /**

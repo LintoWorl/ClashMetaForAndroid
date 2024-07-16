@@ -5,6 +5,7 @@ import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
 import app.hw.network.util.GsonHelper
+import app.hw.network.util.NoSSLv3SocketFactory
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.dnsoverhttps.DnsOverHttps
@@ -44,20 +45,20 @@ object RetrofitManager {
                 return arrayOf()
             }
         }
-        val sslContext = SSLContext.getInstance("TLS")
-        sslContext.init(null, Array(1) { trustManager }, SecureRandom())
+        val sslContext = SSLContext.getInstance("TLSv1")
+        sslContext.init(null, null, SecureRandom())
+        val noSSLv3SocketFactory = NoSSLv3SocketFactory(sslContext.socketFactory)
 //        val dns = DnsOverHttps.Builder()
 //            .url("https://1.1.1.1/dns-query".toHttpUrl())
 //            .build()
         OkHttpClient.Builder()
             .followSslRedirects(false)
-            //.retryOnConnectionFailure(true)
-            //.sslSocketFactory(sslContext.socketFactory, trustManager)
-            //.hostnameVerifier { _, _ -> true }
+            .retryOnConnectionFailure(true)
+            .sslSocketFactory(noSSLv3SocketFactory, trustManager)
+            .hostnameVerifier { _, _ -> true }
             .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
             .readTimeout(HTTP_TIMEOUT_READ, TimeUnit.MILLISECONDS)
             .writeTimeout(HTTP_TIMEOUT_WRITE, TimeUnit.MILLISECONDS)
-            //.dns(dns)
             .addInterceptor(RequestInterceptor())
             .addInterceptor(ResponseInterceptor())
             .build()
@@ -65,7 +66,7 @@ object RetrofitManager {
 
     private val retrofit: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         Retrofit.Builder().baseUrl(baseInfo.baseServerUrl()).client(httpClient)
-            .addConverterFactory(GsonConverterFactory.create(GsonHelper.gson)).build()
+            .addConverterFactory(GsonConverterFactory.create()).build()
     }
 
     /**
