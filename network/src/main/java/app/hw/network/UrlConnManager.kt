@@ -149,11 +149,12 @@ object UrlConnManager {
         }
     }
 
-    fun getUrlContent(
+    fun getUrlContentV2(
         urlStr: String, addHeader: Boolean = true, injectSni: Boolean = true
     ): String {
         Log.d(TAG_HTTP, "it's going to request:$urlStr")
-        val url = URL(urlStr)
+        val url = URL(baseInfo.baseServerUrl() + urlStr)
+        Log.d(TAG_HTTP,"getUrlContentV2, url:${url}")
         val conn = url.openConnection() as HttpsURLConnection
         conn.connectTimeout = 10000
         conn.readTimeout = 5000
