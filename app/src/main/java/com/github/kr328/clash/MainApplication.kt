@@ -41,8 +41,8 @@ class MainApplication : Application() {
             CoroutineScope(Dispatchers.IO).launch {
                 val pastIp = UrlConnManager.dohParse(this@MainApplication, "a1.8jiasu.com")
                 Log.d("get the ip address:$pastIp")
-                //initNetwork(pastIp)
-                initNetwork("a1.8jiasu.com")
+                initNetwork(pastIp)
+                //initNetwork("a1.8jiasu.com")
                 //val configCnt = UrlConnManager.getUrlContent("https://oss.cctvvv.com/mt/android_config_1.2.2.yaml")
                 //val yamlReader = Yaml().load(configCnt)
                 //val config = yamlReader.read(ServerConfig::class.java)

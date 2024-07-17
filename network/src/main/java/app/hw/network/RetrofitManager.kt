@@ -8,7 +8,6 @@ import app.hw.network.util.GsonHelper
 import app.hw.network.util.NoSSLv3SocketFactory
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
-import okhttp3.dnsoverhttps.DnsOverHttps
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.security.SecureRandom
@@ -45,16 +44,16 @@ object RetrofitManager {
                 return arrayOf()
             }
         }
-        val sslContext = SSLContext.getInstance("TLSv1")
-        sslContext.init(null, null, SecureRandom())
-        val noSSLv3SocketFactory = NoSSLv3SocketFactory(sslContext.socketFactory)
+        //val sslContext = SSLContext.getInstance("TLSv1")
+        //sslContext.init(null, null, SecureRandom())
+        //val noSSLv3SocketFactory = NoSSLv3SocketFactory(sslContext.socketFactory)
 //        val dns = DnsOverHttps.Builder()
 //            .url("https://1.1.1.1/dns-query".toHttpUrl())
 //            .build()
         OkHttpClient.Builder()
             .followSslRedirects(false)
             .retryOnConnectionFailure(true)
-            .sslSocketFactory(noSSLv3SocketFactory, trustManager)
+            //.sslSocketFactory(noSSLv3SocketFactory, trustManager)
             .hostnameVerifier { _, _ -> true }
             .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
             .readTimeout(HTTP_TIMEOUT_READ, TimeUnit.MILLISECONDS)

@@ -54,6 +54,14 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     private fun initView() {
         binding.btnLoginAccount.onClickNew {
             //用账号登录
+            RequestHandler.request({
+                UserAccountApi.login("dadr@qq.com", "we123wr")
+                //UrlConnManager.getUrlContent()
+            }, {
+                Log.d("init guest config data:$it")
+            }, { code, msg ->
+                Log.e("initData fail: $msg")
+            })
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
             AppStore(requireContext()).hasLoginApp = true
         }
