@@ -20,11 +20,12 @@ object RequestHandler {
     ) {
         scope.launch {
             runCatching { block() }
-                .onSuccess { parseData(it, onSucc, onFail) }
-                .onFailure {
+                .fold(onSuccess = {
+                    parseData(it, onSucc, onFail)
+                }, onFailure = {
                     val ex = ExceptionHandler().handleException(it)
                     onFail(ex.code, ex.message)
-                }
+                })
         }
     }
 
@@ -35,7 +36,7 @@ object RequestHandler {
     ) {
         val exceptionHandler = ExceptionHandler()
         when (response.code) {
-            1 -> {
+            200 -> {
                 if (response.data != null) {
                     try {
                         onSucc(response.data!!)

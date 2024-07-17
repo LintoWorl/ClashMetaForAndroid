@@ -6,18 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.viewModelScope
+import app.hw.network.RetrofitManager
 import app.hw.network.UrlConnManager
+import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
+import app.hw.network.model.Constant.PROTOCOL_HTTPS
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Log.TAG_HTTP
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -44,6 +49,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 select {
                     Global.commEvents.onReceive {
                         initData()
+                        //fetchData()
                     }
                 }
             }
@@ -77,15 +83,26 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private fun initData() {
+    private suspend fun initData() {
+//        RetrofitManager.requestData("https://eight.8jiasu.com/api/v1/guest/comm/config")
         RequestHandler.request({
             UserAccountApi.appConfig()
-            //UrlConnManager.getUrlContent()
         }, {
-            Log.d("init guest config data:$it")
-        }, { code, msg ->
+            Log.d("init guest config data:${it.toString()}")
+        }, { _, msg ->
             Log.e("initData fail: $msg")
-        }, viewModel.viewModelScope)
+        })
+    }
+
+    private suspend fun fetchData() {
+        coroutineScope {
+            launch(Dispatchers.IO) {
+                val result =
+                    UrlConnManager.getUrlContentV2("/api/v1/guest/comm/config")
+                    //UrlConnManager.getUrlContent("${PROTOCOL_HTTPS}a1.8jiasu.com/api/v1/guest/comm/config")
+                android.util.Log.d(TAG_HTTP,"getUrlContent:$result")
+            }
+        }
     }
 
     companion object {

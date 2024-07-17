@@ -1,20 +1,33 @@
 package app.hw.network
 
 import android.annotation.SuppressLint
+import android.os.Environment
 import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
-import app.hw.network.util.GsonHelper
 import app.hw.network.util.NoSSLv3SocketFactory
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import com.github.kr328.clash.common.log.Log
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.conn.ssl.SSLConnectionSocketFactory
+import com.google.gson.GsonBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.Cache
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSession
 import javax.net.ssl.X509TrustManager
+import kotlin.coroutines.CoroutineContext
+
 
 /**
  * @Time : created on 2024/4/22 20:19
@@ -44,9 +57,9 @@ object RetrofitManager {
                 return arrayOf()
             }
         }
-        //val sslContext = SSLContext.getInstance("TLSv1")
-        //sslContext.init(null, null, SecureRandom())
-        //val noSSLv3SocketFactory = NoSSLv3SocketFactory(sslContext.socketFactory)
+        val sslContext = SSLContext.getInstance("TLSv1")
+        sslContext.init(null, null, SecureRandom())
+        val noSSLv3SocketFactory = NoSSLv3SocketFactory(sslContext.socketFactory)
 //        val dns = DnsOverHttps.Builder()
 //            .url("https://1.1.1.1/dns-query".toHttpUrl())
 //            .build()
@@ -80,4 +93,55 @@ object RetrofitManager {
      */
     internal fun <T> createApiService(clazz: Class<T>): T = retrofit.create(clazz)
 
+
+    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+    private val gson = GsonBuilder().setLenient().create()
+
+    private val connectionSpecs: ArrayList<ConnectionSpec> =
+        arrayListOf(ConnectionSpec.COMPATIBLE_TLS)
+
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        .connectionSpecs(connectionSpecs)
+        .addInterceptor(logging)
+        .addInterceptor(RequestInterceptor())
+        .addInterceptor(ResponseInterceptor())
+        .hostnameVerifier { _, _ -> true }
+        .readTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .build()
+    private val retrofit2: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+        Retrofit.Builder()
+            .baseUrl(baseInfo.baseServerUrl())
+            //.baseUrl("https://eight.8jiasu.com")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(client)
+            .build()
+    }
+
+    fun <S> createService(serviceClass: Class<S>): S {
+        return retrofit2.create(serviceClass)
+    }
+
+
+    suspend fun requestData(reqUrl: String, context: CoroutineContext = Dispatchers.IO) {
+        withContext(context) {
+            val client = OkHttpClient()
+            try {
+                val request = Request.Builder()
+                    .url(reqUrl)
+                    .get()
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    //.header("User-Agent", "ClashforWindows/0.19.23")
+                    .build()
+
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        Log.d("Response data is:$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("request fail: $e")
+            }
+        }
+    }
 }
