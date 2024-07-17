@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import app.hw.network.RetrofitManager
 import app.hw.network.UrlConnManager
+import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.Constant.PROTOCOL_HTTPS
@@ -61,7 +62,8 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
             //用账号登录
             //RetrofitManager.requestData("https://eight.8jiasu.com/passport/auth/login")
             RequestHandler.request({
-                UserAccountApi.login("hieye@qq.com", "sdwe12324")
+                //UserAccountApi.login("hieye@qq.com", "sdwe12324")
+                PaymentApi.getSubsPlan()
             }, {
                 Log.d("Login success:$it")
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
@@ -83,14 +85,14 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private suspend fun initData() {
-        RetrofitManager.requestData("https://eight.8jiasu.com/api/v1/guest/comm/config")
-//        RequestHandler.request({
-//            UserAccountApi.appConfig()
-//        }, {
-//            Log.d("init guest config data:$it")
-//        }, { _, msg ->
-//            Log.e("initData fail: $msg")
-//        })
+//        RetrofitManager.requestData("https://eight.8jiasu.com/api/v1/guest/comm/config")
+        RequestHandler.request({
+            UserAccountApi.appConfig()
+        }, {
+            Log.d("init guest config data:${it.toString()}")
+        }, { _, msg ->
+            Log.e("initData fail: $msg")
+        })
     }
 
     private suspend fun fetchData() {

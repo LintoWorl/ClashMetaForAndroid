@@ -104,16 +104,19 @@ object RetrofitManager {
         .connectionSpecs(connectionSpecs)
         .addInterceptor(logging)
         .addInterceptor(RequestInterceptor())
+        .addInterceptor(ResponseInterceptor())
         .hostnameVerifier { _, _ -> true }
         .readTimeout(60, TimeUnit.SECONDS)
         .connectTimeout(60, TimeUnit.SECONDS)
         .build()
-    private var retrofit2: Retrofit = Retrofit.Builder()
-        .baseUrl("https://eight.8jiasu.com")
-        //.baseUrl("http://web.juhe.cn")
-        .addConverterFactory(GsonConverterFactory.create(gson))
-        .client(client)
-        .build()
+    private val retrofit2: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+        Retrofit.Builder()
+            .baseUrl(baseInfo.baseServerUrl())
+            //.baseUrl("https://eight.8jiasu.com")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(client)
+            .build()
+    }
 
     fun <S> createService(serviceClass: Class<S>): S {
         return retrofit2.create(serviceClass)
@@ -127,7 +130,8 @@ object RetrofitManager {
                 val request = Request.Builder()
                     .url(reqUrl)
                     .get()
-                    .header("User-Agent", "ClashforWindows/0.19.23")
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    //.header("User-Agent", "ClashforWindows/0.19.23")
                     .build()
 
                 client.newCall(request).execute().use { response ->
