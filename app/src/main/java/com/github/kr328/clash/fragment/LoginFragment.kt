@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.viewModelScope
 import app.hw.network.UrlConnManager
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
@@ -47,8 +46,8 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
             while (isActive) {
                 select {
                     Global.commEvents.onReceive {
-                        //initData()
-                        fetchData()
+                        initData()
+                        //fetchData()
                     }
                 }
             }
@@ -59,8 +58,15 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     private fun initView() {
         binding.btnLoginAccount.onClickNew {
             //用账号登录
-            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-            AppStore(requireContext()).hasLoginApp = true
+            RequestHandler.request({
+                UserAccountApi.login("hieye@qq.com", "sdwe12324")
+            }, {
+                Log.d("Login success:$it")
+                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
+                AppStore(requireContext()).hasLoginApp = true
+            }, { _, msg ->
+                Log.e("initData fail: $msg")
+            })
         }
         binding.btnEnterTourist.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
@@ -77,12 +83,11 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     private fun initData() {
         RequestHandler.request({
             UserAccountApi.appConfig()
-            //UrlConnManager.getUrlContent()
         }, {
             Log.d("init guest config data:$it")
-        }, { code, msg ->
+        }, { _, msg ->
             Log.e("initData fail: $msg")
-        }, viewModel.viewModelScope)
+        })
     }
 
     private suspend fun fetchData() {

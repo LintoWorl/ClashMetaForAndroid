@@ -12,6 +12,7 @@ import app.hw.network.util.GsonHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import retrofit2.Response
 
 /**
  * @Time : created on 2024/4/23 14:10
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
  */
 object UserAccountApi {
     private val service: UserAccountService by lazy {
-        RetrofitManager.createApiService(
+        RetrofitManager.createService(
             UserAccountService::class.java
         )
     }

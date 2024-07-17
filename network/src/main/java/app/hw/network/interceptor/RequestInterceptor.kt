@@ -4,7 +4,6 @@ import android.content.Context
 import android.os.Build
 import android.telephony.TelephonyManager
 import app.hw.network.RetrofitManager.baseInfo
-import app.hw.network.util.NetworkUtil
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -21,9 +20,9 @@ class RequestInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val builder = chain.request().newBuilder()
-        builder.addHeader("Content-Type", "application/json;charset=utf-8")
-        //builder.addHeader("deviceId", PhoneSystemUtils.getDeviceId())//FIXME
-        builder.addHeader("clientIp", NetworkUtil.getIpAddress(baseInfo.getAppContext()))
+        //builder.addHeader("Content-Type", "application/json;charset=utf-8")
+        builder.addHeader("Content-Type", "application/x-www-form-urlencoded")
+        //builder.addHeader("clientIp", NetworkUtil.getIpAddress(baseInfo.getAppContext()))
         builder.addHeader("vername", baseInfo.appVerName())
         builder.addHeader("vercode", baseInfo.appVerCode())
         builder.addHeader("manufacture", Build.MANUFACTURER)
@@ -36,7 +35,7 @@ class RequestInterceptor : Interceptor {
         val localeCountry = Locale.getDefault().country
         builder.addHeader("loc", "${netCountryCode}_$localeCountry")
         builder.addHeader("appType", "8007")//区分app
-        builder.addHeader("Host", "www.huawei.com")
+        //builder.addHeader("Host", "www.huawei.com")
         return chain.proceed(builder.build())
     }
 

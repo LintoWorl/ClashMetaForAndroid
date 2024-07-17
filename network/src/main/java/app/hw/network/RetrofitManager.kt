@@ -1,21 +1,28 @@
 package app.hw.network
 
 import android.annotation.SuppressLint
+import android.os.Environment
 import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
-import app.hw.network.util.GsonHelper
 import app.hw.network.util.NoSSLv3SocketFactory
-import okhttp3.HttpUrl.Companion.toHttpUrl
+import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.conn.ssl.SSLConnectionSocketFactory
+import com.google.gson.GsonBuilder
+import okhttp3.Cache
+import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
-import okhttp3.dnsoverhttps.DnsOverHttps
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSession
 import javax.net.ssl.X509TrustManager
+
 
 /**
  * @Time : created on 2024/4/22 20:19
@@ -81,4 +88,28 @@ object RetrofitManager {
      */
     internal fun <T> createApiService(clazz: Class<T>): T = retrofit.create(clazz)
 
+
+    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+    private val gson = GsonBuilder().setLenient().create()
+
+    private val connectionSpecs: ArrayList<ConnectionSpec> = arrayListOf(ConnectionSpec.COMPATIBLE_TLS)
+
+    private val client: OkHttpClient = OkHttpClient.Builder()
+        .connectionSpecs(connectionSpecs)
+        .addInterceptor(logging)
+        .addInterceptor(RequestInterceptor())
+        .hostnameVerifier { _, _ -> true }
+        .readTimeout(60, TimeUnit.SECONDS)
+        .connectTimeout(60, TimeUnit.SECONDS)
+        .build()
+    private var retrofit2: Retrofit = Retrofit.Builder()
+        .baseUrl("https://eight.8jiasu.com")
+        //.baseUrl("http://web.juhe.cn")
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .client(client)
+        .build()
+
+    fun <S> createService(serviceClass: Class<S>): S {
+        return retrofit2.create(serviceClass)
+    }
 }
