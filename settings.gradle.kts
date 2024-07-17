@@ -65,8 +65,8 @@ dependencyResolutionManagement {
             library("androidx-viewmodel-ktx", "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
             library("retrofit", "com.squareup.retrofit2:retrofit:$retrofit")
             library("retrofit-converter", "com.squareup.retrofit2:converter-gson:$retrofit")
-            library("logging-interceptor", "com.squareup.okhttp3:logging-interceptor:4.11.0")
-            library("okhttp-bom", "com.squareup.okhttp3:okhttp-bom:4.11.0")
+            library("logging-interceptor", "com.squareup.okhttp3:logging-interceptor:4.10.0")
+            library("okhttp-bom", "com.squareup.okhttp3:okhttp-bom:4.10.0")
             library("gson", "com.google.code.gson:gson:2.10.1")
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.6.2")
         }

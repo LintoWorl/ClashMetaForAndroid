@@ -6,11 +6,15 @@ import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
 import app.hw.network.util.NoSSLv3SocketFactory
+import com.github.kr328.clash.common.log.Log
 import com.google.firebase.crashlytics.buildtools.reloc.org.apache.http.conn.ssl.SSLConnectionSocketFactory
 import com.google.gson.GsonBuilder
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Cache
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
+import okhttp3.Request
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -22,6 +26,7 @@ import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSession
 import javax.net.ssl.X509TrustManager
+import kotlin.coroutines.CoroutineContext
 
 
 /**
@@ -92,7 +97,8 @@ object RetrofitManager {
     private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
     private val gson = GsonBuilder().setLenient().create()
 
-    private val connectionSpecs: ArrayList<ConnectionSpec> = arrayListOf(ConnectionSpec.COMPATIBLE_TLS)
+    private val connectionSpecs: ArrayList<ConnectionSpec> =
+        arrayListOf(ConnectionSpec.COMPATIBLE_TLS)
 
     private val client: OkHttpClient = OkHttpClient.Builder()
         .connectionSpecs(connectionSpecs)
@@ -111,5 +117,27 @@ object RetrofitManager {
 
     fun <S> createService(serviceClass: Class<S>): S {
         return retrofit2.create(serviceClass)
+    }
+
+
+    suspend fun requestData(reqUrl: String, context: CoroutineContext = Dispatchers.IO) {
+        withContext(context) {
+            val client = OkHttpClient()
+            try {
+                val request = Request.Builder()
+                    .url(reqUrl)
+                    .get()
+                    .header("User-Agent", "ClashforWindows/0.19.23")
+                    .build()
+
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        Log.d("Response data is:$response")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("request fail: $e")
+            }
+        }
     }
 }
