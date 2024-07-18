@@ -65,7 +65,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         binding.btnLoginAccount.onClickNew {
             //用账号登录
             RequestHandler.request({
-                val mailAddress = binding.editEmail.text?.append(mailSuffix).toString()
+                val mailAddress = binding.editEmail.text.toString() + mailSuffix
                 UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
             }, {
                 Log.d("init guest config data:$it")

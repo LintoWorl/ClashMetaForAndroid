@@ -81,7 +81,7 @@ class MainApplication : Application() {
             }
 
             override fun baseServerUrl(): String {
-                return "https://www.ifeng.com"
+                return "https://www.ifeng.com/api/v1/"
             }
 
             override fun appVerCode(): String {

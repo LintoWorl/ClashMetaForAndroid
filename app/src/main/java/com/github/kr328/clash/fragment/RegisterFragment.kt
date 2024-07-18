@@ -58,7 +58,7 @@ class RegisterFragment : Fragment() {
         binding.btnRegister.onClickNew {
             //调注册用户的API
             RequestHandler.request({
-                val mailAddress = binding.editEmail.text?.append(mailSuffix).toString()
+                val mailAddress = binding.editEmail.text.toString() + mailSuffix
                 UserAccountApi.registerAccount(mailAddress, binding.editPassword.text.toString())
             }, {
                 Log.d("init guest config data:$it")
