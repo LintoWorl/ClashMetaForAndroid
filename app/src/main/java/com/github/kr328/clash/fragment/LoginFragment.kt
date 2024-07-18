@@ -27,6 +27,7 @@ import kotlinx.coroutines.launch
 class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var binding: FragLoginAccountBinding
     private val viewModel by activityViewModels<MainViewModel>()
+    private var mailSuffix: String = "@gmail.com"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,14 +49,12 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private fun initView() {
-        binding.mailList.onItemSelectedListener = object : OnItemSelectedListener{
+        binding.mailList.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 binding.mailList.setSelection(position)
+                mailSuffix = "@${binding.mailList.selectedItem}"
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -66,8 +65,8 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         binding.btnLoginAccount.onClickNew {
             //用账号登录
             RequestHandler.request({
-                UserAccountApi.login("dadr@qq.com", "we123wr")
-                //UrlConnManager.getUrlContent()
+                val mailAddress = binding.editEmail.text?.append(mailSuffix).toString()
+                UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
             }, {
                 Log.d("init guest config data:$it")
             }, { code, msg ->
