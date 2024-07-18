@@ -67,7 +67,7 @@ object UserAccountApi {
     suspend fun registerAccount(
         mail: String,
         pwd: String,
-        mailCode: String,
+        mailCode: String = "",
         inviteCode: String = "",
         verifyCode: String = ""
     ): ResponseData<LoginResp> {

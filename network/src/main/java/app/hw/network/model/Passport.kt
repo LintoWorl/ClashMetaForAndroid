@@ -6,6 +6,7 @@ class CheckStat {
 
 class LoginResp {
     var token: String = ""
+    var is_admin: Any? = null
     var auth_data: String = ""
 }
 

@@ -69,11 +69,12 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
             }, {
                 Log.d("init guest config data:$it")
+
+                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
+                AppStore(requireContext()).hasLoginApp = true
             }, { code, msg ->
                 Log.e("initData fail: $msg")
             })
-            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-            AppStore(requireContext()).hasLoginApp = true
         }
         binding.btnEnterTourist.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
