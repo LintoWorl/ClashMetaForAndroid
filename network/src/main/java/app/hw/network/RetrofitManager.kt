@@ -3,6 +3,7 @@ package app.hw.network
 import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.MyDns
 import app.hw.network.interceptor.RequestInterceptor
+import app.hw.network.util.UnsafeOkHttpClient
 import com.google.gson.GsonBuilder
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
@@ -35,13 +36,12 @@ object RetrofitManager {
     private val connectionSpecs: ArrayList<ConnectionSpec> =
         arrayListOf(ConnectionSpec.COMPATIBLE_TLS)
 
-    private val client: OkHttpClient = OkHttpClient.Builder()
+    private val client: OkHttpClient = UnsafeOkHttpClient.getBuilder()
         .connectionSpecs(connectionSpecs)
         .dns(MyDns())
         .addInterceptor(logging)
         .addInterceptor(RequestInterceptor())
         //.addInterceptor(ResponseInterceptor())
-        .hostnameVerifier { _, _ -> true }
         .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
         .readTimeout(HTTP_TIMEOUT_READ, TimeUnit.MILLISECONDS)
         .writeTimeout(HTTP_TIMEOUT_WRITE, TimeUnit.MILLISECONDS)
