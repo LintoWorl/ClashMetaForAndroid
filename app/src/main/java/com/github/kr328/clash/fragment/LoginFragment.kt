@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemSelectedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import app.hw.network.UrlConnManager
@@ -11,6 +13,7 @@ import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.log.Log
 import com.github.kr328.clash.common.log.Log.TAG_HTTP
+import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
@@ -37,9 +40,29 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        viewModel.appConfig.observe(viewLifecycleOwner) {
+            it ?: return@observe
+            val mailList = it.email_whitelist_suffix
+            binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
+        }
     }
 
     private fun initView() {
+        binding.mailList.onItemSelectedListener = object : OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                binding.mailList.setSelection(position)
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
         binding.btnLoginAccount.onClickNew {
             //用账号登录
             RequestHandler.request({
