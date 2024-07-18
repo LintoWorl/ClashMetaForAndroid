@@ -9,7 +9,7 @@ import app.hw.network.model.NoticeBean
 object OthersApi {
 
     private val service: OthersService by lazy {
-        RetrofitManager.createApiService(OthersService::class.java)
+        RetrofitManager.createService(OthersService::class.java)
     }
 
     suspend fun getInviteCodeList(): ResponseData<InviteCodeResp> {

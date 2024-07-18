@@ -34,7 +34,7 @@ class RequestInterceptor : Interceptor {
         val netCountryCode = getNetWorkCountryISO(baseInfo.getAppContext())
         val localeCountry = Locale.getDefault().country
         builder.addHeader("loc", "${netCountryCode}_$localeCountry")
-        builder.addHeader("appType", "8007")//区分app
+        //builder.addHeader("appType", "8007")//区分app
         //builder.addHeader("Host", "www.huawei.com")
         return chain.proceed(builder.build())
     }

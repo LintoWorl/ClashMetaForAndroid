@@ -3,9 +3,7 @@ package com.github.kr328.clash
 import android.app.Application
 import android.content.Context
 import app.hw.network.RetrofitManager
-import app.hw.network.UrlConnManager
 import app.hw.network.api.INetworkBaseInfo
-import app.hw.network.model.ServerConfig
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.currentProcessName
 import com.github.kr328.clash.common.log.Log
@@ -15,7 +13,6 @@ import com.github.kr328.clash.util.clashDir
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.yaml.snakeyaml.Yaml
 import java.io.File
 import java.io.FileOutputStream
 
@@ -39,9 +36,10 @@ class MainApplication : Application() {
 
             //初始化请求网络配置资源
             CoroutineScope(Dispatchers.IO).launch {
-                val pastIp = UrlConnManager.dohParse(this@MainApplication, "eight.8jiasu.com")
-                Log.d("get the ip address:$pastIp")
-                initNetwork(pastIp)
+                //val pastIp = UrlConnManager.dohParse(this@MainApplication, "eight.8jiasu.com")
+                //android.util.Log.d(TAG_HTTP,"get the domain;s ip:$pastIp")
+                //initNetwork(pastIp)
+                initNetwork()
                 //val configCnt = UrlConnManager.getUrlContent("https://oss.cctvvv.com/mt/android_config_1.2.2.yaml")
                 //val yamlReader = Yaml().load(configCnt)
                 //val config = yamlReader.read(ServerConfig::class.java)
@@ -77,15 +75,14 @@ class MainApplication : Application() {
         }
     }
 
-    private fun initNetwork(ip: String) {
+    private fun initNetwork() {
         RetrofitManager.init(object : INetworkBaseInfo {
             override fun getAppContext(): Application {
                 return this@MainApplication
             }
 
             override fun baseServerUrl(): String {
-                return "https://$ip"
-                //return "https://oss.cctvvv.com"
+                return "https://www.ifeng.com"
             }
 
             override fun appVerCode(): String {
