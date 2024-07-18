@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
@@ -25,7 +26,9 @@ import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.selects.select
 import java.util.*
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
@@ -48,6 +51,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
         appStore = AppStore(this)
         fetchProfile()
+        viewModel.initConfigs(this)
 
         // 根据登录状态确定初始状态应该跳转到什么页面
         if (appStore.enteredHome) {

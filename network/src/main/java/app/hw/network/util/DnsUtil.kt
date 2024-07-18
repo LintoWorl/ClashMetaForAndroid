@@ -3,6 +3,7 @@ package app.hw.network.util
 import android.content.Context
 import android.util.Log
 import app.hw.network.model.Constant
+import com.github.kr328.clash.common.log.Log.TAG_HTTP
 import org.json.JSONObject
 import java.net.URL
 import java.net.URLConnection
@@ -90,13 +91,13 @@ class DnsUtil {
         conn.readTimeout = 3000
         conn.setRequestProperty("Connection", "close")
         conn.setRequestProperty("accept", "application/dns-json")
-        conn.useCaches = false
+        conn.useCaches = true
         return conn
     }
 
     private fun parseData(response: String): String {
         try {
-            Log.d(com.github.kr328.clash.common.log.Log.TAG_HTTP, "parseIp:$response")
+            Log.d(TAG_HTTP, "parseIp:$response")
             val json = JSONObject(response)
             if (json.has("Answer")) {
                 val ans = json.optJSONArray("Answer")
