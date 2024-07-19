@@ -2,13 +2,9 @@ package app.hw.network.handler
 
 import app.hw.network.api.ResponseData
 import com.github.kr328.clash.common.log.Log
-import com.github.kr328.clash.common.util.decodeUnicode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import okhttp3.ResponseBody
-import retrofit2.HttpException
-import java.nio.charset.Charset
 
 /**
  * @Time : created on 2024/4/23 17:22
@@ -25,16 +21,17 @@ object RequestHandler {
     ) {
         scope.launch {
             runCatching { block() }
-                .fold(onSuccess = {
-                    launch(Dispatchers.Main) { parseData(it, onSucc, onFail) }
-                }, onFailure = {
-                    /*if (it is HttpException) {
-                        val body = it.response()?.errorBody()?.string() ?: "hello pappy"
-                        Log.d("the Error body is:${decodeUnicode(body)}")
-                    }*/
+                .onSuccess {
+                    launch(Dispatchers.Main) {
+                        //parseData(it, onSucc, onFail)
+                        onSucc(it.data!!)
+                    }
+                }
+                .onFailure {
                     val ex = ExceptionHandler().handleException(it)
+                    Log.e("request fail, errCode:${ex.code}, errMsg:${ex.message}")
                     launch(Dispatchers.Main) { onFail(ex.code, ex.message) }
-                })
+                }
         }
     }
 

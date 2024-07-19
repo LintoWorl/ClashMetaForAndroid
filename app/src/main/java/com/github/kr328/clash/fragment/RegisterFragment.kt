@@ -66,7 +66,6 @@ class RegisterFragment : Fragment() {
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
             }, { code, msg ->
                 context?.toast(msg)
-                Log.e("initData fail: $msg")
             })
         }
         binding.titleBar.titleBarGoback.onClickNew {

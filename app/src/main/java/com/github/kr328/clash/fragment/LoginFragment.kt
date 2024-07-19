@@ -74,7 +74,6 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                 //AppStore(requireContext()).hasLoginApp = true
             }, { code, msg ->
-                Log.e("initData fail: $msg")
                 context?.toast(msg)
             })
         }

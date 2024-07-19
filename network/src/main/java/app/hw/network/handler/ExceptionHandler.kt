@@ -42,7 +42,8 @@ class ExceptionHandler {
                     SERVER_STATE_UNAUTHORIZED, SERVER_STATE_FORBIDDEN, SERVER_STATE_UNFOUND,
                     SERVER_STATE_REQUEST_TIMEOUT, SERVER_STATE_GATEWAY_TIMEOUT,
                     SERVER_STATE_INTERNAL_ERROR, SERVER_STATE_BAD_GATEWAY, SERVER_STATE_UNAVAILABLE -> {
-                        val body = throwable.response()?.errorBody()?.string() ?: "hello bro, there's something wrong."
+                        val body = throwable.response()?.errorBody()?.string()
+                            ?: "hi bro, there's something wrong."
                         Log.d("the Error body is:${decodeUnicode(body)}")
                         try {
                             val json = JSONObject(body)
@@ -51,13 +52,14 @@ class ExceptionHandler {
                             } else {
                                 responseThrowable.message = json.optString("message")
                             }
-                        } catch (e:Exception) {
+                        } catch (e: Exception) {
                             responseThrowable.message = "network error."
                         }
                     }
 
                     else -> responseThrowable.message = "network error."
                 }
+                responseThrowable.code = throwable.code()
                 responseThrowable
             }
 
