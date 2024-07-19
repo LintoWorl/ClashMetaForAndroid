@@ -13,8 +13,10 @@ import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.log.Log
 import com.github.kr328.clash.common.log.Log.TAG_HTTP
+import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
+import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
@@ -69,11 +71,11 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
             }, {
                 Log.d("init guest config data:$it")
-
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-                AppStore(requireContext()).hasLoginApp = true
+                //AppStore(requireContext()).hasLoginApp = true
             }, { code, msg ->
                 Log.e("initData fail: $msg")
+                context?.toast(msg)
             })
         }
         binding.btnEnterTourist.onClickNew {

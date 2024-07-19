@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragRegisterAccountBinding
 import com.github.kr328.clash.design.util.onClickNew
@@ -64,6 +65,7 @@ class RegisterFragment : Fragment() {
                 Log.d("init guest config data:$it")
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
             }, { code, msg ->
+                context?.toast(msg)
                 Log.e("initData fail: $msg")
             })
         }

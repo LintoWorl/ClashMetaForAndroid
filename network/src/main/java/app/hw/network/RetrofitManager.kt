@@ -2,6 +2,7 @@ package app.hw.network
 
 import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.RequestInterceptor
+import app.hw.network.interceptor.ResponseInterceptor
 import app.hw.network.util.DnsUtil
 import app.hw.network.util.UnsafeOkHttpClient
 import com.github.kr328.clash.common.Global
@@ -71,7 +72,7 @@ object RetrofitManager {
         .dns(myDns)
         .addInterceptor(logging)
         .addInterceptor(RequestInterceptor())
-        //.addInterceptor(ResponseInterceptor())
+        .addInterceptor(ResponseInterceptor())
         .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
         .readTimeout(HTTP_TIMEOUT_READ, TimeUnit.MILLISECONDS)
         .writeTimeout(HTTP_TIMEOUT_WRITE, TimeUnit.MILLISECONDS)

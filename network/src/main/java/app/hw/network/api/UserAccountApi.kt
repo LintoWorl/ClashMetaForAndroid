@@ -1,7 +1,6 @@
 package app.hw.network.api
 
 import app.hw.network.RetrofitManager
-import app.hw.network.RetrofitManager.baseInfo
 import app.hw.network.UrlConnManager
 import app.hw.network.model.AppConfig
 import app.hw.network.model.CheckStat
@@ -9,10 +8,6 @@ import app.hw.network.model.LoginResp
 import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.UserInfo
 import app.hw.network.util.GsonHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import retrofit2.Response
 
 /**
  * @Time : created on 2024/4/23 14:10

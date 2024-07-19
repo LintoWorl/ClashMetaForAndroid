@@ -27,6 +27,10 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.google.material)
     implementation(libs.fragment.ktx)
+    implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
+
+    // define any required OkHttp artifacts without version
+    implementation("com.squareup.okhttp3:okhttp")
 }
 
 tasks.getByName("clean", type = Delete::class) {

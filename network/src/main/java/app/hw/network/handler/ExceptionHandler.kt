@@ -15,8 +15,11 @@ import app.hw.network.handler.ErrorType.SERVER_STATE_REQUEST_TIMEOUT
 import app.hw.network.handler.ErrorType.SERVER_STATE_UNAUTHORIZED
 import app.hw.network.handler.ErrorType.SERVER_STATE_UNAVAILABLE
 import app.hw.network.handler.ErrorType.SERVER_STATE_UNFOUND
+import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.util.decodeUnicode
 import com.google.gson.JsonParseException
 import org.json.JSONException
+import org.json.JSONObject
 import retrofit2.HttpException
 import java.net.ConnectException
 import java.net.SocketTimeoutException
@@ -38,8 +41,20 @@ class ExceptionHandler {
                 when (throwable.code()) {
                     SERVER_STATE_UNAUTHORIZED, SERVER_STATE_FORBIDDEN, SERVER_STATE_UNFOUND,
                     SERVER_STATE_REQUEST_TIMEOUT, SERVER_STATE_GATEWAY_TIMEOUT,
-                    SERVER_STATE_INTERNAL_ERROR, SERVER_STATE_BAD_GATEWAY, SERVER_STATE_UNAVAILABLE ->
-                        responseThrowable.message = "network error."
+                    SERVER_STATE_INTERNAL_ERROR, SERVER_STATE_BAD_GATEWAY, SERVER_STATE_UNAVAILABLE -> {
+                        val body = throwable.response()?.errorBody()?.string() ?: "hello bro, there's something wrong."
+                        Log.d("the Error body is:${decodeUnicode(body)}")
+                        try {
+                            val json = JSONObject(body)
+                            if (json.has("errors")) {
+                                responseThrowable.message = json.optString("errors")
+                            } else {
+                                responseThrowable.message = json.optString("message")
+                            }
+                        } catch (e:Exception) {
+                            responseThrowable.message = "network error."
+                        }
+                    }
 
                     else -> responseThrowable.message = "network error."
                 }

@@ -1,9 +1,14 @@
 package app.hw.network.handler
 
 import app.hw.network.api.ResponseData
+import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.util.decodeUnicode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.ResponseBody
+import retrofit2.HttpException
+import java.nio.charset.Charset
 
 /**
  * @Time : created on 2024/4/23 17:22
@@ -21,10 +26,14 @@ object RequestHandler {
         scope.launch {
             runCatching { block() }
                 .fold(onSuccess = {
-                    parseData(it, onSucc, onFail)
+                    launch(Dispatchers.Main) { parseData(it, onSucc, onFail) }
                 }, onFailure = {
+                    /*if (it is HttpException) {
+                        val body = it.response()?.errorBody()?.string() ?: "hello pappy"
+                        Log.d("the Error body is:${decodeUnicode(body)}")
+                    }*/
                     val ex = ExceptionHandler().handleException(it)
-                    onFail(ex.code, ex.message)
+                    launch(Dispatchers.Main) { onFail(ex.code, ex.message) }
                 })
         }
     }
@@ -35,28 +44,26 @@ object RequestHandler {
         onFail: (code: Int, msg: String) -> Unit
     ) {
         val exceptionHandler = ExceptionHandler()
-        CoroutineScope(Dispatchers.Main).launch {
-            when (response.code) {
-                200 -> {
-                    if (response.data != null) {
-                        try {
-                            onSucc(response.data!!)
-                        } catch (e: Exception) {
-                            val ex = exceptionHandler.handleException(e)
-                            onFail(ex.code, ex.message)
-                        }
-                    } else {
-                        onFail(-1, "response data is null.")
+        when (response.code) {
+            200 -> {
+                if (response.data != null) {
+                    try {
+                        onSucc(response.data!!)
+                    } catch (e: Exception) {
+                        val ex = exceptionHandler.handleException(e)
+                        onFail(ex.code, ex.message)
                     }
+                } else {
+                    onFail(-1, "response data is null.")
                 }
+            }
 
-                else -> {
-                    //TODO 需根据业务补写相关逻辑
-                    if (exceptionHandler.tokenExpired(response.code)) {
-                        //用户登录token过期，统一处理跳到登录页面
-                    } else {
+            else -> {
+                //TODO 需根据业务补写相关逻辑
+                if (exceptionHandler.tokenExpired(response.code)) {
+                    //用户登录token过期，统一处理跳到登录页面
+                } else {
 
-                    }
                 }
             }
         }
