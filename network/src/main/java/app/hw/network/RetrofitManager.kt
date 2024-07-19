@@ -45,7 +45,7 @@ object RetrofitManager {
     }
 
 
-    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
     private val gson = GsonBuilder().setLenient().create()
 
     private val connectionSpecs: ArrayList<ConnectionSpec> =

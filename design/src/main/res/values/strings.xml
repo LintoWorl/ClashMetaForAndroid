@@ -324,4 +324,7 @@
     <string name="tab_name_home">Home</string>
     <string name="tab_name_billing">Subscribe</string>
     <string name="tab_name_mine">Mine</string>
+    <string name="title_reset_pwd">Reset Password</string>
+    <string name="title_register">Register</string>
+    <string name="send_mail_code">Send</string>
 </resources>

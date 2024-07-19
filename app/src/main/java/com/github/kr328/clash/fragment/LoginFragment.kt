@@ -71,8 +71,11 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
             }, {
                 Log.d("init guest config data:$it")
+                val appStore = AppStore(requireContext())
+                appStore.userToken = it.token
+                appStore.authData = it.auth_data
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-                //AppStore(requireContext()).hasLoginApp = true
+                appStore.hasLoginApp = true
             }, { code, msg ->
                 context?.toast(msg)
             })

@@ -6,8 +6,6 @@ import com.github.kr328.clash.common.log.Log.TAG_HTTP
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
-import okhttp3.ResponseBody
-import okhttp3.ResponseBody.Companion.toResponseBody
 import java.io.IOException
 
 /**
@@ -19,7 +17,6 @@ class ResponseInterceptor : Interceptor {
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val response = chain.proceed(chain.request())
-        //FIXME
         if (BuildConfig.DEBUG) {
             printRes(response)
         }
@@ -28,19 +25,12 @@ class ResponseInterceptor : Interceptor {
 
     private fun printRes(response: Response): Response {
         try {
-            //val builder = response.newBuilder()
-            //val clone = builder.build()
             val body = response.peekBody(Long.MAX_VALUE).string()
-            //val mediaType = body.contentType()
-            //if (mediaType != null) {
             if (body.isNotEmpty()) {
-                //val resp = body.string()
                 Log.i(TAG_HTTP, "/======================start========================\\")
                 Log.i(TAG_HTTP, "url=" + response.request.url)
                 Log.i(TAG_HTTP, body)
                 Log.i(TAG_HTTP, "\\=======================end=========================/")
-                //body = resp.toResponseBody(mediaType)
-                //return builder.body(body).build()
             } else {
                 Log.i(TAG_HTTP, "data:" + " maybe[file part] , too large too print , ignored!")
             }

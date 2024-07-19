@@ -57,13 +57,22 @@ class RegisterFragment : Fragment() {
 
         }
         binding.btnRegister.onClickNew {
+            if (!validMail() || !validPwd() || !validMailCode() || !agreePolicies()) {
+                return@onClickNew
+            }
+            val mailAddress = binding.editEmail.text.toString() + mailSuffix
+            val password = binding.editPassword.text.toString()
+            val mailCode = binding.editVerifyCode.text.toString()
+            val inviteCode = binding.editInviteCode.text.toString()
             //调注册用户的API
             RequestHandler.request({
-                val mailAddress = binding.editEmail.text.toString() + mailSuffix
-                UserAccountApi.registerAccount(mailAddress, binding.editPassword.text.toString())
+                UserAccountApi.registerAccount(mailAddress, password, mailCode, inviteCode)
             }, {
                 Log.d("init guest config data:$it")
-                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
+                val appStore = AppStore(requireContext())
+                appStore.userToken = it.token
+                appStore.authData = it.auth_data
+                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
             }, { code, msg ->
                 context?.toast(msg)
             })
@@ -71,6 +80,53 @@ class RegisterFragment : Fragment() {
         binding.titleBar.titleBarGoback.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
         }
+        binding.btnSendCode.onClickNew {
+            if (!validMail()) return@onClickNew
+            val mailAddress = binding.editEmail.text.toString() + mailSuffix
+            RequestHandler.request({
+                UserAccountApi.sendEmailVerifyCode(mailAddress)
+            }, {
+                if (it) {
+                    context?.toast("验证码发送成功，请在5分钟内使用该验证码")
+                } else {
+                    context?.toast("验证码发送失败")
+                }
+            }, { code, msg ->
+                context?.toast(msg)
+            })
+        }
+    }
+
+    private fun validMail(): Boolean {
+        if (binding.editEmail.text.isNullOrEmpty()) {
+            context?.toast("请输入邮箱")
+            return false
+        }
+        return true
+    }
+
+    private fun validPwd(): Boolean {
+        if (binding.editPassword.text.isNullOrEmpty()) {
+            context?.toast("请输入密码")
+            return false
+        }
+        return true
+    }
+
+    private fun validMailCode(): Boolean {
+        if (binding.editEmail.text.isNullOrEmpty()) {
+            context?.toast("请输入验证码")
+            return false
+        }
+        return true
+    }
+
+    private fun agreePolicies(): Boolean {
+        if (!binding.cbAgreeTos.isChecked) {
+            context?.toast("请阅读并同意隐私政策和用户协议")
+            return false
+        }
+        return true
     }
 
     companion object {
