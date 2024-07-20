@@ -1,6 +1,8 @@
 package com.github.kr328.clash
 
 import android.annotation.SuppressLint
+import androidx.activity.OnBackPressedCallback
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -48,9 +50,22 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         binding = DesignMainV2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
         appStore = AppStore(this)
-        fetchProfile()
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                when (currentIndex) {
+                    MainViewModel.IDX_FRAG_REPWD, MainViewModel.IDX_FRAG_REGST -> {
+                        showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
+                    }
+
+                    else -> {
+                        finish()
+                    }
+                }
+            }
+        })
+
+        //fetchProfile()
         viewModel.initConfigs(this)
 
         // 根据登录状态确定初始状态应该跳转到什么页面
