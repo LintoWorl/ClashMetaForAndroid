@@ -2,6 +2,7 @@ package com.github.kr328.clash.vm
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
@@ -44,5 +45,15 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun fetchSubsPlan(isGuest: Boolean) {
+        RequestHandler.request({
+            PaymentApi.getSubsPlan(isGuest)
+        },{
+
+        },{code, msg ->
+
+        })
     }
 }

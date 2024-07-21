@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.telephony.TelephonyManager
 import app.hw.network.RetrofitManager.baseInfo
+import com.github.kr328.clash.common.constants.Authorities
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -34,6 +35,9 @@ class RequestInterceptor : Interceptor {
         val netCountryCode = getNetWorkCountryISO(baseInfo.getAppContext())
         val localeCountry = Locale.getDefault().country
         builder.addHeader("loc", "${netCountryCode}_$localeCountry")
+        if (Authorities.authData.isNotEmpty()) {
+            builder.addHeader("authorization", Authorities.authData)
+        }
         //builder.addHeader("appType", "8007")//区分app
         //builder.addHeader("Host", "www.huawei.com")
         return chain.proceed(builder.build())

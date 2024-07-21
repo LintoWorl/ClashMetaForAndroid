@@ -16,27 +16,30 @@ import retrofit2.http.Query
  */
 internal interface PaymentService {
 
-    @GET("/user/plan/fetch")
+    @GET("guest/plan/fetch")
+    suspend fun getGuestSubsPlan(): ResponseData<List<SubsProductBean>>
+
+    @GET("user/plan/fetch")
     suspend fun getProductList(): ResponseData<List<SubsProductBean>>
 
-    @GET("/user/order/fetch")
+    @GET("user/order/fetch")
     suspend fun fetchOrder(): ResponseData<List<OrderBean>>
 
-    @GET("/user/order/getPaymentMethod")
+    @GET("user/order/getPaymentMethod")
     suspend fun getPayWay(): ResponseData<List<PaymentBean>>
 
-    @GET("/user/order/details")
+    @GET("user/order/details")
     suspend fun getOrderDetail(@Query("trade_no") tradeNo: String): ResponseData<OrderBean>
 
-    @GET("/user/order/check")
+    @GET("user/order/check")
     suspend fun checkOrderStat(@Query("trade_no") tradeNo: String): ResponseData<Int>
 
-    @POST("/user/order/save")
+    @POST("user/order/save")
     suspend fun saveOrder(@Body requestBody: RequestBody): ResponseData<String>
 
-    @POST("/user/order/checkout")
+    @POST("user/order/checkout")
     suspend fun checkoutOrder(@Body requestBody: RequestBody): ResponseData<String>
 
-    @POST("/user/order/cancel")
+    @POST("user/order/cancel")
     suspend fun cancelOrder(@Body requestBody: RequestBody): ResponseData<Boolean>
 }

@@ -11,12 +11,12 @@ import androidx.fragment.app.activityViewModels
 import app.hw.network.UrlConnManager
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
+import com.github.kr328.clash.common.constants.Authorities
 import com.github.kr328.clash.common.log.Log
 import com.github.kr328.clash.common.log.Log.TAG_HTTP
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
-import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
@@ -76,11 +76,13 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 appStore.authData = it.auth_data
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                 appStore.hasLoginApp = true
+                viewModel.fetchSubsPlan(false)
             }, { code, msg ->
                 context?.toast(msg)
             })
         }
         binding.btnEnterTourist.onClickNew {
+            viewModel.fetchSubsPlan(true)
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
         }
         binding.btnEnterRegister.onClickNew {

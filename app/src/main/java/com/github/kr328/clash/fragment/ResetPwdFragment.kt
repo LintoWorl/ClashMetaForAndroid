@@ -46,6 +46,7 @@ class ResetPwdFragment : Fragment() {
             }, {
                 if (it) {
                     context?.toast("重置密码成功")
+                    viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
                 } else {
                     context?.toast("重置密码失败，请稍后重试")
                 }

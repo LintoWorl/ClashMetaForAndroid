@@ -12,8 +12,8 @@ import app.hw.network.model.SubsProductBean
 object PaymentApi {
     private val service: PaymentService by lazy { RetrofitManager.createService(PaymentService::class.java) }
 
-    suspend fun getSubsPlan(): ResponseData<List<SubsProductBean>> {
-        return service.getProductList()
+    suspend fun getSubsPlan(guest: Boolean = false): ResponseData<List<SubsProductBean>> {
+        return if (guest) service.getGuestSubsPlan() else service.getProductList()
     }
 
     suspend fun getOrderList(): ResponseData<List<OrderBean>> {

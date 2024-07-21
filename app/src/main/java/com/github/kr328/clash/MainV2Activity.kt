@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.github.kr328.clash.common.Global
+import com.github.kr328.clash.common.constants.Authorities
 import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
@@ -206,6 +207,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         transaction.show(newFragment).commitAllowingStateLoss()
         if (index == MainViewModel.IDX_FRAG_HOME) {
             appStore.enteredHome = true
+            Authorities.authData = appStore.authData
         }
         //使用此方式在主线程中立即执行事务队列所有事务，同步当前的状态,确保来回快速切换的时候事务不会堆积在队列中异步执行，避免卡顿问题
         supportFragmentManager.executePendingTransactions()
