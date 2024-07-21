@@ -1,6 +1,7 @@
 package app.hw.network.api
 
 import android.util.Log
+import app.hw.network.model.Constant
 import app.hw.network.util.GsonHelper
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
@@ -55,7 +56,7 @@ class RequestParam(private val builder: Builder) {
         fun build(): RequestParam {
             //params["version"] = Utils.appVersion()
             val jsonData = GsonHelper.gson.toJson(params)
-            Log.i(TAG, jsonData)
+            Log.i(Constant.TAG_REQ, jsonData)
             return RequestParam(this)
         }
 
@@ -63,7 +64,6 @@ class RequestParam(private val builder: Builder) {
 
     companion object {
         private val contentType = "application/json; charset=UTF-8".toMediaTypeOrNull()
-        const val TAG = "HTTP_RequestParam"
         fun <T> getRequestBody(t: T): RequestBody {
             return t.toString().toRequestBody(contentType)
         }

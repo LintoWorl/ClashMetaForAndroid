@@ -4,7 +4,7 @@ import android.app.Service
 import android.net.*
 import android.os.Build
 import androidx.core.content.getSystemService
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.core.Clash
 import com.github.kr328.clash.service.util.resolvePrimaryDns
 import kotlinx.coroutines.NonCancellable
@@ -42,7 +42,7 @@ class NetworkObserveModule(service: Service) : Module<Network?>(service) {
         try {
             connectivity.registerNetworkCallback(request, callback)
         } catch (e: Exception) {
-            Log.w("Observe network failed: $e", e)
+            Logger.w("Observe network failed: $e", e)
 
             return
         }
@@ -75,7 +75,7 @@ class NetworkObserveModule(service: Service) : Module<Network?>(service) {
 
                 Clash.notifyDnsChanged(dns)
 
-                Log.d("DNS: $dns")
+                Logger.d("DNS: $dns")
 
                 if (resolveDefault) {
                     val network = networks.maxByOrNull { net ->
@@ -86,7 +86,7 @@ class NetworkObserveModule(service: Service) : Module<Network?>(service) {
 
                     enqueueEvent(network)
 
-                    Log.d("Network: $network of $networks")
+                    Logger.d("Network: $network of $networks")
                 }
             }
         } finally {

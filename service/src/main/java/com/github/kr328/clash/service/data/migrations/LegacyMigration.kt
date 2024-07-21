@@ -5,7 +5,7 @@ package com.github.kr328.clash.service.data.migrations
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import androidx.core.text.isDigitsOnly
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.service.data.Pending
 import com.github.kr328.clash.service.data.PendingDao
 import com.github.kr328.clash.service.model.Profile
@@ -21,14 +21,14 @@ internal suspend fun migrationFromLegacy(context: Context) {
         return
     }
 
-    Log.i("Migration from legacy database")
+    Logger.i("Migration from legacy database")
 
     try {
         SQLiteDatabase.openDatabase(file.absolutePath, null, SQLiteDatabase.OPEN_READONLY)
             .use { db ->
                 val v = db.version
 
-                Log.i("Legacy database version = $v")
+                Logger.i("Legacy database version = $v")
 
                 when (v) {
                     1 -> migrationFromLegacy1(context, db)
@@ -36,12 +36,12 @@ internal suspend fun migrationFromLegacy(context: Context) {
                 }
             }
     } catch (e: Exception) {
-        Log.w("Migration legacy database: $e", e)
+        Logger.w("Migration legacy database: $e", e)
     }
 
     context.deleteDatabase("clash-config")
 
-    Log.i("Legacy database migrated")
+    Logger.i("Legacy database migrated")
 }
 
 private suspend fun migrationFromLegacy234(
@@ -116,7 +116,7 @@ private suspend fun migrationFromLegacy234(
 
             context.sendProfileChanged(pending.uuid)
 
-            Log.i("${pending.name} migrated")
+            Logger.i("${pending.name} migrated")
         } while (cursor.moveToNext())
     }
 
@@ -192,7 +192,7 @@ private suspend fun migrationFromLegacy1(context: Context, legacy: SQLiteDatabas
 
             context.sendProfileChanged(pending.uuid)
 
-            Log.i("${pending.name} migrated")
+            Logger.i("${pending.name} migrated")
         } while (cursor.moveToNext())
     }
 }

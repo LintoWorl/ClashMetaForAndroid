@@ -5,7 +5,7 @@ import android.content.Intent
 import com.github.kr328.clash.ApkBrokenActivity
 import com.github.kr328.clash.AppCrashedActivity
 import com.github.kr328.clash.common.Global
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.util.ApplicationObserver
@@ -31,12 +31,12 @@ object Remote {
 
         ApplicationObserver.onVisibleChanged {
             if(it) {
-                Log.d("App becomes visible")
+                Logger.d("App becomes visible")
                 service.bind()
                 broadcasts.register()
             }
             else {
-                Log.d("App becomes invisible")
+                Logger.d("App becomes invisible")
                 service.unbind()
                 broadcasts.unregister()
             }

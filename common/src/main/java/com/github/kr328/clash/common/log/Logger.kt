@@ -1,25 +1,27 @@
 package com.github.kr328.clash.common.log
 
-object Log {
-    private const val TAG = "ClashMetaForAndroid"
+import android.util.Log
+
+object Logger {
+    private const val TAG = "FHL_Common"
     const val TAG_HTTP = "Http_Resp"
-    const val TAG_EXP = "Http_Resp"
+    const val TAG_EXP = "Http_Exp"
 
     fun i(message: String, throwable: Throwable? = null) =
-        android.util.Log.i(TAG, message, throwable)
+        Log.i(TAG, message, throwable)
 
     fun w(message: String, throwable: Throwable? = null) =
-        android.util.Log.w(TAG, message, throwable)
+        Log.w(TAG, message, throwable)
 
     fun e(message: String, throwable: Throwable? = null) =
-        android.util.Log.e(TAG, message, throwable)
+        Log.e(TAG, message, throwable)
 
     fun d(message: String, throwable: Throwable? = null) =
-        android.util.Log.d(TAG, message, throwable)
+        Log.d(TAG, message, throwable)
 
     fun v(message: String, throwable: Throwable? = null) =
-        android.util.Log.v(TAG, message, throwable)
+        Log.v(TAG, message, throwable)
 
     fun f(message: String, throwable: Throwable) =
-        android.util.Log.wtf(message, throwable)
+        Log.wtf(message, throwable)
 }

@@ -3,7 +3,7 @@ package com.github.kr328.clash.remote
 import android.content.Context
 import android.net.Uri
 import com.github.kr328.clash.common.constants.Authorities
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.service.StatusProvider
 
 class StatusClient(private val context: Context) {
@@ -26,7 +26,7 @@ class StatusClient(private val context: Context) {
 
             result?.getString("name")
         } catch (e: Exception) {
-            Log.w("Query current profile: $e", e)
+            Logger.w("Query current profile: $e", e)
 
             null
         }

@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragRegisterAccountBinding
@@ -68,7 +68,7 @@ class RegisterFragment : Fragment() {
             RequestHandler.request({
                 UserAccountApi.registerAccount(mailAddress, password, mailCode, inviteCode)
             }, {
-                Log.d("init guest config data:$it")
+                Logger.d("init guest config data:$it")
                 val appStore = AppStore(requireContext())
                 appStore.userToken = it.token
                 appStore.authData = it.auth_data

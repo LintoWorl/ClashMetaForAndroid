@@ -5,7 +5,7 @@ import android.app.Application
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 
 val Application.currentProcessName: String
     get() {
@@ -15,7 +15,7 @@ val Application.currentProcessName: String
         return try {
             ActivityThread.currentProcessName()
         } catch (throwable: Throwable) {
-            Log.w("Resolve process name: $throwable")
+            Logger.w("Resolve process name: $throwable")
 
             packageName
         }

@@ -1,7 +1,7 @@
 package com.github.kr328.clash.service
 
 import android.content.Context
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.core.Clash
 import com.github.kr328.clash.core.model.*
 import com.github.kr328.clash.service.data.Selection
@@ -95,7 +95,7 @@ class ClashManager(private val context: Context) : IClashManager,
                             // intended behavior
                             // ignore
                         } catch (e: Exception) {
-                            Log.w("UI crashed", e)
+                            Logger.w("UI crashed", e)
                         } finally {
                             withContext(NonCancellable) {
                                 c.cancel()

@@ -10,7 +10,7 @@ import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.pendingIntentFlags
 import com.github.kr328.clash.common.compat.startForegroundServiceCompat
 import com.github.kr328.clash.common.constants.Intents
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.util.componentName
 import com.github.kr328.clash.common.util.setUUID
 import com.github.kr328.clash.service.data.Imported
@@ -54,7 +54,7 @@ class ProfileReceiver : BroadcastReceiver() {
 
             initialized = true
 
-            Log.i("Reschedule all profiles update")
+            Logger.i("Reschedule all profiles update")
 
             ImportedDao().queryAllUUIDs()
                 .mapNotNull { ImportedDao().queryByUUID(it) }

@@ -14,7 +14,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.github.kr328.clash.common.compat.getColorCompat
 import com.github.kr328.clash.common.compat.pendingIntentFlags
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.core.model.LogMessage
 import com.github.kr328.clash.log.LogcatCache
@@ -27,7 +27,6 @@ import com.github.kr328.clash.util.logsDir
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.io.IOException
-import java.util.*
 
 class LogcatService : Service(), CoroutineScope by CoroutineScope(Dispatchers.Default), IInterface {
     private val cache = LogcatCache()
@@ -111,7 +110,7 @@ class LogcatService : Service(), CoroutineScope by CoroutineScope(Dispatchers.De
                     }
                 }
             } catch (e: IOException) {
-                Log.e("Write log file: $e", e)
+                Logger.e("Write log file: $e", e)
             } finally {
                 withContext(NonCancellable) {
                     if (binder.isBinderAlive) {

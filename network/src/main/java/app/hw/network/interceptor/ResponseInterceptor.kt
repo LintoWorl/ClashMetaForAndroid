@@ -2,7 +2,8 @@ package app.hw.network.interceptor
 
 import android.util.Log
 import app.hw.network.BuildConfig
-import com.github.kr328.clash.common.log.Log.TAG_HTTP
+import app.hw.network.model.Constant.TAG_RES
+import com.github.kr328.clash.common.util.decodeUnicode
 import okhttp3.Interceptor
 import okhttp3.MediaType
 import okhttp3.Response
@@ -27,15 +28,15 @@ class ResponseInterceptor : Interceptor {
         try {
             val body = response.peekBody(Long.MAX_VALUE).string()
             if (body.isNotEmpty()) {
-                Log.i(TAG_HTTP, "/======================start========================\\")
-                Log.i(TAG_HTTP, "url=" + response.request.url)
-                Log.i(TAG_HTTP, body)
-                Log.i(TAG_HTTP, "\\=======================end=========================/")
+                Log.i(TAG_RES, "/======================start========================\\")
+                Log.i(TAG_RES, "url=" + response.request.url)
+                Log.i(TAG_RES, decodeUnicode(body))
+                Log.i(TAG_RES, "\\=======================end=========================/")
             } else {
-                Log.i(TAG_HTTP, "data:" + " maybe[file part] , too large too print , ignored!")
+                Log.i(TAG_RES, "data:" + " maybe[file part] , too large too print , ignored!")
             }
         } catch (e: Exception) {
-            e.localizedMessage?.let { Log.i(TAG_HTTP, it) }
+            e.localizedMessage?.let { Log.i(TAG_RES, it) }
         }
         return response
     }

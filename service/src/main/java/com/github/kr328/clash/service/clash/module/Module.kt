@@ -6,7 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import com.github.kr328.clash.common.constants.Permissions
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -58,7 +58,7 @@ abstract class Module<E>(val service: Service) {
         val moduleName = this.javaClass.simpleName
 
         try {
-            Log.d("$moduleName: initialize")
+            Logger.d("$moduleName: initialize")
 
             run()
         } finally {
@@ -69,7 +69,7 @@ abstract class Module<E>(val service: Service) {
                     service.unregisterReceiver(it)
                 }
 
-                Log.d("$moduleName: destroyed")
+                Logger.d("$moduleName: destroyed")
             }
         }
     }

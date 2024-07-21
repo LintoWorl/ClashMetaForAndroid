@@ -2,7 +2,7 @@ package app.hw.network.util
 
 import android.net.SSLCertificateSocketFactory
 import android.util.Log
-import com.github.kr328.clash.common.log.Log.TAG_HTTP
+import com.github.kr328.clash.common.log.Logger.TAG_HTTP
 import java.io.IOException
 import java.net.InetAddress
 import java.net.Socket

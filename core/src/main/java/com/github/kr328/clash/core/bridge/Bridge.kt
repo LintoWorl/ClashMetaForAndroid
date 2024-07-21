@@ -4,7 +4,7 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import androidx.annotation.Keep
 import com.github.kr328.clash.common.Global
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import kotlinx.coroutines.CompletableDeferred
 import java.io.File
 
@@ -65,7 +65,7 @@ object Bridge {
         val versionName = ctx.packageManager.getPackageInfo(ctx.packageName, 0).versionName
         val sdkVersion = Build.VERSION.SDK_INT
 
-        Log.d("Home = $home")
+        Logger.d("Home = $home")
 
         nativeInit(home, versionName, sdkVersion)
     }

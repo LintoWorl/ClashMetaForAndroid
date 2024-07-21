@@ -11,9 +11,8 @@ import androidx.fragment.app.activityViewModels
 import app.hw.network.UrlConnManager
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
-import com.github.kr328.clash.common.constants.Authorities
-import com.github.kr328.clash.common.log.Log
-import com.github.kr328.clash.common.log.Log.TAG_HTTP
+import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.common.log.Logger.TAG_HTTP
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
@@ -70,7 +69,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 val mailAddress = binding.editEmail.text.toString() + mailSuffix
                 UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
             }, {
-                Log.d("init guest config data:$it")
+                Logger.d("init guest config data:$it")
                 val appStore = AppStore(requireContext())
                 appStore.userToken = it.token
                 appStore.authData = it.auth_data

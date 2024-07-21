@@ -6,7 +6,7 @@ import app.hw.network.interceptor.ResponseInterceptor
 import app.hw.network.util.DnsUtil
 import app.hw.network.util.UnsafeOkHttpClient
 import com.github.kr328.clash.common.Global
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
  * @Description :网络模块的门户，负责Retrofit库的初始化和网络连接的通用配置
  */
 object RetrofitManager {
-    private const val HTTP_TIMEOUT_CONNECT: Long = 10 * 1000L //网络请求连接超时时长
+    private const val HTTP_TIMEOUT_CONNECT: Long = 30 * 1000L //网络请求连接超时时长
     private const val HTTP_TIMEOUT_READ: Long = 30 * 1000L
     private const val HTTP_TIMEOUT_WRITE: Long = 30 * 1000L
     internal lateinit var baseInfo: INetworkBaseInfo
@@ -36,11 +36,11 @@ object RetrofitManager {
      */
     fun init(networkInfo: INetworkBaseInfo) {
         baseInfo = networkInfo
-        Log.d("init network.")
+        Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
-            Log.d("init network, request the Ip")
+            Logger.d("init network, request the Ip")
             strIp = DnsUtil().getIpByHost(networkInfo.getAppContext(), "eight.8jiasu.com")
-            Log.d("init network, receive the Ip: $strIp")
+            Logger.d("init network, receive the Ip: $strIp")
         }
     }
 
@@ -52,10 +52,10 @@ object RetrofitManager {
         arrayListOf(ConnectionSpec.COMPATIBLE_TLS)
     private val myDns: Dns = object : Dns {
         override fun lookup(hostname: String): List<InetAddress> {
-            android.util.Log.d(Log.TAG_HTTP, "lookup hostname:$hostname, the parsedIp is:$strIp")
+            android.util.Log.d(Logger.TAG_HTTP, "lookup hostname:$hostname, the parsedIp is:$strIp")
             if (strIp.isEmpty()) {
                 strIp = DnsUtil().getIpByHost(Global.application, "eight.8jiasu.com")
-                android.util.Log.d(Log.TAG_HTTP, "got the hostname's ip:$strIp")
+                android.util.Log.d(Logger.TAG_HTTP, "got the hostname's ip:$strIp")
             }
             val ipList: List<InetAddress>
             if (strIp.isNotEmpty()) {

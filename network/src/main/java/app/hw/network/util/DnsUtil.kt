@@ -3,7 +3,7 @@ package app.hw.network.util
 import android.content.Context
 import android.util.Log
 import app.hw.network.model.Constant
-import com.github.kr328.clash.common.log.Log.TAG_HTTP
+import com.github.kr328.clash.common.log.Logger.TAG_HTTP
 import org.json.JSONObject
 import java.net.URL
 import java.net.URLConnection

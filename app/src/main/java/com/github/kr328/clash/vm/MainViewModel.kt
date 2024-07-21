@@ -7,7 +7,7 @@ import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
 import com.github.kr328.clash.common.Global
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -32,14 +32,14 @@ class MainViewModel : ViewModel() {
             while (isActive) {
                 select {
                     Global.commEvents.onReceive {
-                        Log.d("onReceive:$it, start request appConfig")
+                        Logger.d("onReceive:$it, start request appConfig")
                         RequestHandler.request({
                             UserAccountApi.appConfig()
                         }, { config ->
-                            Log.d("got guest config data.")
+                            Logger.d("got guest config data.")
                             appConfig.value = config
                         }, { _, msg ->
-                            Log.e("initData fail: $msg")
+                            Logger.e("initData fail: $msg")
                         })
                     }
                 }

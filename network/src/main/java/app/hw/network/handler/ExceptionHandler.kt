@@ -15,7 +15,7 @@ import app.hw.network.handler.ErrorType.SERVER_STATE_REQUEST_TIMEOUT
 import app.hw.network.handler.ErrorType.SERVER_STATE_UNAUTHORIZED
 import app.hw.network.handler.ErrorType.SERVER_STATE_UNAVAILABLE
 import app.hw.network.handler.ErrorType.SERVER_STATE_UNFOUND
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.util.decodeUnicode
 import com.google.gson.JsonParseException
 import org.json.JSONException
@@ -44,7 +44,7 @@ class ExceptionHandler {
                     SERVER_STATE_INTERNAL_ERROR, SERVER_STATE_BAD_GATEWAY, SERVER_STATE_UNAVAILABLE -> {
                         val body = throwable.response()?.errorBody()?.string()
                             ?: "hi bro, there's something wrong."
-                        Log.d("the Error body is:${decodeUnicode(body)}")
+                        Logger.d("the Error body is:${decodeUnicode(body)}")
                         try {
                             val json = JSONObject(body)
                             if (json.has("errors")) {

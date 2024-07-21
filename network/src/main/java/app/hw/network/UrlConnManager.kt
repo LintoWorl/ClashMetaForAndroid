@@ -5,8 +5,8 @@ import android.util.Log
 import app.hw.network.RetrofitManager.baseInfo
 import app.hw.network.util.NetworkUtil
 import app.hw.network.util.SecureSSLSocketFactory
-import com.github.kr328.clash.common.log.Log.TAG_EXP
-import com.github.kr328.clash.common.log.Log.TAG_HTTP
+import com.github.kr328.clash.common.log.Logger.TAG_EXP
+import com.github.kr328.clash.common.log.Logger.TAG_HTTP
 import java.net.URL
 import java.security.SecureRandom
 import java.security.cert.X509Certificate

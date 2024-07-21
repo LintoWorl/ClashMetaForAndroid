@@ -8,7 +8,7 @@ import android.net.VpnService
 import android.os.Build
 import com.github.kr328.clash.common.compat.pendingIntentFlags
 import com.github.kr328.clash.common.constants.Components
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.service.clash.clashRuntime
 import com.github.kr328.clash.service.clash.module.*
 import com.github.kr328.clash.service.model.AccessControlMode
@@ -74,7 +74,7 @@ class TunService : VpnService(), CoroutineScope by CoroutineScope(Dispatchers.De
                 if (quit) break
             }
         } catch (e: Exception) {
-            Log.e("Create clash runtime: ${e.message}", e)
+            Logger.e("Create clash runtime: ${e.message}", e)
 
             reason = e.message
         } finally {
@@ -115,7 +115,7 @@ class TunService : VpnService(), CoroutineScope by CoroutineScope(Dispatchers.De
 
         cancelAndJoinBlocking()
 
-        Log.i("TunService destroyed: ${reason ?: "successfully"}")
+        Logger.i("TunService destroyed: ${reason ?: "successfully"}")
 
         super.onDestroy()
     }

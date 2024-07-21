@@ -3,7 +3,7 @@ package com.github.kr328.clash.service.clash.module
 import android.app.Service
 import android.content.Intent
 import com.github.kr328.clash.common.constants.Intents
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.core.Clash
 import com.github.kr328.clash.service.sideload.readGeoipDatabaseFrom
 import com.github.kr328.clash.service.store.ServiceStore
@@ -70,9 +70,9 @@ class SideloadDatabaseModule(service: Service) :
                     Clash.installSideloadGeoip(data)
 
                     if (data != null) {
-                        Log.d("Sideload geoip loaded, pkg = $pkg")
+                        Logger.d("Sideload geoip loaded, pkg = $pkg")
                     } else {
-                        Log.d("Sideload geoip not found")
+                        Logger.d("Sideload geoip not found")
                     }
                 }
             } catch (e: FileNotFoundException) {

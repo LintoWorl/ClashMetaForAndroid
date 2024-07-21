@@ -2,7 +2,7 @@ package com.github.kr328.clash.service.clash.module
 
 import android.app.Service
 import com.github.kr328.clash.common.constants.Intents
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.core.Clash
 import com.github.kr328.clash.service.StatusProvider
 import com.github.kr328.clash.service.data.ImportedDao
@@ -67,7 +67,7 @@ class ConfigurationModule(service: Service) : Module<ConfigurationModule.LoadExc
 
                 service.sendProfileLoaded(current)
 
-                Log.d("Profile ${active.name} loaded")
+                Logger.d("Profile ${active.name} loaded")
             } catch (e: Exception) {
                 return enqueueEvent(LoadException(e.message ?: "Unknown"))
             }

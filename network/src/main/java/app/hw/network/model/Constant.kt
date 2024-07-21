@@ -1,6 +1,10 @@
 package app.hw.network.model
 
 object Constant {
+    const val TAG_RES = "Http_Resp"
+    const val TAG_REQ = "Http_Req"
+    const val TAG_EXP = "Http_Exp"
+
     const val PROTOCOL_HTTP: String = "http://"
     const val PROTOCOL_HTTPS: String = "https://"
     const val DNS_TYPE_V4 = "A"

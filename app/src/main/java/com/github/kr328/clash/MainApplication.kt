@@ -6,7 +6,7 @@ import app.hw.network.RetrofitManager
 import app.hw.network.api.INetworkBaseInfo
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.currentProcessName
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.util.sendServiceRecreated
 import com.github.kr328.clash.util.clashDir
@@ -29,8 +29,8 @@ class MainApplication : Application() {
         val processName = currentProcessName
         extractGeoFiles()
 
-        Log.d("Process $processName started")
-        Log.i("packageName is:$packageName")
+        Logger.d("Process $processName started")
+        Logger.i("packageName is:$packageName")
         if (processName == packageName) {
             Remote.launch()
             initNetwork()
@@ -55,13 +55,13 @@ class MainApplication : Application() {
         CoroutineScope(Dispatchers.IO).launch {
             clashDir.mkdirs()
 
-            Log.i("start extractGeoFiles:${clashDir.absoluteFile}")
+            Logger.i("start extractGeoFiles:${clashDir.absoluteFile}")
             val geoipFile = File(clashDir, "geoip.metadb")
             if (!geoipFile.exists()) {
                 val res = FileOutputStream(geoipFile).use {
                     assets.open("geoip.metadb").copyTo(it)
                 }
-                Log.d("Copy geoip.metadb: $res")
+                Logger.d("Copy geoip.metadb: $res")
             }
 
             val geositeFile = File(clashDir, "geosite.dat")
@@ -69,7 +69,7 @@ class MainApplication : Application() {
                 val res = FileOutputStream(geositeFile).use {
                     assets.open("geosite.dat").copyTo(it)
                 }
-                Log.d("Copy geosite.dat: $res")
+                Logger.d("Copy geosite.dat: $res")
             }
         }
     }

@@ -2,7 +2,7 @@ package com.github.kr328.clash.service
 
 import android.content.Context
 import android.net.Uri
-import com.github.kr328.clash.common.log.Log
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.core.Clash
 import com.github.kr328.clash.service.data.Imported
 import com.github.kr328.clash.service.data.ImportedDao
@@ -21,7 +21,6 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.net.URL
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -56,7 +55,7 @@ object ProfileProcessor {
                     } catch (e: Exception) {
                         cb = null
 
-                        Log.w("Report fetch status: $e", e)
+                        Logger.w("Report fetch status: $e", e)
                     }
                 }.await()
 
@@ -183,7 +182,7 @@ object ProfileProcessor {
                     } catch (e: Exception) {
                         cb = null
 
-                        Log.w("Report fetch status: $e", e)
+                        Logger.w("Report fetch status: $e", e)
                     }
                 }.await()
 
