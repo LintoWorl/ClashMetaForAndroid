@@ -13,9 +13,13 @@ import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragRegisterAccountBinding
+import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragRegisterAccountBinding
@@ -64,19 +68,32 @@ class RegisterFragment : Fragment() {
             val password = binding.editPassword.text.toString()
             val mailCode = binding.editVerifyCode.text.toString()
             val inviteCode = binding.editInviteCode.text.toString()
-            //调注册用户的API
-            RequestHandler.request({
-                UserAccountApi.registerAccount(mailAddress, password, mailCode, inviteCode)
-            }, {
-                Logger.d("init guest config data:$it")
-                val appStore = AppStore(requireContext())
-                appStore.userToken = it.token
-                appStore.authData = it.auth_data
-                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-            }, { code, msg ->
-                context?.toast(msg)
-            })
+
+            CoroutineScope(Dispatchers.Main).launch {
+                requireContext().showModalProgressBar {
+                    configure {
+                        isIndeterminate = true
+                        text = "提交注册，请稍候..."
+                    }
+                    //调注册用户的API
+                    RequestHandler.request({
+                        UserAccountApi.registerAccount(mailAddress, password, mailCode, inviteCode)
+                    }, {
+                        Logger.d("init guest config data:$it")
+                        val appStore = AppStore(requireContext())
+                        appStore.userToken = it.token
+                        appStore.authData = it.auth_data
+                        viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
+
+                        onResult()
+                    }, { _, msg ->
+                        context?.toast(msg)
+                        onResult()
+                    })
+                }
+            }
         }
+
         binding.titleBar.titleBarGoback.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
         }

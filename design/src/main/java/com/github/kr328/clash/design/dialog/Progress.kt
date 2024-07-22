@@ -18,6 +18,11 @@ interface ModelProgressBarScope {
     suspend fun configure(block: suspend ModelProgressBarConfigure.() -> Unit)
 }
 
+interface ModalProgressScope {
+    suspend fun configure(block: suspend ModelProgressBarConfigure.() -> Unit)
+    fun onResult()
+}
+
 suspend fun Context.withModelProgressBar(block: suspend ModelProgressBarScope.() -> Unit) {
     val view = DialogFetchStatusBinding.inflate(this.layoutInflater)
     val dialog = MaterialAlertDialogBuilder(this)
@@ -60,6 +65,57 @@ suspend fun Context.withModelProgressBar(block: suspend ModelProgressBarScope.()
     try {
         scopeImpl.block()
     } finally {
+        dialog.dismiss()
+    }
+}
+
+
+suspend fun Context.showModalProgressBar(block: suspend ModalProgressScope.() -> Unit) {
+    val view = DialogFetchStatusBinding.inflate(this.layoutInflater)
+    val dialog = MaterialAlertDialogBuilder(this)
+        .setCancelable(false)
+        .setView(view.root)
+        .show()
+
+    val configureImpl = object : ModelProgressBarConfigure {
+        override var isIndeterminate: Boolean
+            get() = view.progressIndicator.isIndeterminate
+            set(value) {
+                view.progressIndicator.isIndeterminate = value
+            }
+        override var text: String?
+            get() = view.text.text?.toString()
+            set(value) {
+                view.text.text = value
+            }
+        override var progress: Int
+            get() = view.progressIndicator.progress
+            set(value) {
+                view.progressIndicator.setProgressCompat(value, true)
+            }
+        override var max: Int
+            get() = view.progressIndicator.max
+            set(value) {
+                view.progressIndicator.max = value
+            }
+
+    }
+
+    val scopeImpl = object : ModalProgressScope {
+        override suspend fun configure(block: suspend ModelProgressBarConfigure.() -> Unit) {
+            withContext(Dispatchers.Main) {
+                configureImpl.block()
+            }
+        }
+
+        override fun onResult() {
+            dialog.dismiss()
+        }
+    }
+
+    try {
+        scopeImpl.block()
+    } catch (_: Exception) {
         dialog.dismiss()
     }
 }

@@ -14,8 +14,11 @@ import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.Logger.TAG_HTTP
 import com.github.kr328.clash.common.log.toast
+import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
+import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
@@ -64,22 +67,36 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
 
         }
         binding.btnLoginAccount.onClickNew {
-            //用账号登录
-            RequestHandler.request({
-                val mailAddress = binding.editEmail.text.toString() + mailSuffix
-                UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
-            }, {
-                Logger.d("init guest config data:$it")
-                val appStore = AppStore(requireContext())
-                appStore.userToken = it.token
-                appStore.authData = it.auth_data
-                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-                appStore.hasLoginApp = true
-                viewModel.fetchSubsPlan(false)
-            }, { code, msg ->
-                context?.toast(msg)
-            })
+            if (!validMail() || !validPwd() || !agreePolicies()) return@onClickNew
+
+            launch(Dispatchers.Main) {
+                requireContext().showModalProgressBar {
+                    configure {
+                        isIndeterminate = true
+                        text = "登录中，请稍候..."
+                    }
+                    //用账号登录
+                    RequestHandler.request({
+                        val mailAddress = binding.editEmail.text.toString() + mailSuffix
+                        UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
+                    }, {
+                        Logger.d("init guest config data:$it")
+                        val appStore = AppStore(requireContext())
+                        appStore.userToken = it.token
+                        appStore.authData = it.auth_data
+                        viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
+                        appStore.hasLoginApp = true
+                        viewModel.fetchSubsPlan(false)
+
+                        onResult()
+                    }, { code, msg ->
+                        context?.toast(msg)
+                        onResult()
+                    })
+                }
+            }
         }
+
         binding.btnEnterTourist.onClickNew {
             viewModel.fetchSubsPlan(true)
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
@@ -91,6 +108,30 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
             //重置密码
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REPWD
         }
+    }
+
+    private fun validMail(): Boolean {
+        if (binding.editEmail.text.isNullOrEmpty()) {
+            context?.toast("请输入邮箱")
+            return false
+        }
+        return true
+    }
+
+    private fun validPwd(): Boolean {
+        if (binding.editPassword.text.isNullOrEmpty()) {
+            context?.toast("请输入密码")
+            return false
+        }
+        return true
+    }
+
+    private fun agreePolicies(): Boolean {
+        if (!binding.cbAgreeTos.isChecked) {
+            context?.toast("请阅读并同意隐私政策和用户协议")
+            return false
+        }
+        return true
     }
 
     private suspend fun fetchData() {

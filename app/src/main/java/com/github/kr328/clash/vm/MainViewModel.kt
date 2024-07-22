@@ -1,13 +1,17 @@
 package com.github.kr328.clash.vm
 
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
+import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.dialog.withModelProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -33,14 +37,22 @@ class MainViewModel : ViewModel() {
                 select {
                     Global.commEvents.onReceive {
                         Logger.d("onReceive:$it, start request appConfig")
-                        RequestHandler.request({
-                            UserAccountApi.appConfig()
-                        }, { config ->
-                            Logger.d("got guest config data.")
-                            appConfig.value = config
-                        }, { _, msg ->
-                            Logger.e("initData fail: $msg")
-                        })
+                        (scope as MainV2Activity).showModalProgressBar {
+                            configure {
+                                isIndeterminate = true
+                                text = "正在获取VPS配置，请稍候..."
+                            }
+                            RequestHandler.request({
+                                UserAccountApi.appConfig()
+                            }, { config ->
+                                Logger.d("got guest config data.")
+                                appConfig.value = config
+                                onResult()
+                            }, { _, msg ->
+                                Logger.e("initData fail: $msg")
+                                onResult()
+                            })
+                        }
                     }
                 }
             }

@@ -20,6 +20,7 @@ object RequestHandler {
         onFail: (code: Int, msg: String) -> Unit,
         scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     ) {
+        //开始显示loading FIXME
         scope.launch {
             runCatching { block() }
                 .onSuccess {
