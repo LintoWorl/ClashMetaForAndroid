@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="20dp"
+    android:background="@drawable/bg_user_center_item"
+    android:paddingHorizontal="20dp"
+    android:paddingVertical="16dp">
+
+    <TextView
+        android:id="@+id/tv_plan_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="8.8元套餐" />
+
+    <TextView
+        android:id="@+id/tv_plan_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_plan_title"
+        tools:text="¥ 8.80" />
+    <TextView
+        android:id="@+id/tv_plan_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBaseline_toBaselineOf="@id/tv_plan_price"
+        app:layout_constraintStart_toEndOf="@id/tv_plan_price"
+        tools:text="月付" />
+
+    <TextView
+        android:id="@+id/tv_plan_intro"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="@id/tv_plan_price"
+        app:layout_constraintTop_toBottomOf="@id/tv_plan_price"
+        tools:text="流量 88GB" />
+    <TextView
+        android:id="@+id/btn_plan_buy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:textColor="@color/color_clash_dark"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_plan_price"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_plan_price"
+        tools:text="立即购买" />
+
+    <TextView
+        android:id="@+id/btn_plan_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="6dp"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        app:layout_constraintEnd_toEndOf="@id/btn_plan_buy"
+        app:layout_constraintStart_toStartOf="@id/btn_plan_buy"
+        app:layout_constraintTop_toBottomOf="@id/btn_plan_buy"
+        tools:text="详情 >>" />
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/color_F4F4F4"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tv_plan_intro"
+        tools:visibility="visible" />
+    <TextView
+        android:id="@+id/tv_plan_desc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textColor="@color/black"
+        android:textSize="13sp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/divider"
+        tools:text="每月 88G 流量\n峰值宽带可达 1Gbps\n解锁流媒体\n解锁 ChatGPT\n7X24 工单守候支持"
+        tools:visibility="visible" />
+</androidx.constraintlayout.widget.ConstraintLayout>

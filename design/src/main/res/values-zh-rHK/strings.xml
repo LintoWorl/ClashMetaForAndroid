@@ -253,7 +253,7 @@
     <string name="override_destination">Override Destination</string>
 
     <string name="tab_name_home">首页</string>
-    <string name="tab_name_billing">订阅</string>
+    <string name="tab_name_billing">商店</string>
     <string name="tab_name_mine">我的</string>
     <string name="title_reset_pwd">重置密码</string>
     <string name="title_register">注册</string>

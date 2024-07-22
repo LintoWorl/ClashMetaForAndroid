@@ -2,11 +2,9 @@ package com.github.kr328.clash
 
 import android.annotation.SuppressLint
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
-import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.constants.Authorities
 import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.Design
@@ -18,9 +16,9 @@ import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.fragment.HomeFragment
 import com.github.kr328.clash.fragment.LoginFragment
-import com.github.kr328.clash.fragment.ProductFragment
 import com.github.kr328.clash.fragment.RegisterFragment
 import com.github.kr328.clash.fragment.ResetPwdFragment
+import com.github.kr328.clash.fragment.StoreFragment
 import com.github.kr328.clash.fragment.UserFragment
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.store.AppStore
@@ -29,9 +27,7 @@ import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 import java.util.*
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
@@ -41,7 +37,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     private val mResetPwdFragment: ResetPwdFragment by lazy { ResetPwdFragment.newInstance() }
     private val mLoginFragment: LoginFragment by lazy { LoginFragment.newInstance() }
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
-    private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
+    private val mSubsFragment: StoreFragment by lazy { StoreFragment.newInstance() }
     private val mUserFragment: UserFragment by lazy { UserFragment.newInstance() }
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: DesignMainV2Binding

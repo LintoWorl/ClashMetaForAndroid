@@ -18,4 +18,7 @@ dependencies {
     implementation(libs.androidx.fragment)
     implementation(libs.androidx.viewpager)
     implementation(libs.google.material)
+    implementation(libs.refresh.layout.kernel)
+    implementation(libs.refresh.header.radar)
+    implementation(project(":network"))
 }

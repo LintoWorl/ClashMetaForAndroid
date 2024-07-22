@@ -69,6 +69,8 @@ dependencyResolutionManagement {
             library("okhttp-bom", "com.squareup.okhttp3:okhttp-bom:4.10.0")
             library("gson", "com.google.code.gson:gson:2.10.1")
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.6.2")
+            library("refresh-layout-kernel","io.github.scwang90:refresh-layout-kernel:2.1.0")
+            library("refresh-header-radar","io.github.scwang90:refresh-header-radar:2.1.0")
         }
     }
 }

@@ -27,6 +27,8 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.google.material)
     implementation(libs.fragment.ktx)
+    implementation(libs.refresh.layout.kernel)
+    implementation(libs.refresh.header.radar)
     implementation(platform("com.squareup.okhttp3:okhttp-bom:4.10.0"))
 
     // define any required OkHttp artifacts without version
