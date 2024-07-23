@@ -5,28 +5,21 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.AdapterView.OnItemSelectedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import app.hw.network.UrlConnManager
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
+import com.github.kr328.clash.common.compat.checkEmpty
 import com.github.kr328.clash.common.log.Logger
-import com.github.kr328.clash.common.log.Logger.TAG_HTTP
 import com.github.kr328.clash.common.log.toast
-import com.github.kr328.clash.design.R
-import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
 import com.github.kr328.clash.design.dialog.showModalProgressBar
-import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 class LoginFragment : Fragment(), CoroutineScope by MainScope() {
@@ -46,29 +39,32 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        viewModel.appConfig.observe(viewLifecycleOwner) {
+        /*viewModel.appConfig.observe(viewLifecycleOwner) {
             it ?: return@observe
             val mailList = it.email_whitelist_suffix
             binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
-        }
+        }*/
     }
 
     private fun initView() {
-        binding.mailList.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-                binding.mailList.setSelection(position)
-                mailSuffix = "@${binding.mailList.selectedItem}"
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
-        }
+//        binding.mailList.onItemSelectedListener = object : OnItemSelectedListener {
+//            override fun onItemSelected(
+//                parent: AdapterView<*>?, view: View?, position: Int, id: Long
+//            ) {
+//                binding.mailList.setSelection(position)
+//                mailSuffix = "@${binding.mailList.selectedItem}"
+//            }
+//
+//            override fun onNothingSelected(parent: AdapterView<*>?) {
+//
+//            }
+//
+//        }
         binding.btnLoginAccount.onClickNew {
-            if (!validMail() || !validPwd() || !agreePolicies()) return@onClickNew
+            if (binding.editEmail.checkEmpty("请输入邮箱地址")
+                || binding.editPassword.checkEmpty("请输入密码")
+                || !agreePolicies()
+            ) return@onClickNew
 
             launch(Dispatchers.Main) {
                 requireContext().showModalProgressBar {
@@ -78,7 +74,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                     }
                     //用账号登录
                     RequestHandler.request({
-                        val mailAddress = binding.editEmail.text.toString() + mailSuffix
+                        val mailAddress = binding.editEmail.text.toString()// + mailSuffix
                         UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
                     }, {
                         Logger.d("init guest config data:$it")
@@ -90,7 +86,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                         viewModel.fetchSubsPlan(false)
 
                         onResult()
-                    }, { code, msg ->
+                    }, { _, msg ->
                         context?.toast(msg)
                         onResult()
                     })
@@ -119,41 +115,12 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private fun validMail(): Boolean {
-        if (binding.editEmail.text.isNullOrEmpty()) {
-            binding.editEmail.error = "请输入邮箱地址"
-            //context?.toast("请输入邮箱")
-            return false
-        }
-        return true
-    }
-
-    private fun validPwd(): Boolean {
-        if (binding.editPassword.text.isNullOrEmpty()) {
-            binding.editPassword.error = "请输入密码"
-            //context?.toast("请输入密码")
-            return false
-        }
-        return true
-    }
-
     private fun agreePolicies(): Boolean {
         if (!binding.cbAgreeTos.isChecked) {
             context?.toast("请阅读并同意隐私政策和用户协议")
             return false
         }
         return true
-    }
-
-    private suspend fun fetchData() {
-        coroutineScope {
-            launch(Dispatchers.IO) {
-                val result =
-                    UrlConnManager.getUrlContentV2("/api/v1/guest/comm/config")
-                //UrlConnManager.getUrlContent("${PROTOCOL_HTTPS}a1.8jiasu.com/api/v1/guest/comm/config")
-                android.util.Log.d(TAG_HTTP, "getUrlContent:$result")
-            }
-        }
     }
 
     companion object {

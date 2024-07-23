@@ -5,10 +5,12 @@ import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
+import com.github.kr328.clash.common.compat.checkEmpty
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.databinding.FragResetPasswordBinding
 import com.github.kr328.clash.design.util.onClickNew
@@ -35,7 +37,11 @@ class ResetPwdFragment : Fragment() {
     private fun initView() {
         binding.titleBar.titleBarText.text = "重置密码"
         binding.btnResetPwd.onClickNew {
-            if (!validMail() || !validMailCode() || !validNewPwd() || !validNewPwd2()) {
+            if (binding.editEmail.checkEmpty("请输入邮箱")
+                || binding.editVerifyCode.checkEmpty("请输入验证码")
+                || binding.editNewPwd.checkEmpty("请输入新密码")
+                || binding.confirmNewPwd.checkEmpty("请确认新密码")
+            ) {
                 return@onClickNew
             }
             //调重置用户密码的API
@@ -61,8 +67,7 @@ class ResetPwdFragment : Fragment() {
         }
         binding.btnSendCode.onClickNew {
             val mailAddress = binding.editEmail.text.toString()
-            if (binding.editEmail.text.isNullOrEmpty()) {
-                context?.toast("请输入邮箱")
+            if (binding.editEmail.checkEmpty("请输入邮箱")) {
                 return@onClickNew
             }
             RequestHandler.request({
@@ -94,39 +99,23 @@ class ResetPwdFragment : Fragment() {
             }
             binding.confirmNewPwd.setSelection(binding.confirmNewPwd.text.toString().length)
         }
-        //校验两次输入的密码是否一致 TODO
-    }
-
-    private fun validMail(): Boolean {
-        if (binding.editEmail.text.isNullOrEmpty()) {
-            context?.toast("请输入邮箱")
-            return false
+        //校验两次输入的密码是否一致
+        binding.editNewPwd.addTextChangedListener {
+            it ?: return@addTextChangedListener
+            val confirm = binding.confirmNewPwd.text
+            if (confirm.isNullOrEmpty()) return@addTextChangedListener
+            if (it.toString() != confirm.toString()) {
+                binding.editNewPwd.error = "请保持两次输入密码一致"
+            }
         }
-        return true
-    }
-
-    private fun validNewPwd(): Boolean {
-        if (binding.editNewPwd.text.isNullOrEmpty()) {
-            context?.toast("请输入新密码")
-            return false
+        binding.confirmNewPwd.addTextChangedListener {
+            it ?: return@addTextChangedListener
+            val newPwd = binding.editNewPwd.text
+            if (newPwd.isNullOrEmpty()) return@addTextChangedListener
+            if (it.toString() != newPwd.toString()) {
+                binding.confirmNewPwd.error = "请保持两次输入密码一致"
+            }
         }
-        return true
-    }
-
-    private fun validNewPwd2(): Boolean {
-        if (binding.confirmNewPwd.text.isNullOrEmpty()) {
-            context?.toast("请确认新密码")
-            return false
-        }
-        return true
-    }
-
-    private fun validMailCode(): Boolean {
-        if (binding.editVerifyCode.text.isNullOrEmpty()) {
-            context?.toast("请输入验证码")
-            return false
-        }
-        return true
     }
 
     companion object {

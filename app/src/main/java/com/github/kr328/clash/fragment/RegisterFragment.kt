@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
+import com.github.kr328.clash.common.compat.checkEmpty
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
@@ -62,7 +63,11 @@ class RegisterFragment : Fragment() {
 
         }
         binding.btnRegister.onClickNew {
-            if (!validMail() || !validPwd() || !validMailCode() || !agreePolicies()) {
+            if (binding.editEmail.checkEmpty("请输入邮箱")
+                || binding.editPassword.checkEmpty("请输入密码")
+                || binding.editVerifyCode.checkEmpty("请输入验证码")
+                || !agreePolicies()
+            ) {
                 return@onClickNew
             }
             val mailAddress = binding.editEmail.text.toString() + mailSuffix
@@ -81,12 +86,12 @@ class RegisterFragment : Fragment() {
                         UserAccountApi.registerAccount(mailAddress, password, mailCode, inviteCode)
                     }, {
                         Logger.d("init guest config data:$it")
+                        onResult()
                         val appStore = AppStore(requireContext())
                         appStore.userToken = it.token
                         appStore.authData = it.auth_data
+                        //TODO 提示用户注册成功，直接进入首页
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-
-                        onResult()
                     }, { _, msg ->
                         context?.toast(msg)
                         onResult()
@@ -99,7 +104,7 @@ class RegisterFragment : Fragment() {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
         }
         binding.btnSendCode.onClickNew {
-            if (!validMail()) return@onClickNew
+            if (binding.editEmail.checkEmpty("请输入邮箱")) return@onClickNew
             val mailAddress = binding.editEmail.text.toString() + mailSuffix
             RequestHandler.request({
                 UserAccountApi.sendEmailVerifyCode(mailAddress)
@@ -121,30 +126,6 @@ class RegisterFragment : Fragment() {
             }
             binding.editPassword.setSelection(binding.editPassword.text.toString().length)
         }
-    }
-
-    private fun validMail(): Boolean {
-        if (binding.editEmail.text.isNullOrEmpty()) {
-            context?.toast("请输入邮箱")
-            return false
-        }
-        return true
-    }
-
-    private fun validPwd(): Boolean {
-        if (binding.editPassword.text.isNullOrEmpty()) {
-            context?.toast("请输入密码")
-            return false
-        }
-        return true
-    }
-
-    private fun validMailCode(): Boolean {
-        if (binding.editEmail.text.isNullOrEmpty()) {
-            context?.toast("请输入验证码")
-            return false
-        }
-        return true
     }
 
     private fun agreePolicies(): Boolean {

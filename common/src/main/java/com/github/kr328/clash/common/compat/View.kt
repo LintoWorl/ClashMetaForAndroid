@@ -3,6 +3,7 @@
 package com.github.kr328.clash.common.compat
 
 import android.os.Build
+import android.widget.EditText
 import android.widget.TextView
 import androidx.annotation.StyleRes
 
@@ -15,3 +16,11 @@ var TextView.textAppearance: Int
             setTextAppearance(context, value)
         }
     }
+
+fun EditText.checkEmpty(tips: String): Boolean {
+    if (text.isNullOrEmpty()) {
+        error = tips
+        return true
+    }
+    return false
+}
