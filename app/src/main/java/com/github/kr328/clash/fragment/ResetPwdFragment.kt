@@ -1,6 +1,7 @@
 package com.github.kr328.clash.fragment
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -77,6 +78,22 @@ class ResetPwdFragment : Fragment() {
             })
         }
 
+        binding.cbShowPwd.setOnCheckedChangeListener { _, isChecked ->
+            binding.editNewPwd.inputType = if (isChecked) {
+                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            binding.editNewPwd.setSelection(binding.editNewPwd.text.toString().length)
+        }
+        binding.cbShowConfirmPwd.setOnCheckedChangeListener { _, isChecked ->
+            binding.confirmNewPwd.inputType = if (isChecked) {
+                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            binding.confirmNewPwd.setSelection(binding.confirmNewPwd.text.toString().length)
+        }
         //校验两次输入的密码是否一致 TODO
     }
 

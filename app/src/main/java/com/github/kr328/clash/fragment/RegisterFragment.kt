@@ -1,6 +1,7 @@
 package com.github.kr328.clash.fragment
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -111,6 +112,14 @@ class RegisterFragment : Fragment() {
             }, { code, msg ->
                 context?.toast(msg)
             })
+        }
+        binding.cbShowPwd.setOnCheckedChangeListener { _, isChecked ->
+            binding.editPassword.inputType = if (isChecked) {
+                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            binding.editPassword.setSelection(binding.editPassword.text.toString().length)
         }
     }
 

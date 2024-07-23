@@ -1,6 +1,7 @@
 package com.github.kr328.clash.fragment
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -108,11 +109,20 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
             //重置密码
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REPWD
         }
+        binding.cbShowPwd.setOnCheckedChangeListener { _, isChecked ->
+            binding.editPassword.inputType = if (isChecked) {
+                InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            } else {
+                InputType.TYPE_CLASS_TEXT or InputType.TYPE_TEXT_VARIATION_PASSWORD
+            }
+            binding.editPassword.setSelection(binding.editPassword.text.toString().length)
+        }
     }
 
     private fun validMail(): Boolean {
         if (binding.editEmail.text.isNullOrEmpty()) {
-            context?.toast("请输入邮箱")
+            binding.editEmail.error = "请输入邮箱地址"
+            //context?.toast("请输入邮箱")
             return false
         }
         return true
@@ -120,7 +130,8 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun validPwd(): Boolean {
         if (binding.editPassword.text.isNullOrEmpty()) {
-            context?.toast("请输入密码")
+            binding.editPassword.error = "请输入密码"
+            //context?.toast("请输入密码")
             return false
         }
         return true
