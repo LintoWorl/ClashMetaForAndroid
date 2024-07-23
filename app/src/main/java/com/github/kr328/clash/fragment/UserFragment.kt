@@ -70,13 +70,16 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             context?.showModalProgressBar {
                 configure {
                     isIndeterminate = true
+                    text = "更新数据，请稍候..."
                 }
                 RequestHandler.request({
                     UserAccountApi.userAccountInfo()
                 }, {
                     Logger.d("got userInfo:${it.email}")//TODO
+                    onResult()
                 }, { code, msg ->
-
+                    context?.toast(msg)
+                    onResult()
                 })
             }
         }
