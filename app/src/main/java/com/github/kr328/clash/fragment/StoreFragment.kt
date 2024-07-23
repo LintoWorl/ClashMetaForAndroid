@@ -41,7 +41,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         initView()
         val appStore = AppStore(activity)
         viewModel.fetchSubsPlan(!appStore.hasLoginApp)
-        planAdapter = TrafficPlanAdapter(activity)
+        initObserver()
     }
 
     private fun initView() {
@@ -49,12 +49,20 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         refreshLayout.setOnRefreshListener {
             it.finishRefresh(3000)
         }
+        planAdapter = TrafficPlanAdapter(activity)
         binding.rvTrafficPlan.apply {
             adapter = planAdapter
             layoutManager =
                 LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
             itemAnimator = null
             isNestedScrollingEnabled = false
+        }
+    }
+
+    private fun initObserver() {
+        viewModel.subsPlanList.observe(viewLifecycleOwner) {
+            planAdapter.planList = it
+            planAdapter.notifyDataSetChanged()
         }
     }
 

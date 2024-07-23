@@ -19,7 +19,7 @@
         android:focusable="true"
         android:paddingHorizontal="@dimen/toolbar_image_action_padding"
         android:src="@drawable/ic_baseline_arrow_back"
-        android:tint="@color/black" />
+        app:tint="@color/black" />
 
     <TextView
         android:id="@+id/title_bar_text"

@@ -18,7 +18,6 @@ import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
@@ -66,7 +65,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                 || !agreePolicies()
             ) return@onClickNew
 
-            launch(Dispatchers.Main) {
+            launch {
                 requireContext().showModalProgressBar {
                     configure {
                         isIndeterminate = true
@@ -78,14 +77,13 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                         UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
                     }, {
                         Logger.d("init guest config data:$it")
+                        onResult()
                         val appStore = AppStore(requireContext())
                         appStore.userToken = it.token
                         appStore.authData = it.auth_data
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                         appStore.hasLoginApp = true
-                        viewModel.fetchSubsPlan(false)
-
-                        onResult()
+                        //viewModel.fetchSubsPlan(false)
                     }, { _, msg ->
                         context?.toast(msg)
                         onResult()
@@ -95,7 +93,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         binding.btnEnterTourist.onClickNew {
-            viewModel.fetchSubsPlan(true)
+            //viewModel.fetchSubsPlan(true)
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
         }
         binding.btnEnterRegister.onClickNew {

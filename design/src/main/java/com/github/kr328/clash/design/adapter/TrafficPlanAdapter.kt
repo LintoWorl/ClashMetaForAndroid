@@ -5,12 +5,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.hw.network.model.SubsProductBean
 import com.github.kr328.clash.design.databinding.AdapterTrafficPlanBinding
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.layoutInflater
+import com.github.kr328.clash.design.util.onClickNew
+import com.github.kr328.clash.design.util.show
 
 class TrafficPlanAdapter(val context: Context) : RecyclerView.Adapter<TrafficPlanAdapter.Holder>() {
     class Holder(val binding: AdapterTrafficPlanBinding) : RecyclerView.ViewHolder(binding.root)
 
-    val planList = emptyList<SubsProductBean>()
+    var planList = emptyList<SubsProductBean>()
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         return Holder(AdapterTrafficPlanBinding.inflate(context.layoutInflater, parent, false))
     }
@@ -26,5 +29,16 @@ class TrafficPlanAdapter(val context: Context) : RecyclerView.Adapter<TrafficPla
         holder.binding.tvPlanPeriod.text = "月付"
         holder.binding.tvPlanIntro.text = plan.sort
         holder.binding.tvPlanDesc.text = plan.content
+        holder.binding.btnPlanMore.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                holder.binding.tvPlanDesc.show()
+                holder.binding.divider.show()
+                holder.binding.btnPlanMore.text = "收起"
+            } else {
+                holder.binding.tvPlanDesc.hide()
+                holder.binding.divider.hide()
+                holder.binding.btnPlanMore.text = "详情"
+            }
+        }
     }
 }
