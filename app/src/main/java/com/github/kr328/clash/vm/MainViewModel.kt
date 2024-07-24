@@ -61,13 +61,15 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun fetchSubsPlan(isGuest: Boolean) {
+    fun fetchSubsPlan(isGuest: Boolean, onFinish: () -> Unit = {}) {
         RequestHandler.request({
             PaymentApi.getSubsPlan(isGuest)
         }, {
             subsPlanList.value = it
+            onFinish()
         }, { code, msg ->
             Logger.d("fetchSubsPlan fail:$msg")
+            onFinish()
         })
     }
 }

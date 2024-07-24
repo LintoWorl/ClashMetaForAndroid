@@ -21,6 +21,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     private val viewModel by activityViewModels<MainViewModel>()
     private lateinit var activity: MainV2Activity
     private lateinit var planAdapter: TrafficPlanAdapter
+    private lateinit var appStore: AppStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +32,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragTrafficStoreBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -39,7 +40,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        val appStore = AppStore(activity)
+        appStore = AppStore(activity)
         viewModel.fetchSubsPlan(!appStore.hasLoginApp)
         initObserver()
     }
@@ -47,7 +48,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     private fun initView() {
         val refreshLayout = binding.refreshLayout
         refreshLayout.setOnRefreshListener {
-            it.finishRefresh(3000)
+            viewModel.fetchSubsPlan(!appStore.hasLoginApp) { it.finishRefresh() }
         }
         planAdapter = TrafficPlanAdapter(activity)
         binding.rvTrafficPlan.apply {
