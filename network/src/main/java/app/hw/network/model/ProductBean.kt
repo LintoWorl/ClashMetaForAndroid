@@ -25,8 +25,9 @@ data class ProductSubsInfo(
     var d: Long = 0,//已用下行流量
     var transfer_enable: Long = 0,//总可用流量
     var email: String = "",
+    var plan: SubsProductBean? = null,
     var subscribe_url: String = "",
-    var reset_day: String = ""//重置日
+    var reset_day: Int = 1//重置日
 )
 
 /**

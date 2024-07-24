@@ -8,6 +8,7 @@ import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
+import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.common.Global
@@ -32,6 +33,7 @@ class MainViewModel : ViewModel() {
     }
 
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }
+    val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
 
     fun checkLoginStat() {
@@ -74,7 +76,7 @@ class MainViewModel : ViewModel() {
         RequestHandler.request({
             UserAccountApi.getSubscribeInfo()
         }, {
-
+            subsInfo.value = it
         }, { code, msg ->
             Logger.e("fetchSubscribeInfo fail:$msg")
         })

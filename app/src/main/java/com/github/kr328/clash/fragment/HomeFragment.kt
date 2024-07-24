@@ -16,17 +16,24 @@ import com.github.kr328.clash.R
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
+import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.HomeDesign
+import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
+import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.remote.Remote
+import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.util.startClashService
 import com.github.kr328.clash.util.stopClashService
+import com.github.kr328.clash.util.subsUrl
 import com.github.kr328.clash.util.withClash
 import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -61,6 +68,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         super.onViewCreated(view, savedInstanceState)
         main()
         viewModel.fetchSubscribeInfo()
+        initObserver()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -113,6 +121,104 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
             }
         }
     }
+
+    private fun initObserver() {
+        viewModel.subsInfo.observe(viewLifecycleOwner) {
+            if (it == null || it.subscribe_url.isEmpty()) {
+                return@observe
+            }
+            fetchProfile(it.subscribe_url)
+        }
+    }
+
+    private fun fetchProfile(url: String) {
+        launch {
+            withProfile {
+                val savedProf = queryActive()
+                if (savedProf == null) {
+                    val name = getString(com.github.kr328.clash.design.R.string.new_profile)
+                    //val name = "default_profile"
+                    val uuid: UUID = create(Profile.Type.Url, name)
+
+                    val originProf = queryByUUID(uuid) ?: return@withProfile
+                    val profile = originProf.copy(source = url)
+                    load(profile)
+                    activity.defer {
+                        release(uuid)
+                    }
+                } else {
+                    update(savedProf.uuid)
+                }
+                //delay(3000)
+            }
+        }
+    }
+
+    private fun load(profile: Profile) {
+        try {
+            withProcessing { updateStatus ->
+                withProfile {
+                    patch(profile.uuid, profile.name, profile.source, profile.interval)
+
+                    coroutineScope {
+                        commit(profile.uuid) {
+                            launch {
+                                updateStatus(it)
+                            }
+                        }
+                    }
+                }
+                withProfile {
+                    setActive(profile)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun withProcessing(executeTask: suspend (suspend (FetchStatus) -> Unit) -> Unit) {
+        try {
+            launch(Dispatchers.Main) {
+                activity.withModelProgressBar {
+                    configure {
+                        isIndeterminate = true
+                        text = getString(com.github.kr328.clash.design.R.string.initializing)
+                    }
+
+                    executeTask {
+                        configure {
+                            applyFrom(it)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun ModelProgressBarConfigure.applyFrom(status: FetchStatus) {
+        when (status.action) {
+            FetchStatus.Action.FetchConfiguration -> {
+                text = getString(
+                    com.github.kr328.clash.design.R.string.format_fetching_configuration,
+                    status.args[0]
+                )
+                isIndeterminate = true
+            }
+
+            FetchStatus.Action.Verifying -> {
+                text = getString(com.github.kr328.clash.design.R.string.verifying)
+                isIndeterminate = false
+                max = status.max
+                progress = status.progress
+            }
+
+            else -> {}
+        }
+    }
+
 
     companion object {
         @JvmStatic
