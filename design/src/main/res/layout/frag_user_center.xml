@@ -44,13 +44,23 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/tv_account_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="aqwer2312jd@gmail.com"
                     android:textColor="@color/black"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="aqwer2312jd@gmail.com" />
+
+                <TextView
+                    android:id="@+id/tv_last_login"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:textColor="@color/black"
+                    android:textSize="12sp"
+                    tools:text="上次登录时间：" />
             </LinearLayout>
 
             <LinearLayout
@@ -73,18 +83,18 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
-                    android:text="免费体验套餐A"
                     android:textColor="@color/black"
                     android:textSize="14sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    tools:text="免费体验套餐A" />
                 <TextView
                     android:id="@+id/tv_subs_desc"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="于 2024/08/01 到期，距离到期还有 10 天"
                     android:textColor="@color/color_666"
-                    android:textSize="12sp" />
+                    android:textSize="12sp"
+                    tools:text="于 2024/08/01 到期，距离到期还有 10 天" />
             </LinearLayout>
 
             <LinearLayout
@@ -144,22 +154,28 @@
                     android:paddingVertical="12dp"
                     android:text="在线客服"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone" />
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
-                    android:layout_height="0.5dp" />
+                    android:layout_height="0.5dp"
+                    android:visibility="gone" />
                 <TextView
+                    android:id="@+id/btn_my_workflow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/ic_baseline_arrow_enter"
                     android:paddingVertical="12dp"
                     android:text="我的工单"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    app:drawableEndCompat="@drawable/ic_baseline_arrow_enter" />
                 <com.google.android.material.divider.MaterialDivider
                     android:layout_width="match_parent"
-                    android:layout_height="0.5dp" />
+                    android:layout_height="0.5dp"
+                    android:visibility="gone" />
                 <TextView
+                    android:id="@+id/btn_my_traffic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_baseline_arrow_enter"
@@ -171,13 +187,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp" />
                 <TextView
+                    android:id="@+id/btn_setting"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:drawableEnd="@drawable/ic_baseline_arrow_enter"
                     android:paddingVertical="12dp"
                     android:text="其他设置"
                     android:textColor="@color/black"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    app:drawableEndCompat="@drawable/ic_baseline_arrow_enter" />
             </LinearLayout>
 
             <TextView
