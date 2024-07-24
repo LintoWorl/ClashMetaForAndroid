@@ -1,7 +1,10 @@
 package com.github.kr328.clash
 
 import android.annotation.SuppressLint
+import android.os.Build
+import android.os.Looper
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -43,24 +46,27 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     private lateinit var binding: DesignMainV2Binding
     private lateinit var appStore: AppStore
 
+    private val pressBackListener = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            when (currentIndex) {
+                MainViewModel.IDX_FRAG_REPWD, MainViewModel.IDX_FRAG_REGST -> {
+                    showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
+                }
+
+                else -> {
+                    finish()
+                }
+            }
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
     override suspend fun main() {
         binding = DesignMainV2Binding.inflate(layoutInflater)
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         appStore = AppStore(this)
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                when (currentIndex) {
-                    MainViewModel.IDX_FRAG_REPWD, MainViewModel.IDX_FRAG_REGST -> {
-                        showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
-                    }
-
-                    else -> {
-                        finish()
-                    }
-                }
-            }
-        })
+        onBackPressedDispatcher.addCallback(this, pressBackListener)
 
         //fetchProfile()
         viewModel.initConfigs(this)
@@ -68,9 +74,14 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         // 根据登录状态确定初始状态应该跳转到什么页面
         if (appStore.enteredHome) {
             showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
+            Looper.getMainLooper().queue.addIdleHandler {
+                viewModel.fetchNoticeInfo()
+                return@addIdleHandler false
+            }
         } else {
             showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
         }
+
         initTabEvents()
         initObserver()
     }

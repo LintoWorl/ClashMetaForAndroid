@@ -3,6 +3,7 @@ package com.github.kr328.clash.vm
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import app.hw.network.api.OthersApi
 import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
@@ -33,6 +34,14 @@ class MainViewModel : ViewModel() {
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
 
+    fun checkLoginStat() {
+        RequestHandler.request({
+            UserAccountApi.checkLogin()
+        }, {}, { code, msg ->
+            Logger.e("checkLoginStat fail:$msg")
+        })
+    }
+
     fun initConfigs(scope: CoroutineScope) {
         scope.launch {
             while (isActive) {
@@ -59,6 +68,26 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun fetchSubscribeInfo() {
+        RequestHandler.request({
+            UserAccountApi.getSubscribeInfo()
+        }, {
+
+        }, { code, msg ->
+            Logger.e("fetchSubscribeInfo fail:$msg")
+        })
+    }
+
+    fun fetchNoticeInfo() {
+        RequestHandler.request({
+            OthersApi.getNoticeMsg()
+        }, {
+
+        }, { code, msg ->
+            Logger.e("fetchNoticeInfo fail:$msg")
+        })
     }
 
     fun fetchSubsPlan(isGuest: Boolean, onFinish: () -> Unit = {}) {

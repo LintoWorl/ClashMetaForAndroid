@@ -16,6 +16,6 @@ internal interface OthersService {
     @GET("/user/invite/details")
     suspend fun inviteDetail(): ResponseData<InviteDetail>
 
-    @GET("/user/notice/fetch")
+    @GET("user/notice/fetch")
     suspend fun fetchNotice(): ResponseData<List<NoticeBean>>
 }

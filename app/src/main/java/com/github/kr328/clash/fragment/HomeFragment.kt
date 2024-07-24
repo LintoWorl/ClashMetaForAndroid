@@ -13,6 +13,7 @@ import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProfilesActivity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.design.HomeDesign
@@ -59,6 +60,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         main()
+        viewModel.fetchSubscribeInfo()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -72,7 +74,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
 
     fun main() {
         launch {
-            design.fetch()
+            //design.fetch()
             val ticker = ticker(TimeUnit.SECONDS.toMillis(1))
 
             while (isActive) {
@@ -82,6 +84,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
                             BaseActivity.Event.ActivityStart, BaseActivity.Event.ServiceRecreated,
                             BaseActivity.Event.ClashStop, BaseActivity.Event.ClashStart,
                             BaseActivity.Event.ProfileLoaded, BaseActivity.Event.ProfileChanged -> {
+                                Logger.i("In HomeFrag, receive event:${it.name}")
                                 design.fetch()
                             }
 
