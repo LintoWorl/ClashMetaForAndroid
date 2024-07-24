@@ -19,6 +19,7 @@ var TextView.textAppearance: Int
 
 fun EditText.checkEmpty(tips: String): Boolean {
     if (text.isNullOrEmpty()) {
+        requestFocus()
         error = tips
         return true
     }

@@ -70,7 +70,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             })
         }
         binding.btnResetPwd.onClickNew {
-            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REPWD
+            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_XPWD
         }
         //TODO
         binding.btnSetting.onClickNew {

@@ -30,6 +30,7 @@ class MainViewModel : ViewModel() {
         const val IDX_FRAG_HOME = 1
         const val IDX_FRAG_SUBS = 2
         const val IDX_FRAG_USER = 3
+        const val IDX_FRAG_XPWD = 4
     }
 
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }

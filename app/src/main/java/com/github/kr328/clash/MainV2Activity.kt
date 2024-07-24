@@ -17,6 +17,7 @@ import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
 import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.show
+import com.github.kr328.clash.fragment.ChangePwdFragment
 import com.github.kr328.clash.fragment.HomeFragment
 import com.github.kr328.clash.fragment.LoginFragment
 import com.github.kr328.clash.fragment.RegisterFragment
@@ -42,6 +43,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
     private val mSubsFragment: StoreFragment by lazy { StoreFragment.newInstance() }
     private val mUserFragment: UserFragment by lazy { UserFragment.newInstance() }
+    private val mChangePwdFragment: ChangePwdFragment by lazy { ChangePwdFragment.newInstance() }
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: DesignMainV2Binding
     private lateinit var appStore: AppStore
@@ -230,6 +232,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         if (mHomeFragment.isVisible) return mHomeFragment
         if (mSubsFragment.isVisible) return mSubsFragment
         if (mUserFragment.isVisible) return mUserFragment
+        if (mChangePwdFragment.isVisible) return mChangePwdFragment
         return null
     }
 
@@ -266,6 +269,11 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
             MainViewModel.IDX_FRAG_USER -> {
                 binding.navigation.show()
                 mUserFragment
+            }
+
+            MainViewModel.IDX_FRAG_XPWD -> {
+                binding.navigation.hide()
+                mChangePwdFragment
             }
 
             else -> null
