@@ -1,5 +1,6 @@
 package com.github.kr328.clash.design.util
 
+import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.core.content.getSystemService
@@ -14,6 +15,11 @@ fun View.requestTextInput() {
                 ?.showSoftInput(this, 0)
         }, 300)
     }
+}
+
+fun View.hideKeyboard(): Boolean {
+    val mInputManager = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    return mInputManager.hideSoftInputFromWindow(windowToken, 0)
 }
 
 fun View.show(): View {

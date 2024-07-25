@@ -13,6 +13,7 @@ import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.compat.checkEmpty
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.databinding.FragResetPasswordBinding
+import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.vm.MainViewModel
 
@@ -36,6 +37,7 @@ class ResetPwdFragment : Fragment() {
 
     private fun initView() {
         binding.titleBar.titleBarText.text = "重置密码"
+        binding.root.onClickNew { it.hideKeyboard() }
         binding.btnResetPwd.onClickNew {
             if (binding.editEmail.checkEmpty("请输入邮箱")
                 || binding.editVerifyCode.checkEmpty("请输入验证码")
@@ -44,6 +46,8 @@ class ResetPwdFragment : Fragment() {
             ) {
                 return@onClickNew
             }
+
+            it.hideKeyboard()
             //调重置用户密码的API
             val mailAddress = binding.editEmail.text.toString()
             val password = binding.editNewPwd.text.toString()
@@ -63,6 +67,7 @@ class ResetPwdFragment : Fragment() {
 
         }
         binding.titleBar.titleBarGoback.onClickNew {
+            it.hideKeyboard()
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
         }
         binding.btnSendCode.onClickNew {

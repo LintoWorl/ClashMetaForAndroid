@@ -16,6 +16,7 @@ import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragRegisterAccountBinding
 import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
@@ -49,6 +50,7 @@ class RegisterFragment : Fragment() {
 
     private fun initView() {
         binding.titleBar.titleBarText.text = "注册"
+        binding.root.onClickNew { it.hideKeyboard() }
         binding.mailList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
@@ -70,6 +72,8 @@ class RegisterFragment : Fragment() {
             ) {
                 return@onClickNew
             }
+
+            it.hideKeyboard()
             val mailAddress = binding.editEmail.text.toString() + mailSuffix
             val password = binding.editPassword.text.toString()
             val mailCode = binding.editVerifyCode.text.toString()
@@ -101,6 +105,7 @@ class RegisterFragment : Fragment() {
         }
 
         binding.titleBar.titleBarGoback.onClickNew {
+            it.hideKeyboard()
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
         }
         binding.btnSendCode.onClickNew {

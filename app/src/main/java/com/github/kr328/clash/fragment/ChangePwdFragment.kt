@@ -13,8 +13,13 @@ import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.compat.checkEmpty
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.databinding.FragChangePasswordBinding
+import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.vm.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class ChangePwdFragment : Fragment() {
     private lateinit var binding: FragChangePasswordBinding
@@ -36,6 +41,7 @@ class ChangePwdFragment : Fragment() {
 
     private fun initView() {
         binding.titleBar.titleBarText.text = "修改密码"
+        binding.root.onClickNew { it.hideKeyboard() }
         binding.btnResetPwd.onClickNew {
             if (binding.editOldPwd.checkEmpty("请输入原密码")
                 || binding.editNewPwd.checkEmpty("请输入新密码")
@@ -43,24 +49,17 @@ class ChangePwdFragment : Fragment() {
             ) {
                 return@onClickNew
             }
+
+            it.hideKeyboard()
             //调重置用户密码的API
             val oldPwd = binding.editOldPwd.text.toString()
             val newPwd = binding.editNewPwd.text.toString()
-            RequestHandler.request({
-                UserAccountApi.modifyPassword(oldPwd, newPwd)
-            }, {
-                if (it) {
-                    context?.toast("重置密码成功")
-                    viewModel.fragIndex.value = MainViewModel.IDX_FRAG_USER
-                } else {
-                    context?.toast("重置密码失败，请稍后重试")
-                }
-            }, { _, msg ->
-                context?.toast(msg)
-            })
-
+            CoroutineScope(Dispatchers.Main).launch {
+                viewModel.modifyUserPwd(requireContext(), oldPwd, newPwd)
+            }
         }
         binding.titleBar.titleBarGoback.onClickNew {
+            it.hideKeyboard()
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_USER
         }
 

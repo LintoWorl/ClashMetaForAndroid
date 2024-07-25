@@ -1,6 +1,6 @@
 package com.github.kr328.clash.vm
 
-import androidx.core.content.ContentProviderCompat.requireContext
+import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import app.hw.network.api.OthersApi
@@ -13,8 +13,8 @@ import app.hw.network.model.SubsProductBean
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
-import com.github.kr328.clash.design.dialog.withModelProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -103,5 +103,28 @@ class MainViewModel : ViewModel() {
             Logger.d("fetchSubsPlan fail:$msg")
             onFinish()
         })
+    }
+
+    suspend fun modifyUserPwd(context: Context, oldPwd: String, newPwd: String) {
+        context.showModalProgressBar {
+            configure {
+                isIndeterminate = true
+                text = "正在处理..."
+            }
+            RequestHandler.request({
+                UserAccountApi.modifyPassword(oldPwd, newPwd)
+            }, {
+                onResult()
+                if (it) {
+                    context.toast("重置密码成功")
+                    fragIndex.value = MainViewModel.IDX_FRAG_USER
+                } else {
+                    context.toast("重置密码失败，请稍后重试")
+                }
+            }, { _, msg ->
+                context.toast(msg)
+                onResult()
+            })
+        }
     }
 }
