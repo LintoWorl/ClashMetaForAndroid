@@ -1,5 +1,6 @@
 package com.github.kr328.clash.design.adapter
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -9,6 +10,7 @@ import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.show
+import java.text.DecimalFormat
 
 class TrafficPlanAdapter(val context: Context) : RecyclerView.Adapter<TrafficPlanAdapter.Holder>() {
     class Holder(val binding: AdapterTrafficPlanBinding) : RecyclerView.ViewHolder(binding.root)
@@ -22,12 +24,14 @@ class TrafficPlanAdapter(val context: Context) : RecyclerView.Adapter<TrafficPla
         return planList.size
     }
 
+    @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val plan = planList[position]
         holder.binding.tvPlanTitle.text = plan.name
-        holder.binding.tvPlanPrice.text = plan.month_price.toString()
+        val df = DecimalFormat("#.00")
+        holder.binding.tvPlanPrice.text = "¥ " + df.format(plan.month_price / 100f)
         holder.binding.tvPlanPeriod.text = "月付"
-        holder.binding.tvPlanIntro.text = plan.sort
+        holder.binding.tvPlanIntro.text = plan.sort ?: "88GB 流量"
         holder.binding.tvPlanDesc.text = plan.content
         holder.binding.btnPlanMore.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {

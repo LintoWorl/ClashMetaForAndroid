@@ -10,7 +10,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
-import com.github.kr328.clash.ProfilesActivity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
 import com.github.kr328.clash.common.log.Logger
@@ -20,21 +19,18 @@ import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.HomeDesign
 import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
 import com.github.kr328.clash.design.dialog.showModalProgressBar
-import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.util.startClashService
 import com.github.kr328.clash.util.stopClashService
-import com.github.kr328.clash.util.subsUrl
 import com.github.kr328.clash.util.withClash
 import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -46,6 +42,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
     private lateinit var design: HomeDesign
     private val viewModel by activityViewModels<MainViewModel>()
     private lateinit var activity: MainV2Activity
+    private var refreshSubsInfo: Boolean = false
 
     val clashRunning: Boolean
         get() = Remote.broadcasts.clashRunning
@@ -77,6 +74,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         if (hidden) {
             Remote.broadcasts.removeObserver(this)
         } else {
+            if (refreshSubsInfo) {
+                viewModel.fetchSubscribeInfo()
+            }
             Remote.broadcasts.addObserver(this)
         }
     }
@@ -129,6 +129,10 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
                 return@observe
             }
             fetchProfile(it.subscribe_url)
+            refreshSubsInfo = false
+        }
+        viewModel.lgnStatChngd.observe(viewLifecycleOwner) {
+            refreshSubsInfo = true
         }
     }
 
@@ -270,7 +274,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         if (active == null || !active.imported) {
             showToast(R.string.no_profile_selected, ToastDuration.Long) {
                 setAction(R.string.profiles) {
-                    startActivity(ProfilesActivity::class.intent)
+                    //startActivity(ProfilesActivity::class.intent)//FIXME
                 }
             }
 
