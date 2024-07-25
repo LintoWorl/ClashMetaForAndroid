@@ -68,6 +68,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                         appStore.authData = lgn.auth_data
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                         appStore.hasLoginApp = true
+                        viewModel.lgnStatChngd.postValue(true)
                     }, { _, msg ->
                         context?.toast(msg)
                         onResult()

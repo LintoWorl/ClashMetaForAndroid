@@ -24,6 +24,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var activity: MainV2Activity
     private lateinit var planAdapter: TrafficPlanAdapter
     private lateinit var appStore: AppStore
+    private var requireRefresh: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +50,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden) {
+        if (!hidden && requireRefresh) {
             fetchData()
         }
     }
@@ -74,6 +75,9 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
             planAdapter.planList = it
             planAdapter.notifyDataSetChanged()
         }
+        viewModel.lgnStatChngd.observe(viewLifecycleOwner) {
+            requireRefresh = true
+        }
     }
 
     private fun fetchData() {
@@ -86,6 +90,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
                 viewModel.fetchSubsPlan(!appStore.hasLoginApp) { onResult() }
             }
         }
+        requireRefresh = false
     }
 
     companion object {

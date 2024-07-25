@@ -31,6 +31,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
 
     private val viewModel by activityViewModels<MainViewModel>()
     private lateinit var activity: MainV2Activity
+    private var reqrdRefresh: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +56,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (!hidden) {
+        if (!hidden && reqrdRefresh) {
             initView()
         }
     }
@@ -75,7 +76,10 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.tvAccountEmail.isClickable = true
             binding.tvLastLogin.hide()
             binding.llSubsInfo.hide()
+            binding.btnLogout.hide()
+            binding.btnResetPwd.hide()
         }
+        reqrdRefresh = false
     }
 
     private fun initEvents() {
@@ -84,7 +88,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             appStore.hasLoginApp = false
             appStore.enteredHome = false
             appStore.authData = ""
-            viewModel.lgnStatChngd = true
+            viewModel.lgnStatChngd.postValue(true)
             context?.toast("退出登录成功")
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
             //请求退出登录API
@@ -120,6 +124,9 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
                 "套餐到期时间：${it.expired_at.toDateStr(DATE_DATE_ONLY)}"
             binding.tvLastLogin.text =
                 "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
+        }
+        viewModel.lgnStatChngd.observe(viewLifecycleOwner) {
+            reqrdRefresh = true
         }
     }
 

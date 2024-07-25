@@ -94,6 +94,7 @@ class RegisterFragment : Fragment() {
                         val appStore = AppStore(requireContext())
                         appStore.userToken = it.token
                         appStore.authData = it.auth_data
+                        viewModel.lgnStatChngd.postValue(true)
                         //TODO 提示用户注册成功，直接进入首页
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                     }, { _, msg ->

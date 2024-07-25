@@ -39,7 +39,7 @@ class MainViewModel : ViewModel() {
     val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
     val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
-    var lgnStatChngd: Boolean = false
+    val lgnStatChngd: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
 
     fun checkLoginStat() {
         RequestHandler.request({
