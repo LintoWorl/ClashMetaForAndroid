@@ -10,10 +10,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.design.adapter.TrafficPlanAdapter
 import com.github.kr328.clash.design.databinding.FragTrafficStoreBinding
+import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 class StoreFragment : Fragment(), CoroutineScope by MainScope() {
 
@@ -41,7 +43,15 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         super.onViewCreated(view, savedInstanceState)
         initView()
         appStore = AppStore(activity)
-        viewModel.fetchSubsPlan(!appStore.hasLoginApp)
+        launch {
+            activity.showModalProgressBar {
+                configure {
+                    isIndeterminate = true
+                    text = "加载数据..."
+                }
+                viewModel.fetchSubsPlan(!appStore.hasLoginApp) { onResult() }
+            }
+        }
         initObserver()
     }
 
