@@ -1,5 +1,6 @@
 package com.github.kr328.clash.design.util
 
+import android.annotation.SuppressLint
 import android.content.Context
 import com.github.kr328.clash.common.compat.preferredLocale
 import com.github.kr328.clash.core.model.Provider
@@ -8,7 +9,7 @@ import com.github.kr328.clash.service.model.Profile
 import java.text.SimpleDateFormat
 import java.util.*
 
-private const val DATE_DATE_ONLY = "yyyy-MM-dd"
+const val DATE_DATE_ONLY = "yyyy-MM-dd"
 private const val DATE_TIME_ONLY = "HH:mm:ss.SSS"
 private const val DATE_ALL = "$DATE_DATE_ONLY $DATE_TIME_ONLY"
 
@@ -46,10 +47,13 @@ fun Date.format(
     return when {
         includeDate && includeTime ->
             SimpleDateFormat(DATE_ALL, locale).format(this)
+
         includeDate ->
             SimpleDateFormat(DATE_DATE_ONLY, locale).format(this)
+
         includeTime ->
             SimpleDateFormat(DATE_TIME_ONLY, locale).format(this)
+
         else -> ""
     }
 }
@@ -58,16 +62,22 @@ fun Long.toBytesString(): String {
     return when {
         this > 1024.0 * 1024 * 1024 * 1024 * 1024 * 1024 ->
             String.format("%.2f EiB", (this.toDouble() / 1024 / 1024 / 1024 / 1024 / 1024 / 1024))
+
         this > 1024.0 * 1024 * 1024 * 1024 * 1024 ->
             String.format("%.2f PiB", (this.toDouble() / 1024 / 1024 / 1024 / 1024 / 1024))
+
         this > 1024.0 * 1024 * 1024 * 1024 ->
             String.format("%.2f TiB", (this.toDouble() / 1024 / 1024 / 1024 / 1024))
+
         this > 1024 * 1024 * 1024 ->
             String.format("%.2f GiB", (this.toDouble() / 1024 / 1024 / 1024))
+
         this > 1024 * 1024 ->
             String.format("%.2f MiB", (this.toDouble() / 1024 / 1024))
+
         this > 1024 ->
             String.format("%.2f KiB", (this.toDouble() / 1024))
+
         else ->
             "$this Bytes"
     }
@@ -76,7 +86,17 @@ fun Long.toBytesString(): String {
 fun Double.toProgress(): Int {
     return this.toInt()
 }
+
+@SuppressLint("SimpleDateFormat")
 fun Long.toDateStr(): String {
-    val simpleDateFormat =SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-    return simpleDateFormat.format(Date(this))
+    val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    return simpleDateFormat.format(Date(this * 1000L))
+}
+
+
+@SuppressLint("SimpleDateFormat")
+fun Long.toDateStr(pattern: String = "yyyy-MM-dd HH:mm:ss"): String {
+    val date = Date(this * 1000L)
+    val format = SimpleDateFormat(pattern)
+    return format.format(date)
 }

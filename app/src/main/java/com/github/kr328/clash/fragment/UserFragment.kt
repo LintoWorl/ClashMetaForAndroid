@@ -13,12 +13,12 @@ import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.SettingsActivity
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
-import com.github.kr328.clash.common.util.TimeFormat
-import com.github.kr328.clash.common.util.TimeFormat.FORMAT_YYYY_MM_DD
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.design.databinding.FragUserCenterBinding
 import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.util.DATE_DATE_ONLY
 import com.github.kr328.clash.design.util.onClickNew
+import com.github.kr328.clash.design.util.toDateStr
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -28,13 +28,11 @@ import kotlinx.coroutines.launch
 class UserFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var binding: FragUserCenterBinding
 
-    //private lateinit var design: SettingsDesign
     private val viewModel by activityViewModels<MainViewModel>()
     private lateinit var activity: MainV2Activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //design = SettingsDesign(requireActivity())
         activity = requireActivity() as MainV2Activity
     }
 
@@ -89,12 +87,12 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
                 RequestHandler.request({
                     UserAccountApi.userAccountInfo()
                 }, {
-                    Logger.d("got userInfo:${it.email}")//TODO
+                    Logger.d("got userInfo:${it.email}")
                     binding.tvAccountEmail.text = it.email
-                    val planExpire = TimeFormat.millis2String(it.expired_at, FORMAT_YYYY_MM_DD)
-                    binding.tvSubsDesc.text = "套餐到期时间：${planExpire}"
-                    val loginTime = TimeFormat.millis2String(it.last_login_at, FORMAT_YYYY_MM_DD)
-                    binding.tvLastLogin.text = "上次登录时间：${loginTime}"
+                    binding.tvSubsDesc.text =
+                        "套餐到期时间：${it.expired_at.toDateStr(DATE_DATE_ONLY)}"
+                    binding.tvLastLogin.text =
+                        "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
                     onResult()
                 }, { code, msg ->
                     context?.toast(msg)
