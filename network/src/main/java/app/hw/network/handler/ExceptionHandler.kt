@@ -31,8 +31,8 @@ import javax.net.ssl.SSLHandshakeException
  */
 class ExceptionHandler {
 
-    fun handleException(throwable: Throwable): ResponseThrowable {
-
+    fun handleException(throwable: Throwable?): ResponseThrowable? {
+        throwable ?: return null
         //返回时抛出异常
         val responseThrowable: ResponseThrowable
         return when (throwable) {

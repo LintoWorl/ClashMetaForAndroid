@@ -9,12 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import com.github.kr328.clash.common.constants.Authorities
-import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
-import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
-import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.fragment.ChangePwdFragment
@@ -24,15 +21,8 @@ import com.github.kr328.clash.fragment.RegisterFragment
 import com.github.kr328.clash.fragment.ResetPwdFragment
 import com.github.kr328.clash.fragment.StoreFragment
 import com.github.kr328.clash.fragment.UserFragment
-import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.store.AppStore
-import com.github.kr328.clash.util.subsUrl
-import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import java.util.*
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
 
@@ -53,6 +43,10 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
             when (currentIndex) {
                 MainViewModel.IDX_FRAG_REPWD, MainViewModel.IDX_FRAG_REGST -> {
                     showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
+                }
+
+                MainViewModel.IDX_FRAG_XPWD -> {
+                    showFragmentByIndex(MainViewModel.IDX_FRAG_USER)
                 }
 
                 else -> {
@@ -86,86 +80,6 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
         initTabEvents()
         initObserver()
-    }
-
-    private suspend fun fetchProfile() {
-        withProfile {
-            val savedProf = queryActive()
-            if (savedProf == null) {
-                val name = getString(R.string.new_profile)
-                //val name = "default_profile"
-                val uuid: UUID = create(Profile.Type.Url, name)
-
-                val originProf = queryByUUID(uuid) ?: return@withProfile
-                val profile = originProf.copy(source = subsUrl)
-                load(profile)
-                defer {
-                    release(uuid)
-                }
-            } else {
-                update(savedProf.uuid)
-            }
-            //delay(3000)
-        }
-    }
-
-    private fun load(profile: Profile) {
-        try {
-            withProcessing { updateStatus ->
-                withProfile {
-                    patch(profile.uuid, profile.name, profile.source, profile.interval)
-
-                    coroutineScope {
-                        commit(profile.uuid) {
-                            launch {
-                                updateStatus(it)
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun withProcessing(executeTask: suspend (suspend (FetchStatus) -> Unit) -> Unit) {
-        try {
-            launch(Dispatchers.Main) {
-                withModelProgressBar {
-                    configure {
-                        isIndeterminate = true
-                        text = getString(R.string.initializing)
-                    }
-
-                    executeTask {
-                        configure {
-                            applyFrom(it)
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    private fun ModelProgressBarConfigure.applyFrom(status: FetchStatus) {
-        when (status.action) {
-            FetchStatus.Action.FetchConfiguration -> {
-                text = getString(R.string.format_fetching_configuration, status.args[0])
-                isIndeterminate = true
-            }
-
-            FetchStatus.Action.Verifying -> {
-                text = getString(R.string.verifying)
-                isIndeterminate = false
-                max = status.max
-                progress = status.progress
-            }
-
-            else -> {}
-        }
     }
 
     private fun initTabEvents() {

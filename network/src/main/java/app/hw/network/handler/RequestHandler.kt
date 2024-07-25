@@ -20,17 +20,16 @@ object RequestHandler {
         onFail: (code: Int, msg: String) -> Unit,
         scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     ) {
-        //开始显示loading FIXME
         scope.launch {
             runCatching { block() }
                 .onSuccess {
                     launch(Dispatchers.Main) {
-                        //parseData(it, onSucc, onFail)
-                        onSucc(it.data!!)
+                        it.data?.apply(onSucc)
                     }
                 }
                 .onFailure {
                     val ex = ExceptionHandler().handleException(it)
+                    ex ?: return@onFailure
                     Log.e(TAG_EXP, "request fail, errCode:${ex.code}, errMsg:${ex.message}")
                     launch(Dispatchers.Main) { onFail(ex.code, ex.message) }
                 }

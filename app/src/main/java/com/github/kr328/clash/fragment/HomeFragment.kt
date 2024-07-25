@@ -19,6 +19,7 @@ import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.design.HomeDesign
 import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
+import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.dialog.withModelProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.remote.Broadcasts
@@ -149,7 +150,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
                 } else {
                     update(savedProf.uuid)
                 }
-                //delay(3000)
+                Logger.i("fetchProfile savedProf:$savedProf")
             }
         }
     }
@@ -160,16 +161,23 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
                 withProfile {
                     patch(profile.uuid, profile.name, profile.source, profile.interval)
 
-                    coroutineScope {
-                        commit(profile.uuid) {
-                            launch {
-                                updateStatus(it)
-                            }
+                    commit(profile.uuid) {
+                        launch {
+                            updateStatus(it)
                         }
+                        Logger.i("commit profile:${profile.uuid}, FetchStat progress:${it.progress}")
                     }
-                }
-                withProfile {
+                    Logger.i("after commit:${profile.uuid}")
+
+                    Logger.i("setActive profile:${profile.uuid}")
+                    updateStatus(
+                        FetchStatus(
+                            action = FetchStatus.Action.FetchProviders,
+                            emptyList(), 1, 10
+                        )
+                    )
                     setActive(profile)
+                    updateStatus(null)
                 }
             }
         } catch (e: Exception) {
@@ -177,16 +185,20 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         }
     }
 
-    private fun withProcessing(executeTask: suspend (suspend (FetchStatus) -> Unit) -> Unit) {
+    private fun withProcessing(executeTask: suspend (suspend (FetchStatus?) -> Unit) -> Unit) {
         try {
             launch(Dispatchers.Main) {
-                activity.withModelProgressBar {
+                activity.showModalProgressBar {
                     configure {
                         isIndeterminate = true
                         text = getString(com.github.kr328.clash.design.R.string.initializing)
                     }
 
                     executeTask {
+                        if (it == null) {
+                            onResult()
+                            return@executeTask
+                        }
                         configure {
                             applyFrom(it)
                         }
@@ -210,12 +222,15 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
 
             FetchStatus.Action.Verifying -> {
                 text = getString(com.github.kr328.clash.design.R.string.verifying)
-                isIndeterminate = false
+                isIndeterminate = true
                 max = status.max
                 progress = status.progress
             }
 
-            else -> {}
+            else -> {
+                text = "激活订阅地址"
+                isIndeterminate = true
+            }
         }
     }
 
