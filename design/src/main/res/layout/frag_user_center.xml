@@ -47,23 +47,25 @@
                     android:id="@+id/tv_account_email"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
+                    android:paddingVertical="6dp"
                     android:textColor="@color/black"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
-                    tools:text="aqwer2312jd@gmail.com" />
+                    tools:text="尚未登录，马上登录 >>" />
 
                 <TextView
                     android:id="@+id/tv_last_login"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
                     android:textColor="@color/black"
                     android:textSize="12sp"
-                    tools:text="上次登录时间：" />
+                    android:visibility="gone"
+                    tools:text="上次登录时间："
+                    tools:visibility="visible" />
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_subs_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -84,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="6dp"
                     android:textColor="@color/black"
-                    android:textSize="14sp"
+                    android:textSize="15sp"
                     android:textStyle="bold"
                     tools:text="免费体验套餐A" />
                 <TextView
@@ -208,7 +210,9 @@
                 android:text="修改密码"
                 android:textColor="@color/black"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
             <TextView
                 android:id="@+id/btn_logout"
                 android:layout_width="match_parent"
@@ -220,7 +224,9 @@
                 android:text="退出登录"
                 android:textColor="@color/color_FF5600"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.core.widget.NestedScrollView>

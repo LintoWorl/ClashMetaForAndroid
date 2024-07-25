@@ -10,11 +10,14 @@ import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
 import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
+import app.hw.network.model.UserInfo
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.util.DATE_DATE_ONLY
+import com.github.kr328.clash.design.util.toDateStr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -22,7 +25,6 @@ import kotlinx.coroutines.selects.select
 
 class MainViewModel : ViewModel() {
     val fragIndex: MutableLiveData<Int> by lazy { MutableLiveData<Int>() }
-
     companion object {
         const val IDX_FRAG_REPWD = -2
         const val IDX_FRAG_REGST = -1
@@ -35,7 +37,9 @@ class MainViewModel : ViewModel() {
 
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }
     val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
+    val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
+    var lgnStatChngd: Boolean = false
 
     fun checkLoginStat() {
         RequestHandler.request({
@@ -70,6 +74,25 @@ class MainViewModel : ViewModel() {
                     }
                 }
             }
+        }
+    }
+
+    suspend fun fetchUserAccountInfo(context: Context) {
+        context.showModalProgressBar {
+            configure {
+                isIndeterminate = true
+                text = "更新数据，请稍候..."
+            }
+            RequestHandler.request({
+                UserAccountApi.userAccountInfo()
+            }, {
+                Logger.d("got userInfo:${it.email}")
+                userInfo.value = it
+                onResult()
+            }, { code, msg ->
+                context.toast(msg)
+                onResult()
+            })
         }
     }
 
@@ -117,7 +140,7 @@ class MainViewModel : ViewModel() {
                 onResult()
                 if (it) {
                     context.toast("重置密码成功")
-                    fragIndex.value = MainViewModel.IDX_FRAG_USER
+                    fragIndex.value = IDX_FRAG_USER
                 } else {
                     context.toast("重置密码失败，请稍后重试")
                 }

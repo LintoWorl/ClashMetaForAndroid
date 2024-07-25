@@ -14,6 +14,7 @@ import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
 import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
@@ -24,7 +25,7 @@ import kotlinx.coroutines.launch
 class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var binding: FragLoginAccountBinding
     private val viewModel by activityViewModels<MainViewModel>()
-    private var mailSuffix: String = "@gmail.com"
+    //private var mailSuffix: String = "@gmail.com"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,33 +39,17 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        /*viewModel.appConfig.observe(viewLifecycleOwner) {
-            it ?: return@observe
-            val mailList = it.email_whitelist_suffix
-            binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
-        }*/
     }
 
     private fun initView() {
-//        binding.mailList.onItemSelectedListener = object : OnItemSelectedListener {
-//            override fun onItemSelected(
-//                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-//            ) {
-//                binding.mailList.setSelection(position)
-//                mailSuffix = "@${binding.mailList.selectedItem}"
-//            }
-//
-//            override fun onNothingSelected(parent: AdapterView<*>?) {
-//
-//            }
-//
-//        }
+        binding.root.onClickNew { it.hideKeyboard() }
         binding.btnLoginAccount.onClickNew {
             if (binding.editEmail.checkEmpty("请输入邮箱地址")
                 || binding.editPassword.checkEmpty("请输入密码")
                 || !agreePolicies()
             ) return@onClickNew
 
+            it.hideKeyboard()
             launch {
                 requireContext().showModalProgressBar {
                     configure {
@@ -75,15 +60,14 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                     RequestHandler.request({
                         val mailAddress = binding.editEmail.text.toString()// + mailSuffix
                         UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
-                    }, {
-                        Logger.d("init guest config data:$it")
+                    }, { lgn ->
+                        Logger.d("init guest config data:$lgn")
                         onResult()
                         val appStore = AppStore(requireContext())
-                        appStore.userToken = it.token
-                        appStore.authData = it.auth_data
+                        appStore.userToken = lgn.token
+                        appStore.authData = lgn.auth_data
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                         appStore.hasLoginApp = true
-                        //viewModel.fetchSubsPlan(false)
                     }, { _, msg ->
                         context?.toast(msg)
                         onResult()
@@ -93,7 +77,6 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         binding.btnEnterTourist.onClickNew {
-            //viewModel.fetchSubsPlan(true)
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
         }
         binding.btnEnterRegister.onClickNew {

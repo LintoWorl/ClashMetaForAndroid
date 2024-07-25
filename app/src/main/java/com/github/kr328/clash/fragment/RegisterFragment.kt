@@ -64,7 +64,7 @@ class RegisterFragment : Fragment() {
             }
 
         }
-        binding.btnRegister.onClickNew {
+        binding.btnRegister.onClickNew { it ->
             if (binding.editEmail.checkEmpty("请输入邮箱")
                 || binding.editPassword.checkEmpty("请输入密码")
                 || binding.editVerifyCode.checkEmpty("请输入验证码")

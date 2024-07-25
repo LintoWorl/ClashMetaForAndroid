@@ -15,9 +15,10 @@ import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.design.databinding.FragUserCenterBinding
-import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.util.DATE_DATE_ONLY
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.onClickNew
+import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.design.util.toDateStr
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
@@ -48,15 +49,42 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
-        fetchUserInfo()
+        initEvents()
         initObserver()
     }
 
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            initView()
+        }
+    }
+
     private fun initView() {
+        val appStore = AppStore(activity)
+        if (appStore.hasLoginApp) {
+            launch { viewModel.fetchUserAccountInfo(activity) }
+
+            binding.tvAccountEmail.isClickable = false
+            binding.tvAccountEmail.isEnabled = false
+            binding.btnLogout.show()
+            binding.btnResetPwd.show()
+            binding.llSubsInfo.show()
+        } else {
+            binding.tvAccountEmail.text = "尚未登录，马上登录 >>"
+            binding.tvAccountEmail.isClickable = true
+            binding.tvLastLogin.hide()
+            binding.llSubsInfo.hide()
+        }
+    }
+
+    private fun initEvents() {
         binding.btnLogout.onClickNew {
             val appStore = AppStore(activity)
             appStore.hasLoginApp = false
+            appStore.enteredHome = false
             appStore.authData = ""
+            viewModel.lgnStatChngd = true
             context?.toast("退出登录成功")
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
             //请求退出登录API
@@ -74,38 +102,24 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
         binding.btnSetting.onClickNew {
             startActivity(SettingsActivity::class.intent)
         }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun fetchUserInfo() {
-        launch {
-            context?.showModalProgressBar {
-                configure {
-                    isIndeterminate = true
-                    text = "更新数据，请稍候..."
-                }
-                RequestHandler.request({
-                    UserAccountApi.userAccountInfo()
-                }, {
-                    Logger.d("got userInfo:${it.email}")
-                    binding.tvAccountEmail.text = it.email
-                    binding.tvSubsDesc.text =
-                        "套餐到期时间：${it.expired_at.toDateStr(DATE_DATE_ONLY)}"
-                    binding.tvLastLogin.text =
-                        "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
-                    onResult()
-                }, { code, msg ->
-                    context?.toast(msg)
-                    onResult()
-                })
-            }
+        binding.tvAccountEmail.onClickNew {
+            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun initObserver() {
         viewModel.subsInfo.observe(viewLifecycleOwner) {
             val subsPlan = it?.plan ?: return@observe
             binding.tvSubsTitle.text = subsPlan.name
+        }
+        viewModel.userInfo.observe(viewLifecycleOwner) {
+            binding.tvAccountEmail.text = it.email
+            binding.tvLastLogin.show()
+            binding.tvSubsDesc.text =
+                "套餐到期时间：${it.expired_at.toDateStr(DATE_DATE_ONLY)}"
+            binding.tvLastLogin.text =
+                "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
         }
     }
 

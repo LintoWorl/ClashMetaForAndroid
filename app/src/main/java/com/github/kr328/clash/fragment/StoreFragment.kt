@@ -41,18 +41,17 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initView()
         appStore = AppStore(activity)
-        launch {
-            activity.showModalProgressBar {
-                configure {
-                    isIndeterminate = true
-                    text = "加载数据..."
-                }
-                viewModel.fetchSubsPlan(!appStore.hasLoginApp) { onResult() }
-            }
-        }
+        initView()
         initObserver()
+        fetchData()
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            fetchData()
+        }
     }
 
     private fun initView() {
@@ -74,6 +73,18 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         viewModel.subsPlanList.observe(viewLifecycleOwner) {
             planAdapter.planList = it
             planAdapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun fetchData() {
+        launch {
+            activity.showModalProgressBar {
+                configure {
+                    isIndeterminate = true
+                    text = "加载数据..."
+                }
+                viewModel.fetchSubsPlan(!appStore.hasLoginApp) { onResult() }
+            }
         }
     }
 
