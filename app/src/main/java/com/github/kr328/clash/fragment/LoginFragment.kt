@@ -7,10 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import app.hw.network.api.UserAccountApi
-import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.compat.checkEmpty
-import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.databinding.FragLoginAccountBinding
 import com.github.kr328.clash.design.dialog.showModalProgressBar
@@ -57,36 +54,43 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                         text = "登录中，请稍候..."
                     }
                     //用账号登录
-                    RequestHandler.request({
-                        val mailAddress = binding.editEmail.text.toString()// + mailSuffix
-                        UserAccountApi.login(mailAddress, binding.editPassword.text.toString())
-                    }, { lgn ->
-                        Logger.d("init guest config data:$lgn")
-                        onResult()
-                        val appStore = AppStore(requireContext())
-                        appStore.userToken = lgn.token
-                        appStore.authData = lgn.auth_data
-                        viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-                        appStore.hasLoginApp = true
-                        viewModel.lgnStatChngd.postValue(true)
-                    }, { _, msg ->
-                        context?.toast(msg)
-                        onResult()
-                    })
+                    viewModel.loginApp(
+                        binding.editEmail.text.toString(),
+                        binding.editPassword.text.toString(),
+                        { lgn ->
+                            onResult()
+                            val appStore = AppStore(requireContext())
+                            appStore.userToken = lgn.token
+                            appStore.authData = lgn.auth_data
+                            appStore.hasLoginApp = true
+                        },
+                        { msg ->
+                            onResult()
+                            requireContext().toast(msg)
+                        })
                 }
             }
         }
 
         binding.btnEnterTourist.onClickNew {
-            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
+            viewModel.loginApp("test@fenghuolun.com", "testtest",
+                onSucc = { lgn ->
+                    val appStore = AppStore(requireContext())
+                    appStore.userToken = lgn.token
+                    appStore.authData = lgn.auth_data
+                    appStore.hasLoginApp = false
+                }, onFail = {})
         }
+
         binding.btnEnterRegister.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REGST
         }
+
         binding.tvForgetPwd.onClickNew {
             //重置密码
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REPWD
         }
+
         binding.cbShowPwd.setOnCheckedChangeListener { _, isChecked ->
             binding.editPassword.inputType = if (isChecked) {
                 InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD

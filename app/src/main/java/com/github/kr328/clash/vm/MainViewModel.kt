@@ -8,6 +8,7 @@ import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
+import app.hw.network.model.LoginResp
 import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
 import app.hw.network.model.UserInfo
@@ -16,8 +17,6 @@ import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
-import com.github.kr328.clash.design.util.DATE_DATE_ONLY
-import com.github.kr328.clash.design.util.toDateStr
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -25,6 +24,7 @@ import kotlinx.coroutines.selects.select
 
 class MainViewModel : ViewModel() {
     val fragIndex: MutableLiveData<Int> by lazy { MutableLiveData<Int>() }
+
     companion object {
         const val IDX_FRAG_REPWD = -2
         const val IDX_FRAG_REGST = -1
@@ -75,6 +75,24 @@ class MainViewModel : ViewModel() {
                 }
             }
         }
+    }
+
+    fun loginApp(
+        mailAddr: String,
+        pwd: String,
+        onSucc: (LoginResp) -> Unit,
+        onFail: (String) -> Unit
+    ) {
+        RequestHandler.request({
+            UserAccountApi.login(mailAddr, pwd)
+        }, { lgn ->
+            Logger.d("login account:$lgn")
+            onSucc(lgn)
+            fragIndex.value = IDX_FRAG_HOME
+            lgnStatChngd.postValue(true)
+        }, { _, msg ->
+            onFail(msg)
+        })
     }
 
     suspend fun fetchUserAccountInfo(context: Context) {
