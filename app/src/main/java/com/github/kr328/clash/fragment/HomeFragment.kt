@@ -1,6 +1,7 @@
 package com.github.kr328.clash.fragment
 
 import android.os.Bundle
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -64,6 +65,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (viewModel.noticeMsgList.value.isNullOrEmpty()) {
+            viewModel.fetchNoticeInfo()
+        }
         main()
         viewModel.fetchSubscribeInfo()
         initObserver()

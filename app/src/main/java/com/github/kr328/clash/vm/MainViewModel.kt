@@ -1,5 +1,6 @@
 package com.github.kr328.clash.vm
 
+import android.app.Activity
 import android.content.Context
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,7 @@ import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -51,31 +53,32 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    fun initConfigs(scope: CoroutineScope) {
-        scope.launch {
-            while (isActive) {
-                select {
-                    Global.commEvents.onReceive {
-                        Logger.d("onReceive:$it, start request appConfig")
-                        (scope as MainV2Activity).showModalProgressBar {
-                            configure {
-                                isIndeterminate = true
-                                text = "正在获取VPS配置，请稍候..."
-                            }
-                            RequestHandler.request({
-                                UserAccountApi.appConfig()
-                            }, { config ->
-                                Logger.d("got guest config data.")
-                                appConfig.value = config
-                                onResult()
-                            }, { _, msg ->
-                                Logger.e("initData fail: $msg")
-                                onResult()
-                            })
-                        }
-                    }
+    fun initConfigs(scope: Activity) {
+        CoroutineScope(Dispatchers.Main).launch {
+            scope.showModalProgressBar {
+                configure {
+                    isIndeterminate = true
+                    text = "正在获取配置信息，请稍候..."
                 }
+                RequestHandler.request({
+                    UserAccountApi.appConfig()
+                }, { config ->
+                    Logger.d("got guest config data.")
+                    appConfig.value = config
+                    onResult()
+                }, { _, msg ->
+                    Logger.e("initData fail: $msg")
+                    onResult()
+                })
             }
+//            while (isActive) {
+//                select {
+//                    Global.commEvents.onReceive {
+//                        Logger.d("onReceive:$it, start request appConfig")
+//
+//                    }
+//                }
+//            }
         }
     }
 

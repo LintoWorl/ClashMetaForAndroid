@@ -64,9 +64,6 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         appStore = AppStore(this)
         onBackPressedDispatcher.addCallback(this, pressBackListener)
 
-        //fetchProfile()
-        viewModel.initConfigs(this)
-
         // 根据登录状态确定初始状态应该跳转到什么页面
         if (appStore.enteredHome) {
             showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
