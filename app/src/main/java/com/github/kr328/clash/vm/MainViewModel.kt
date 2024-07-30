@@ -9,6 +9,7 @@ import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
 import app.hw.network.model.LoginResp
+import app.hw.network.model.NoticeBean
 import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
 import app.hw.network.model.UserInfo
@@ -40,6 +41,7 @@ class MainViewModel : ViewModel() {
     val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
     val lgnStatChngd: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
+    val noticeMsgList: MutableLiveData<List<NoticeBean>> by lazy { MutableLiveData<List<NoticeBean>>() }
 
     fun checkLoginStat() {
         RequestHandler.request({
@@ -128,7 +130,7 @@ class MainViewModel : ViewModel() {
         RequestHandler.request({
             OthersApi.getNoticeMsg()
         }, {
-
+            noticeMsgList.value = it
         }, { code, msg ->
             Logger.e("fetchNoticeInfo fail:$msg")
         })

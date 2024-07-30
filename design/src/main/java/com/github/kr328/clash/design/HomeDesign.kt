@@ -2,8 +2,10 @@ package com.github.kr328.clash.design
 
 import android.content.Context
 import android.view.View
+import app.hw.network.model.NoticeBean
 import com.github.kr328.clash.core.model.TunnelState
 import com.github.kr328.clash.core.util.trafficTotal
+import com.github.kr328.clash.design.adapter.NoticeMsgAdapter
 import com.github.kr328.clash.design.databinding.DesignHomeBinding
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.resolveThemedColor
@@ -23,6 +25,7 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
 
     override val root: View
         get() = binding.root
+    private lateinit var noticeAdapter: NoticeMsgAdapter
 
     suspend fun setProfileName(name: String?) {
         withContext(Dispatchers.Main) {
@@ -68,5 +71,16 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
 
     fun request(request: Request) {
         requests.trySend(request)
+    }
+
+    fun initNoticeView(notices: List<NoticeBean>) {
+        noticeAdapter = NoticeMsgAdapter(context)
+        noticeAdapter.noticeBeans = notices
+        binding.bannerNoticeArea.apply {
+            setCyclic(true)
+            setAutoPlay(true)
+            adapter = noticeAdapter
+            isNestedScrollingEnabled = false
+        }
     }
 }

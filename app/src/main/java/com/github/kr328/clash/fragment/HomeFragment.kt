@@ -134,6 +134,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         viewModel.lgnStatChngd.observe(viewLifecycleOwner) {
             refreshSubsInfo = true
         }
+        viewModel.noticeMsgList.observe(viewLifecycleOwner) {
+            design.initNoticeView(it)
+        }
     }
 
     private fun fetchProfile(url: String) {

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="clicked"
+            type="android.view.View.OnClickListener" />
+        <import type="android.view.View" />
+    </data>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="10dp">
+        <ImageView
+            android:id="@+id/iv_notice_bg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="80dp" />
+        <TextView
+            android:id="@+id/tv_notice_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            tools:text="gmail.com" />
+
+        <TextView
+            android:id="@+id/tv_notice_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_notice_title"
+            android:layout_marginTop="8dp"
+            android:gravity="start|center_vertical"
+            android:textColor="@color/black"
+            android:textSize="13sp"
+            tools:text="asdhiur fhurwveuvkjf fkjjohr \ngmail.com" />
+    </RelativeLayout>
+</layout>

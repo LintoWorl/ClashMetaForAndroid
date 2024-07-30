@@ -40,6 +40,7 @@ dependencyResolutionManagement {
             val room = "2.4.2"
             val multiprocess = "1.0.0"
             val retrofit = "2.9.0"
+            val markwonVersion = "4.6.2"
 
             library("build-android", "com.android.tools.build:gradle:$agp")
             library("build-kotlin-common", "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin")
@@ -71,6 +72,7 @@ dependencyResolutionManagement {
             library("fragment-ktx", "androidx.fragment:fragment-ktx:1.6.2")
             library("refresh-layout-kernel","io.github.scwang90:refresh-layout-kernel:2.1.0")
             library("refresh-header-radar","io.github.scwang90:refresh-header-radar:2.1.0")
+            library("markwon","io.noties.markwon:core:${markwonVersion}")
         }
     }
 }

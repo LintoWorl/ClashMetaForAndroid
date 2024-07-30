@@ -20,5 +20,6 @@ dependencies {
     implementation(libs.google.material)
     implementation(libs.refresh.layout.kernel)
     implementation(libs.refresh.header.radar)
+    implementation(libs.markwon)
     implementation(project(":network"))
 }
