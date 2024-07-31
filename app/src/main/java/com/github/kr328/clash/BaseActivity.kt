@@ -1,15 +1,18 @@
 package com.github.kr328.clash
 
+import android.app.Application
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
+import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.isAllowForceDarkCompat
 import com.github.kr328.clash.common.compat.isLightNavigationBarCompat
 import com.github.kr328.clash.common.compat.isLightStatusBarsCompat
 import com.github.kr328.clash.common.compat.isSystemBarsTranslucentCompat
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.core.bridge.ClashException
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.model.DarkMode
@@ -28,6 +31,7 @@ import java.util.*
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+import kotlin.system.exitProcess
 
 abstract class BaseActivity<D : Design<*>> : AppCompatActivity(),
     CoroutineScope by MainScope(),
@@ -87,6 +91,12 @@ abstract class BaseActivity<D : Design<*>> : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         applyDayNight()
 
+        val pcn = Global.application.javaClass.superclass.name
+        Logger.v("a's p cn:$pcn")
+        if (pcn != Application::class.java.name) {
+            finish()
+            exitProcess(0)
+        }
         launch {
             main()
         }
