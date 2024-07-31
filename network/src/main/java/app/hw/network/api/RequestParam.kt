@@ -1,7 +1,7 @@
 package app.hw.network.api
 
 import android.util.Log
-import app.hw.network.model.Constant
+import app.hw.network.contant.Constant
 import app.hw.network.util.GsonHelper
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody

@@ -46,7 +46,7 @@ object RetrofitManager {
     }
 
 
-    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
+    private val logging = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     private val gson = GsonBuilder().setLenient().create()
 
     private val connectionSpecs: ArrayList<ConnectionSpec> =
@@ -88,6 +88,7 @@ object RetrofitManager {
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(logging)
+        .connectionSpecs(connectionSpecs)
         .addInterceptor(RequestInterceptor())
         .addInterceptor(ResponseInterceptor())
         .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)

@@ -2,7 +2,7 @@ package app.hw.network.interceptor
 
 import android.util.Log
 import app.hw.network.BuildConfig
-import app.hw.network.model.Constant.TAG_RES
+import app.hw.network.contant.Constant.TAG_RES
 import com.github.kr328.clash.common.util.decodeUnicode
 import okhttp3.Interceptor
 import okhttp3.MediaType

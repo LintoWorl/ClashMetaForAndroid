@@ -73,7 +73,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         binding.btnEnterTourist.onClickNew {
-            viewModel.loginApp("test@fenghuolun.com", "testtest",
+            viewModel.loginApp("peterpan168@qq.com", "pass.jsb.8812",
                 onSucc = { lgn ->
                     val appStore = AppStore(requireContext())
                     appStore.userToken = lgn.token

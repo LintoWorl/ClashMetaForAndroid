@@ -134,6 +134,12 @@ subprojects {
             }
             named("debug") {
                 versionNameSuffix = ".debug"
+                isMinifyEnabled = isApp
+                isShrinkResources = isApp
+                proguardFiles(
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
+                )
             }
         }
 

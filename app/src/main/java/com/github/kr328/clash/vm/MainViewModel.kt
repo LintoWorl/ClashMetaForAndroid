@@ -71,14 +71,6 @@ class MainViewModel : ViewModel() {
                     onResult()
                 })
             }
-//            while (isActive) {
-//                select {
-//                    Global.commEvents.onReceive {
-//                        Logger.d("onReceive:$it, start request appConfig")
-//
-//                    }
-//                }
-//            }
         }
     }
 

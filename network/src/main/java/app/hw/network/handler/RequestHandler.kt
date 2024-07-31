@@ -2,7 +2,8 @@ package app.hw.network.handler
 
 import android.util.Log
 import app.hw.network.api.ResponseData
-import app.hw.network.model.Constant.TAG_EXP
+import app.hw.network.contant.Constant.TAG_EXP
+import app.hw.network.contant.Constant.TAG_RES
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,11 +24,13 @@ object RequestHandler {
         scope.launch {
             runCatching { block() }
                 .onSuccess {
+                    Log.i(TAG_RES, "request success, response:${it}, data:${it.data}")
                     launch(Dispatchers.Main) {
                         it.data?.apply(onSucc)
                     }
                 }
                 .onFailure {
+                    Log.e(TAG_EXP, "request fail, throwable:${it.message}")
                     val ex = ExceptionHandler().handleException(it)
                     ex ?: return@onFailure
                     Log.e(TAG_EXP, "request fail, errCode:${ex.code}, errMsg:${ex.message}")

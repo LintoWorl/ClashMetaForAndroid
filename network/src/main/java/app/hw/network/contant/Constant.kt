@@ -1,4 +1,4 @@
-package app.hw.network.model
+package app.hw.network.contant
 
 object Constant {
     const val TAG_RES = "Http_Resp"
