@@ -4,6 +4,7 @@ import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
 import app.hw.network.util.DnsUtil
+import app.hw.network.util.NetworkUtil
 import app.hw.network.util.UnsafeOkHttpClient
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
@@ -62,7 +63,7 @@ object RetrofitManager {
                 ipList = ArrayList()
                 ipList.add(InetAddress.getByName(strIp))
             } else {
-                ipList = Dns.SYSTEM.lookup(hostname)
+                ipList = Dns.SYSTEM.lookup("eight.8jiasu.com")
             }
             return ipList
         }
@@ -85,6 +86,22 @@ object RetrofitManager {
             .build()
     }
 
+    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor(logging)
+        .addInterceptor(RequestInterceptor())
+        .addInterceptor(ResponseInterceptor())
+        .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
+        .readTimeout(HTTP_TIMEOUT_READ, TimeUnit.MILLISECONDS)
+        .writeTimeout(HTTP_TIMEOUT_WRITE, TimeUnit.MILLISECONDS)
+        .build()
+    private val retrofit: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+        Retrofit.Builder()
+            .baseUrl("https://eight.8jiasu.com/api/v1/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .client(okHttpClient)
+            .build()
+    }
+
     /**
      * 创建服务端接口服务
      */
@@ -92,4 +109,7 @@ object RetrofitManager {
         return retrofit2.create(serviceClass)
     }
 
+    fun <T> createApiService(clazz: Class<T>): T {
+        return retrofit.create(clazz)
+    }
 }

@@ -34,18 +34,6 @@ class MainApplication : Application() {
         if (processName == packageName) {
             Remote.launch()
             initNetwork()
-            //初始化请求网络配置资源
-            //CoroutineScope(Dispatchers.IO).launch {
-                //val pastIp = UrlConnManager.dohParse(this@MainApplication, "eight.8jiasu.com")
-                //android.util.Log.d(TAG_HTTP,"get the domain;s ip:$pastIp")
-                //initNetwork(pastIp)
-
-                //val configCnt = UrlConnManager.getUrlContent("https://oss.cctvvv.com/mt/android_config_1.2.2.yaml")
-                //val yamlReader = Yaml().load(configCnt)
-                //val config = yamlReader.read(ServerConfig::class.java)
-                //Log.d("got the yaml configs:$yamlReader")
-                //sendConfigInitialized()
-            //}
         } else {
             sendServiceRecreated()
         }

@@ -4,6 +4,8 @@ import app.hw.network.RetrofitManager
 import app.hw.network.model.OrderBean
 import app.hw.network.model.PaymentBean
 import app.hw.network.model.SubsProductBean
+import app.hw.network.util.NetworkUtil
+import com.github.kr328.clash.common.Global
 
 /**
  * @Time : created on 2024/4/23 13:51
@@ -11,24 +13,40 @@ import app.hw.network.model.SubsProductBean
  */
 object PaymentApi {
     private val service: PaymentService by lazy { RetrofitManager.createService(PaymentService::class.java) }
+    private val service2: PaymentService by lazy { RetrofitManager.createApiService(PaymentService::class.java) }
 
     suspend fun getSubsPlan(guest: Boolean = false): ResponseData<List<SubsProductBean>> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return if (guest) service2.getGuestSubsPlan() else service2.getProductList()
+        }
         return if (guest) service.getGuestSubsPlan() else service.getProductList()
     }
 
     suspend fun getOrderList(): ResponseData<List<OrderBean>> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.fetchOrder()
+        }
         return service.fetchOrder()
     }
 
     suspend fun getPayMethod(): ResponseData<List<PaymentBean>> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.getPayWay()
+        }
         return service.getPayWay()
     }
 
     suspend fun getOrderInfo(tradeNo: String): ResponseData<OrderBean> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.getOrderDetail(tradeNo)
+        }
         return service.getOrderDetail(tradeNo)
     }
 
     suspend fun getOrderStat(tradeNo: String): ResponseData<Int> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.checkOrderStat(tradeNo)
+        }
         return service.checkOrderStat(tradeNo)
     }
 
@@ -37,6 +55,9 @@ object PaymentApi {
             put("cycle", cycleName)
             put("plan_id", planId)
         }.build().requestBody
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.saveOrder(reqBody)
+        }
         return service.saveOrder(reqBody)
     }
 
@@ -45,6 +66,9 @@ object PaymentApi {
             put("trade_no", tradeNo)
             put("method", method)
         }.build().requestBody
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.checkoutOrder(reqBody)
+        }
         return service.checkoutOrder(reqBody)
     }
 
@@ -52,6 +76,9 @@ object PaymentApi {
         val reqBody = RequestParam.Builder().apply {
             put("trade_no", tradeNo)
         }.build().requestBody
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.cancelOrder(reqBody)
+        }
         return service.cancelOrder(reqBody)
     }
 }

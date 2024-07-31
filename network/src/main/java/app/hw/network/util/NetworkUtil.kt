@@ -2,11 +2,13 @@ package app.hw.network.util
 
 import android.content.Context
 import android.net.ConnectivityManager
+import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.wifi.WifiManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -305,4 +307,16 @@ object NetworkUtil {
         return regV6.matches(addr)
     }
 
+    fun isVpnRunning(context: Context): Boolean {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val curNet = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            cm.activeNetwork as Network
+        } else {
+            null
+        }
+        val netCapabilities = cm.getNetworkCapabilities(curNet) ?: return false
+
+        return netCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)
+                && netCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
 }

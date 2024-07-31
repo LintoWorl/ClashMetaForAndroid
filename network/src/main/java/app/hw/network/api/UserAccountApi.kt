@@ -6,6 +6,8 @@ import app.hw.network.model.CheckStat
 import app.hw.network.model.LoginResp
 import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.UserInfo
+import app.hw.network.util.NetworkUtil
+import com.github.kr328.clash.common.Global
 
 /**
  * @Time : created on 2024/4/23 14:10
@@ -14,6 +16,11 @@ import app.hw.network.model.UserInfo
 object UserAccountApi {
     private val service: UserAccountService by lazy {
         RetrofitManager.createService(
+            UserAccountService::class.java
+        )
+    }
+    private val service2: UserAccountService by lazy {
+        RetrofitManager.createApiService(
             UserAccountService::class.java
         )
     }
@@ -82,22 +89,37 @@ object UserAccountApi {
     }
 
     suspend fun logout(): ResponseData<Boolean> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.authLogout()
+        }
         return service.authLogout()
     }
 
     suspend fun userAccountInfo(): ResponseData<UserInfo> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.userInfo()
+        }
         return service.userInfo()
     }
 
     suspend fun getSubscribeInfo(): ResponseData<ProductSubsInfo> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.getSubscribe()
+        }
         return service.getSubscribe()
     }
 
     suspend fun resetSubsLink(): ResponseData<String> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.resetSubsLink()
+        }
         return service.resetSubsLink()
     }
 
     suspend fun getTodos(): ResponseData<List<Long>> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.getStat()
+        }
         return service.getStat()
     }
 
@@ -106,6 +128,9 @@ object UserAccountApi {
             put("old_password", oldPwd)
             put("new_password", newPwd)
         }.build().requestBody
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.changePwd(reqBody)
+        }
         return service.changePwd(reqBody)
     }
 
@@ -114,6 +139,9 @@ object UserAccountApi {
         val reqBody = RequestParam.Builder().apply {
             put("transfer_amount", amount)
         }.build().requestBody
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.transferBonus(reqBody)
+        }
         return service.transferBonus(reqBody)
     }
 }

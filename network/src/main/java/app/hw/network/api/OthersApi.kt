@@ -4,12 +4,17 @@ import app.hw.network.RetrofitManager
 import app.hw.network.model.InviteCodeResp
 import app.hw.network.model.InviteDetail
 import app.hw.network.model.NoticeBean
+import app.hw.network.util.NetworkUtil
+import com.github.kr328.clash.common.Global
 
 
 object OthersApi {
 
     private val service: OthersService by lazy {
         RetrofitManager.createService(OthersService::class.java)
+    }
+    private val service2: OthersService by lazy {
+        RetrofitManager.createApiService(OthersService::class.java)
     }
 
     suspend fun getInviteCodeList(): ResponseData<InviteCodeResp> {
@@ -25,6 +30,9 @@ object OthersApi {
     }
 
     suspend fun getNoticeMsg(): ResponseData<List<NoticeBean>> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.fetchNotice()
+        }
         return service.fetchNotice()
     }
 }
