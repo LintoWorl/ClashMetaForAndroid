@@ -24,6 +24,7 @@ import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
+import com.github.kr328.clash.store.TipsStore
 import com.github.kr328.clash.util.startClashService
 import com.github.kr328.clash.util.stopClashService
 import com.github.kr328.clash.util.withClash
@@ -87,7 +88,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
 
     fun main() {
         launch {
-            //design.fetch()
             val ticker = ticker(TimeUnit.SECONDS.toMillis(1))
 
             while (isActive) {
@@ -159,7 +159,12 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
                         release(uuid)
                     }
                 } else {
-                    update(savedProf.uuid)
+                    val store = TipsStore(activity)
+                    val last = store.updateProfTime
+                    if (System.currentTimeMillis() - last > 30 * 60 * 1000) {
+                        update(savedProf.uuid)
+                        store.updateProfTime = System.currentTimeMillis()
+                    }
                 }
                 Logger.i("fetchProfile savedProf:$savedProf")
             }

@@ -11,18 +11,13 @@ class TipsStore(context: Context) {
             .asStoreProvider()
     )
 
-    var requestDonate: Boolean by store.boolean(
-        key = "request_donate",
-        defaultValue = true,
-    )
-
     var primaryVersion: Int by store.int(
         key = "primary_version",
         defaultValue = -1,
     )
+    var updateProfTime: Long by store.long(key ="last_update_prof", -1)
 
     companion object {
-        const val CURRENT_PRIMARY_VERSION = 1
 
         private const val FILE_NAME = "tips"
     }
