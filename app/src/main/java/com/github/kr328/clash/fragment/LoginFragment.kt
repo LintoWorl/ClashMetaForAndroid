@@ -22,6 +22,7 @@ import kotlinx.coroutines.launch
 class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var binding: FragLoginAccountBinding
     private val viewModel by activityViewModels<MainViewModel>()
+    private var tosUrl: String = ""
     //private var mailSuffix: String = "@gmail.com"
 
     override fun onCreateView(
@@ -36,6 +37,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initView()
+        initObserve()
     }
 
     private fun initView() {
@@ -47,29 +49,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
             ) return@onClickNew
 
             it.hideKeyboard()
-            launch {
-                requireContext().showModalProgressBar {
-                    configure {
-                        isIndeterminate = true
-                        text = "登录中，请稍候..."
-                    }
-                    //用账号登录
-                    viewModel.loginApp(
-                        binding.editEmail.text.toString(),
-                        binding.editPassword.text.toString(),
-                        { lgn ->
-                            onResult()
-                            val appStore = AppStore(requireContext())
-                            appStore.userToken = lgn.token
-                            appStore.authData = lgn.auth_data
-                            appStore.hasLoginApp = true
-                        },
-                        { msg ->
-                            onResult()
-                            requireContext().toast(msg)
-                        })
-                }
-            }
+            handleLogin()
         }
 
         binding.btnEnterTourist.onClickNew {
@@ -83,7 +63,9 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         binding.btnEnterRegister.onClickNew {
-            viewModel.initConfigs(requireActivity())
+            if (viewModel.appConfig.value == null) {
+                viewModel.initConfigs(requireActivity())
+            }
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REGST
         }
 
@@ -102,12 +84,45 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
+    private fun initObserve() {
+        viewModel.appConfig.observe(viewLifecycleOwner) {
+            tosUrl = it.tos_url
+            AppStore(requireContext()).tosAddress = it.tos_url
+        }
+    }
+
     private fun agreePolicies(): Boolean {
         if (!binding.cbAgreeTos.isChecked) {
             context?.toast("请阅读并同意隐私政策和用户协议")
             return false
         }
         return true
+    }
+
+    private fun handleLogin() {
+        launch {
+            requireContext().showModalProgressBar {
+                configure {
+                    isIndeterminate = true
+                    text = "登录中，请稍候..."
+                }
+                //用账号登录
+                viewModel.loginApp(
+                    binding.editEmail.text.toString(),
+                    binding.editPassword.text.toString(),
+                    { lgn ->
+                        onResult()
+                        val appStore = AppStore(requireContext())
+                        appStore.userToken = lgn.token
+                        appStore.authData = lgn.auth_data
+                        appStore.hasLoginApp = true
+                    },
+                    { msg ->
+                        onResult()
+                        requireContext().toast(msg)
+                    })
+            }
+        }
     }
 
     companion object {

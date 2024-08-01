@@ -62,6 +62,9 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         setContentView(binding.root)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         appStore = AppStore(this)
+        if (!appStore.hasLoginApp && !appStore.enteredHome) {
+            viewModel.initConfigs(this)
+        }
         onBackPressedDispatcher.addCallback(this, pressBackListener)
 
         // 根据登录状态确定初始状态应该跳转到什么页面

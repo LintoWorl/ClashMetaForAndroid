@@ -28,6 +28,7 @@ class RegisterFragment : Fragment() {
     private lateinit var binding: FragRegisterAccountBinding
     private val viewModel by activityViewModels<MainViewModel>()
     private var mailSuffix: String = "@gmail.com"
+    private var tosUrl: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,6 +46,8 @@ class RegisterFragment : Fragment() {
             it ?: return@observe
             val mailList = it.email_whitelist_suffix
             binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
+            tosUrl = it.tos_url
+            AppStore(requireContext()).tosAddress = it.tos_url
         }
     }
 

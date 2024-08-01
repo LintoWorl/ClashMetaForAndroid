@@ -16,6 +16,8 @@ class AppStore(context: Context) {
     var hasLoginApp: Boolean by store.boolean("user_has_login", false)
     var userToken: String by store.string("user_lgn_token", "")
     var authData: String by store.string("user_auth_data", "")
+    var tosAddress: String by store.string("user_tos_url", "")
+    var ppAddress: String by store.string("user_pripol_url", "")
 
     companion object {
         private const val FILE_NAME = "app"
