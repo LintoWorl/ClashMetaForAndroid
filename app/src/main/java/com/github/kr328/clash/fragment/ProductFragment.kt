@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.PropertiesActivity
@@ -19,7 +18,6 @@ import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.util.withProfile
-import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -34,7 +32,7 @@ import java.util.concurrent.TimeUnit
 class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Observer {
 
     private lateinit var design: ProfilesDesign
-    private val viewModel by activityViewModels<MainViewModel>()
+    //private val viewModel by activityViewModels<MainViewModel>()
     private lateinit var activity: MainV2Activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -105,19 +103,19 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                                         }
                                     } finally {
                                         withContext(Dispatchers.Main) {
-                                            design.finishUpdateAll();
+                                            design.finishUpdateAll()
                                         }
                                     }
                                 }
 
-                            is ProfilesDesign.Request.Update ->
-                                withProfile { update(it.profile.uuid) }
+                            is ProfilesDesign.Request.Update -> Unit
+                            //withProfile { update(it.profile.uuid) }
 
-                            is ProfilesDesign.Request.Delete ->
-                                withProfile { delete(it.profile.uuid) }
+                            is ProfilesDesign.Request.Delete -> Unit
+                            //withProfile { delete(it.profile.uuid) }
 
-                            is ProfilesDesign.Request.Edit ->
-                                startActivity(PropertiesActivity::class.intent.setUUID(it.profile.uuid))
+                            is ProfilesDesign.Request.Edit -> Unit
+                            //startActivity(PropertiesActivity::class.intent.setUUID(it.profile.uuid))
 
                             is ProfilesDesign.Request.Active -> {
                                 withProfile {
@@ -129,9 +127,8 @@ class ProductFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Ob
                             }
 
                             is ProfilesDesign.Request.Duplicate -> {
-                                val uuid = withProfile { clone(it.profile.uuid) }
-
-                                startActivity(PropertiesActivity::class.intent.setUUID(uuid))
+                                //val uuid = withProfile { clone(it.profile.uuid) }
+                                //startActivity(PropertiesActivity::class.intent.setUUID(uuid))
                             }
                         }
                     }

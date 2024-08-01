@@ -7,6 +7,7 @@ import com.github.kr328.clash.design.databinding.AdapterProfileBinding
 import com.github.kr328.clash.design.model.ProfilePageState
 import com.github.kr328.clash.design.model.ProxyPageState
 import com.github.kr328.clash.design.ui.ObservableCurrentTime
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.service.model.Profile
 
@@ -46,7 +47,7 @@ class ProfileAdapter(
             onClicked(current)
         }
         binding.setMenu {
-            onMenuClicked(current)
+            //onMenuClicked(current)
         }
     }
 
