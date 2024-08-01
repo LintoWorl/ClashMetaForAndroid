@@ -47,7 +47,7 @@ class AppSettingsDesign(
                 summary = R.string.allow_clash_auto_restart,
             )
 
-            category(R.string.interface_)
+            /*category(R.string.interface_)
 
             selectableList(
                 value = uiStore::darkMode,
@@ -63,7 +63,7 @@ class AppSettingsDesign(
                 listener = OnChangedListener {
                     requests.trySend(Request.ReCreateAllActivities)
                 }
-            }
+            }*/
 
             category(R.string.service)
 
