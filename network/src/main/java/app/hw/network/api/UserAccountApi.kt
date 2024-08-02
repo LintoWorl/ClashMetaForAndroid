@@ -38,6 +38,9 @@ object UserAccountApi {
             put("email", mail)
             put("password", pwd)
         }.build().requestBody
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.authLogin(reqBody)
+        }
         return service.authLogin(reqBody)
     }
 

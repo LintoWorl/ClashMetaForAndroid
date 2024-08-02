@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.compat.checkEmpty
+import com.github.kr328.clash.common.constants.Authorities
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
@@ -97,7 +98,8 @@ class RegisterFragment : Fragment() {
                         val appStore = AppStore(requireContext())
                         appStore.userToken = it.token
                         appStore.authData = it.auth_data
-                        viewModel.lgnStatChngd.postValue(true)
+                        Authorities.authData = it.auth_data
+                        viewModel.lgnState.postValue(true)
                         //TODO 提示用户注册成功，直接进入首页
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                     }, { _, msg ->

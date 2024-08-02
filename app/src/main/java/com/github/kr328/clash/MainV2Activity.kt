@@ -58,7 +58,6 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override suspend fun main() {
         binding = DesignMainV2Binding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -72,10 +71,6 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         // 根据登录状态确定初始状态应该跳转到什么页面
         if (appStore.enteredHome) {
             showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
-            Looper.getMainLooper().queue.addIdleHandler {
-                viewModel.fetchNoticeInfo()
-                return@addIdleHandler false
-            }
         } else {
             showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
         }

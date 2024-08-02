@@ -1,5 +1,6 @@
 package com.github.kr328.clash.fragment
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -70,12 +71,13 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun initObserver() {
         viewModel.subsPlanList.observe(viewLifecycleOwner) {
             planAdapter.planList = it
             planAdapter.notifyDataSetChanged()
         }
-        viewModel.lgnStatChngd.observe(viewLifecycleOwner) {
+        viewModel.lgnState.observe(viewLifecycleOwner) {
             requireRefresh = true
         }
     }

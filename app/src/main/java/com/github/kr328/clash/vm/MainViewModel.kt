@@ -14,16 +14,12 @@ import app.hw.network.model.NoticeBean
 import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
 import app.hw.network.model.UserInfo
-import com.github.kr328.clash.MainV2Activity
-import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.selects.select
 
 class MainViewModel : ViewModel() {
     val fragIndex: MutableLiveData<Int> by lazy { MutableLiveData<Int>() }
@@ -42,7 +38,7 @@ class MainViewModel : ViewModel() {
     val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
     val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
-    val lgnStatChngd: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
+    val lgnState: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
     val noticeMsgList: MutableLiveData<List<NoticeBean>> by lazy { MutableLiveData<List<NoticeBean>>() }
 
     fun checkLoginStat() {
@@ -85,8 +81,7 @@ class MainViewModel : ViewModel() {
         }, { lgn ->
             Logger.d("login account:$lgn")
             onSucc(lgn)
-            fragIndex.value = IDX_FRAG_HOME
-            lgnStatChngd.postValue(true)
+            lgnState.postValue(true)
         }, { _, msg ->
             onFail(msg)
         })

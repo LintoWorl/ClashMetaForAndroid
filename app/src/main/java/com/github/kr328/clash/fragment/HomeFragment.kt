@@ -1,7 +1,6 @@
 package com.github.kr328.clash.fragment
 
 import android.os.Bundle
-import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +13,7 @@ import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
 import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.core.model.FetchStatus
@@ -66,12 +66,8 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewModel.noticeMsgList.value.isNullOrEmpty()) {
-            viewModel.fetchNoticeInfo()
-        }
-        main()
-        viewModel.fetchSubscribeInfo()
         initObserver()
+        observeClashStat()
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -86,7 +82,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         }
     }
 
-    fun main() {
+    private fun observeClashStat() {
         launch {
             val ticker = ticker(TimeUnit.SECONDS.toMillis(1))
 
@@ -110,7 +106,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
                                 if (clashRunning)
                                     activity.stopClashService()
                                 else
-                                    design.startClash()
+                                    startClash()
                             }
 
                             HomeDesign.Request.OpenProxy ->
@@ -128,15 +124,19 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
     }
 
     private fun initObserver() {
+        viewModel.lgnState.observe(viewLifecycleOwner) {
+            refreshSubsInfo = true
+            if (it) {
+                viewModel.fetchSubscribeInfo()
+                viewModel.fetchNoticeInfo()
+            }
+        }
         viewModel.subsInfo.observe(viewLifecycleOwner) {
             if (it == null || it.subscribe_url.isEmpty()) {
                 return@observe
             }
             fetchProfile(it.subscribe_url)
             refreshSubsInfo = false
-        }
-        viewModel.lgnStatChngd.observe(viewLifecycleOwner) {
-            refreshSubsInfo = true
         }
         viewModel.noticeMsgList.observe(viewLifecycleOwner) {
             design.initNoticeView(it)
@@ -280,16 +280,11 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         }
     }
 
-    private suspend fun HomeDesign.startClash() {
+    private suspend fun startClash() {
         val active = withProfile { queryActive() }
 
         if (active == null || !active.imported) {
-            showToast(R.string.no_profile_selected, ToastDuration.Long) {
-                setAction(R.string.profiles) {
-                    //startActivity(ProfilesActivity::class.intent)//FIXME
-                }
-            }
-
+            activity.toast(R.string.no_profile_selected)
             return
         }
 

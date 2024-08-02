@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.AppSettingsActivity
+import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.LogsActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.MetaFeatureSettingsActivity
@@ -98,7 +99,8 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             appStore.hasLoginApp = false
             appStore.enteredHome = false
             appStore.authData = ""
-            viewModel.lgnStatChngd.postValue(true)
+            viewModel.lgnState.postValue(false)
+            activity.events.trySend(BaseActivity.Event.ClashStop)
             context?.toast("退出登录成功")
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
             //请求退出登录API
@@ -151,7 +153,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.tvLastLogin.text =
                 "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
         }
-        viewModel.lgnStatChngd.observe(viewLifecycleOwner) {
+        viewModel.lgnState.observe(viewLifecycleOwner) {
             reqrdRefresh = true
         }
     }
