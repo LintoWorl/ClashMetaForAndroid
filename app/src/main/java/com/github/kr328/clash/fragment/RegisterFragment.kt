@@ -17,8 +17,10 @@ import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.adapter.MailAddressAdapter
 import com.github.kr328.clash.design.databinding.FragRegisterAccountBinding
 import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
+import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +32,8 @@ class RegisterFragment : Fragment() {
     private val viewModel by activityViewModels<MainViewModel>()
     private var mailSuffix: String = "@gmail.com"
     private var tosUrl: String = ""
+    private var checkMailAddr: Boolean = false
+    private var needInvite: Boolean = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,8 +49,17 @@ class RegisterFragment : Fragment() {
         initView()
         viewModel.appConfig.observe(viewLifecycleOwner) {
             it ?: return@observe
+            checkMailAddr = it.is_email_verify == 1
+            needInvite = it.is_invite_force == 1
             val mailList = it.email_whitelist_suffix
-            binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
+            if (checkMailAddr) {
+                binding.mailList.show()
+                binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
+            } else {
+                binding.mailList.hide()
+            }
+            binding.tvInviteLabel.text = if (needInvite) "邀请码" else "邀请码（选填）"
+
             it.tos_url?.let { url ->
                 tosUrl = url
                 AppStore(requireContext()).tosAddress = url
@@ -79,8 +92,15 @@ class RegisterFragment : Fragment() {
                 return@onClickNew
             }
 
+            if (needInvite && binding.editInviteCode.checkEmpty("请输入邀请码")) {
+                return@onClickNew
+            }
             it.hideKeyboard()
-            val mailAddress = binding.editEmail.text.toString() + mailSuffix
+            val mailAddress = if (checkMailAddr) {
+                binding.editEmail.text.toString() + mailSuffix
+            } else {
+                binding.editEmail.text.toString()
+            }
             val password = binding.editPassword.text.toString()
             val mailCode = binding.editVerifyCode.text.toString()
             val inviteCode = binding.editInviteCode.text.toString()

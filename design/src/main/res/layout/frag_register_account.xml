@@ -41,6 +41,7 @@
             android:id="@+id/mail_list"
             android:layout_width="0dp"
             android:layout_height="match_parent"
+            android:visibility="gone"
             android:layout_weight="0.3" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -107,6 +108,7 @@
     </RelativeLayout>
 
     <TextView
+        android:id="@+id/tv_invite_label"
         style="@style/CommonTextLabel"
         android:layout_marginTop="16dp"
         android:text="邀请码（选填）" />

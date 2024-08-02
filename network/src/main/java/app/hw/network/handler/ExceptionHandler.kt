@@ -38,27 +38,25 @@ class ExceptionHandler {
         return when (throwable) {
             is HttpException -> {
                 responseThrowable = ResponseThrowable(throwable, ERROR_HTTP_PROTOCOL)
-                when (throwable.code()) {
-                    SERVER_STATE_UNAUTHORIZED, SERVER_STATE_FORBIDDEN, SERVER_STATE_UNFOUND,
-                    SERVER_STATE_REQUEST_TIMEOUT, SERVER_STATE_GATEWAY_TIMEOUT,
-                    SERVER_STATE_INTERNAL_ERROR, SERVER_STATE_BAD_GATEWAY, SERVER_STATE_UNAVAILABLE -> {
-                        val body = throwable.response()?.errorBody()?.string()
-                            ?: "hi bro, there's something wrong."
-                        Logger.d("the Error body is:${decodeUnicode(body)}")
-                        try {
-                            val json = JSONObject(body)
-                            if (json.has("errors")) {
-                                responseThrowable.message = json.optString("errors")
-                            } else {
-                                responseThrowable.message = json.optString("message")
-                            }
-                        } catch (e: Exception) {
-                            responseThrowable.message = "network error."
+                val body = throwable.response()?.errorBody()?.string()
+                    ?: "hi bro, there's something wrong."
+                val regularStr = decodeUnicode(body)
+                Logger.d("the Error body is:${regularStr}")
+                try {
+                    val json = JSONObject(regularStr)
+                    if (json.has("errors")) {
+                        val errJson = json.optJSONObject("errors")
+                        errJson?.apply {
+                            val content = toString().trimStart { it == '{' }.trimEnd { it == '}' }
+                            responseThrowable.message = content.replace(",", "\n")
                         }
+                    } else {
+                        responseThrowable.message = json.optString("message")
                     }
-
-                    else -> responseThrowable.message = "network error."
+                } catch (e: Exception) {
+                    responseThrowable.message = regularStr
                 }
+
                 responseThrowable.code = throwable.code()
                 responseThrowable
             }
