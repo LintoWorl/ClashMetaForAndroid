@@ -86,12 +86,14 @@ class RegisterFragment : Fragment() {
         binding.btnRegister.onClickNew { it ->
             if (binding.editEmail.checkEmpty("请输入邮箱")
                 || binding.editPassword.checkEmpty("请输入密码")
-                || binding.editVerifyCode.checkEmpty("请输入验证码")
                 || !agreePolicies()
             ) {
                 return@onClickNew
             }
 
+            if (checkMailAddr && binding.editVerifyCode.checkEmpty("请输入验证码")) {
+                return@onClickNew
+            }
             if (needInvite && binding.editInviteCode.checkEmpty("请输入邀请码")) {
                 return@onClickNew
             }
