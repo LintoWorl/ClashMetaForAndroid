@@ -7,14 +7,7 @@ import app.hw.network.handler.ErrorType.ERROR_NETWORK_FAIL
 import app.hw.network.handler.ErrorType.ERROR_PARSE_FAIL
 import app.hw.network.handler.ErrorType.ERROR_SSL_EXCEPTION
 import app.hw.network.handler.ErrorType.ERROR_UNKNOWN
-import app.hw.network.handler.ErrorType.SERVER_STATE_BAD_GATEWAY
-import app.hw.network.handler.ErrorType.SERVER_STATE_FORBIDDEN
-import app.hw.network.handler.ErrorType.SERVER_STATE_GATEWAY_TIMEOUT
-import app.hw.network.handler.ErrorType.SERVER_STATE_INTERNAL_ERROR
-import app.hw.network.handler.ErrorType.SERVER_STATE_REQUEST_TIMEOUT
 import app.hw.network.handler.ErrorType.SERVER_STATE_UNAUTHORIZED
-import app.hw.network.handler.ErrorType.SERVER_STATE_UNAVAILABLE
-import app.hw.network.handler.ErrorType.SERVER_STATE_UNFOUND
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.util.decodeUnicode
 import com.google.gson.JsonParseException
