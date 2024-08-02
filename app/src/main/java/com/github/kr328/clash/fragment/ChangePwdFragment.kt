@@ -8,12 +8,8 @@ import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import app.hw.network.api.UserAccountApi
-import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.common.compat.checkEmpty
-import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.databinding.FragChangePasswordBinding
-import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.vm.MainViewModel

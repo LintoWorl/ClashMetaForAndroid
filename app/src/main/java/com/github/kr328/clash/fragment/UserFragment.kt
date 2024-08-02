@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import app.hw.network.api.UserAccountApi
-import app.hw.network.handler.RequestHandler
 import com.github.kr328.clash.AppSettingsActivity
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.LogsActivity
@@ -16,7 +14,6 @@ import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.MetaFeatureSettingsActivity
 import com.github.kr328.clash.NetworkSettingsActivity
 import com.github.kr328.clash.OverrideSettingsActivity
-import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.packageName
