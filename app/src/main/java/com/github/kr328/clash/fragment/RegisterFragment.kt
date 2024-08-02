@@ -47,8 +47,10 @@ class RegisterFragment : Fragment() {
             it ?: return@observe
             val mailList = it.email_whitelist_suffix
             binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
-            tosUrl = it.tos_url
-            AppStore(requireContext()).tosAddress = it.tos_url
+            it.tos_url?.let { url ->
+                tosUrl = url
+                AppStore(requireContext()).tosAddress = url
+            }
         }
     }
 

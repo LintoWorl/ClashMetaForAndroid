@@ -15,7 +15,7 @@ package app.hw.network.model
  * }
  */
 class AppConfig {
-    var tos_url: String = ""
+    var tos_url: String? = ""
     var is_email_verify: Int = 0
     var is_invite_force: Int = 0
     var email_whitelist_suffix = emptyList<String>()

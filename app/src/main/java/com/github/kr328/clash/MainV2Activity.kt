@@ -24,6 +24,7 @@ import com.github.kr328.clash.fragment.StoreFragment
 import com.github.kr328.clash.fragment.UserFragment
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
+import java.util.*
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
 
@@ -32,6 +33,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     private val mResetPwdFragment: ResetPwdFragment by lazy { ResetPwdFragment.newInstance() }
     private val mLoginFragment: LoginFragment by lazy { LoginFragment.newInstance() }
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
+
     //private val mSubsFragment: StoreFragment by lazy { StoreFragment.newInstance() }
     private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
     private val mUserFragment: UserFragment by lazy { UserFragment.newInstance() }
@@ -57,6 +59,23 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
             }
         }
     }
+
+    override fun onServiceRecreated() {
+        events.trySend(Event.ServiceRecreated)
+    }
+
+    override fun onStarted() {
+        events.trySend(Event.ClashStart)
+    }
+
+    override fun onStopped(cause: String?) {
+        events.trySend(Event.ClashStop)
+    }
+
+    override fun onProfileChanged() {
+        events.trySend(Event.ProfileLoaded)
+    }
+
 
     override suspend fun main() {
         binding = DesignMainV2Binding.inflate(layoutInflater)
@@ -100,7 +119,12 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
     private fun initObserver() {
         viewModel.fragIndex.observe(this) {
-            showFragmentByIndex(it)
+            when (it) {
+                MainViewModel.IDX_FRAG_HOME ->
+                    binding.navigation.selectedItemId = R.id.navigation_home
+
+                else -> showFragmentByIndex(it)
+            }
         }
     }
 

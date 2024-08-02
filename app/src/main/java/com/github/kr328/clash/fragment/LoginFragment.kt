@@ -88,8 +88,10 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun initObserve() {
         viewModel.appConfig.observe(viewLifecycleOwner) {
-            tosUrl = it.tos_url
-            AppStore(requireContext()).tosAddress = it.tos_url
+            it.tos_url?.let { url ->
+                tosUrl = url
+                AppStore(requireContext()).tosAddress = url
+            }
         }
     }
 

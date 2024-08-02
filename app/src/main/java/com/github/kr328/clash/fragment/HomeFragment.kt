@@ -21,7 +21,6 @@ import com.github.kr328.clash.design.HomeDesign
 import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
 import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
-import com.github.kr328.clash.remote.Broadcasts
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.store.TipsStore
@@ -39,7 +38,7 @@ import kotlinx.coroutines.selects.select
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Observer {
+class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     private lateinit var design: HomeDesign
     private val viewModel by activityViewModels<MainViewModel>()
@@ -60,7 +59,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        Remote.broadcasts.addObserver(this)
+        //Remote.broadcasts.addObserver(this)
         return design.root
     }
 
@@ -68,17 +67,16 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         super.onViewCreated(view, savedInstanceState)
         initObserver()
         observeClashStat()
+        if (viewModel.lgnState.value != true) {
+            viewModel.fetchSubscribeInfo()
+            viewModel.fetchNoticeInfo()
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
-        if (hidden) {
-            Remote.broadcasts.removeObserver(this)
-        } else {
-            if (refreshSubsInfo) {
-                viewModel.fetchSubscribeInfo()
-            }
-            Remote.broadcasts.addObserver(this)
+        if (!hidden && refreshSubsInfo) {
+            viewModel.fetchSubscribeInfo()
         }
     }
 
@@ -303,34 +301,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope(), Broadcasts.Obser
         } catch (e: Exception) {
             design.showToast(R.string.unable_to_start_vpn, ToastDuration.Long)
         }
-    }
-
-    override fun onServiceRecreated() {
-        activity.events.trySend(BaseActivity.Event.ServiceRecreated)
-    }
-
-    override fun onStarted() {
-        activity.events.trySend(BaseActivity.Event.ClashStart)
-    }
-
-    override fun onStopped(cause: String?) {
-        activity.events.trySend(BaseActivity.Event.ClashStop)
-    }
-
-    override fun onProfileChanged() {
-        activity.events.trySend(BaseActivity.Event.ProfileLoaded)
-    }
-
-    override fun onProfileUpdateCompleted(uuid: UUID?) {
-
-    }
-
-    override fun onProfileUpdateFailed(uuid: UUID?, reason: String?) {
-
-    }
-
-    override fun onProfileLoaded() {
-
     }
 
 }

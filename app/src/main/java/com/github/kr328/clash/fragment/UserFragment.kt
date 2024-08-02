@@ -28,6 +28,7 @@ import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.design.util.toDateStr
 import com.github.kr328.clash.store.AppStore
+import com.github.kr328.clash.util.stopClashService
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -82,6 +83,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
         } else {
             binding.tvAccountEmail.text = "尚未登录，马上登录 >>"
             binding.tvAccountEmail.isClickable = true
+            binding.tvAccountEmail.isEnabled = true
             binding.tvLastLogin.hide()
             binding.llSubsInfo.hide()
             binding.btnLogout.hide()
@@ -101,15 +103,16 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             appStore.authData = ""
             viewModel.lgnState.postValue(false)
             activity.events.trySend(BaseActivity.Event.ClashStop)
+            activity.stopClashService()
             context?.toast("退出登录成功")
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
             //请求退出登录API
-            RequestHandler.request({
+            /*RequestHandler.request({
                 UserAccountApi.logout()
             }, {
             }, { _, msg ->
                 Logger.e("Logout fail:$msg")
-            })
+            })*/
         }
         binding.btnResetPwd.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_XPWD
