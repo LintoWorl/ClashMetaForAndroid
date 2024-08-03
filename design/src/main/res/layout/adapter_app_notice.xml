@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable
@@ -7,35 +8,44 @@
             type="android.view.View.OnClickListener" />
         <import type="android.view.View" />
     </data>
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@drawable/bg_b"
         android:paddingHorizontal="20dp"
         android:paddingVertical="10dp">
         <ImageView
-            android:id="@+id/iv_notice_bg"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="80dp" />
+            android:id="@+id/iv_notice_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/icon_app_logo"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
         <TextView
             android:id="@+id/tv_notice_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="15sp"
             android:textStyle="bold"
-            tools:text="gmail.com" />
-
+            app:layout_constraintBottom_toBottomOf="@id/iv_notice_icon"
+            app:layout_constraintStart_toEndOf="@id/iv_notice_icon"
+            app:layout_constraintTop_toTopOf="@id/iv_notice_icon"
+            tools:text="❗必读❗(点击阅读详情)" />
         <TextView
             android:id="@+id/tv_notice_content"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tv_notice_title"
             android:layout_marginTop="8dp"
+            android:ellipsize="end"
             android:gravity="start|center_vertical"
+            android:maxLines="2"
             android:textColor="@color/black"
             android:textSize="13sp"
-            tools:text="asdhiur fhurwveuvkjf fkjjohr \ngmail.com" />
-    </RelativeLayout>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_notice_icon"
+            tools:text="1) 有问题先看官网：App主界面左上角 \n2) 关掉App再重新打开，会看到最新公告 \n3) 我们的性价比极高，再不买您会后悔滴^_^ \n4) 线路逐步稳定，计划增加一些线路" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

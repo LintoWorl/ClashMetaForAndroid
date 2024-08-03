@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import app.hw.network.model.NoticeBean
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProxyActivity
@@ -37,6 +38,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
@@ -77,6 +79,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         super.onHiddenChanged(hidden)
         if (!hidden && refreshSubsInfo) {
             viewModel.fetchSubscribeInfo()
+        }
+        if (!hidden) {
+            observeClashStat()
         }
     }
 

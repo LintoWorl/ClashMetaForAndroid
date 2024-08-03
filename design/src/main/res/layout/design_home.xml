@@ -54,7 +54,8 @@
                 android:layout_centerHorizontal="true"
                 android:gravity="center_vertical"
                 android:minHeight="@dimen/main_top_banner_height"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
                 <View
                     android:layout_width="@dimen/main_logo_size"
                     android:layout_height="@dimen/main_logo_size"
@@ -84,10 +85,8 @@
             <com.github.kr328.clash.design.view.BannerLayout
                 android:id="@+id/banner_notice_area"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_above="@id/ll_start_vpn"
-                android:layout_below="@id/ll_app_logo"
-                android:layout_marginTop="10dp"
+                android:layout_height="120dp"
+                android:layout_marginTop="30dp"
                 android:layout_marginBottom="20dp" />
 
             <com.github.kr328.clash.design.view.LargeActionCard
