@@ -1,5 +1,6 @@
 package com.github.kr328.clash.common.util
 
+import android.util.Base64
 import java.nio.ByteBuffer
 import java.nio.charset.Charset
 import java.util.regex.Matcher
@@ -41,4 +42,13 @@ fun decodeUnicode(str: String): String {
         sb.append(seg)
     }
     return sb.toString()
+}
+
+fun encode(text: String): String {
+    return try {
+        Base64.encodeToString(text.toByteArray(charset("UTF-8")), Base64.NO_WRAP)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        ""
+    }
 }

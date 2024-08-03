@@ -61,6 +61,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                     appStore.authData = lgn.auth_data
                     Authorities.authData = lgn.auth_data
                     appStore.hasLoginApp = false
+                    viewModel.userHasLogin = false
                 }, onFail = {})
         }
 
@@ -88,10 +89,12 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun initObserve() {
         viewModel.appConfig.observe(viewLifecycleOwner) {
+            val appStore = AppStore(requireContext())
             it.tos_url?.let { url ->
                 tosUrl = url
-                AppStore(requireContext()).tosAddress = url
+                appStore.tosAddress = url
             }
+            appStore.appWebsite = it.app_url
         }
     }
 
@@ -122,6 +125,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                         appStore.authData = lgn.auth_data
                         Authorities.authData = lgn.auth_data
                         appStore.hasLoginApp = true
+                        viewModel.userHasLogin = true
                     },
                     { msg ->
                         onResult()

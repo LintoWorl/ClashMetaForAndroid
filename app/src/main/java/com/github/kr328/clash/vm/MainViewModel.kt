@@ -34,6 +34,7 @@ class MainViewModel : ViewModel() {
         const val IDX_FRAG_XPWD = 4
     }
 
+    var userHasLogin: Boolean = false
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }
     val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
     val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }

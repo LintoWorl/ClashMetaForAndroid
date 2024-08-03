@@ -60,10 +60,12 @@ class RegisterFragment : Fragment() {
             }
             binding.tvInviteLabel.text = if (needInvite) "邀请码" else "邀请码（选填）"
 
+            val appStore = AppStore(requireContext())
             it.tos_url?.let { url ->
                 tosUrl = url
-                AppStore(requireContext()).tosAddress = url
+                appStore.tosAddress = url
             }
+            appStore.appWebsite = it.app_url
         }
     }
 
@@ -123,6 +125,8 @@ class RegisterFragment : Fragment() {
                         appStore.userToken = it.token
                         appStore.authData = it.auth_data
                         Authorities.authData = it.auth_data
+                        appStore.hasLoginApp = true
+                        viewModel.userHasLogin = true
                         viewModel.lgnState.postValue(true)
                         //TODO 提示用户注册成功，直接进入首页
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME

@@ -327,4 +327,6 @@
     <string name="title_reset_pwd">Reset Password</string>
     <string name="title_register">Register</string>
     <string name="send_mail_code">Send</string>
+
+    <string name="conn_us_tg" translatable="false">https://t.me/mimivpn</string>
 </resources>
