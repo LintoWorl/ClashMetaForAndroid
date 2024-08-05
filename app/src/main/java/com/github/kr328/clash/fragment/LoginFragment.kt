@@ -1,12 +1,23 @@
 package com.github.kr328.clash.fragment
 
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.text.InputType
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.github.kr328.clash.R
 import com.github.kr328.clash.common.compat.checkEmpty
 import com.github.kr328.clash.common.constants.Authorities
 import com.github.kr328.clash.common.log.toast
@@ -41,6 +52,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private fun initView() {
+        setPrivacyTerms()
         binding.root.onClickNew { it.hideKeyboard() }
         binding.btnLoginAccount.onClickNew {
             if (binding.editEmail.checkEmpty("请输入邮箱地址")
@@ -133,6 +145,73 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                     })
             }
         }
+    }
+
+    private fun setPrivacyTerms() {
+        val tosTitle = getString(R.string.privacy_statement_tos)
+        val ppTitle = getString(R.string.privacy_statement_pp)
+        val spannableStringBuilder = SpannableStringBuilder()
+        val spannableString1 = SpannableString(getString(R.string.privacy_statement) + " ")
+        spannableStringBuilder.append(spannableString1)
+        spannableStringBuilder.append(
+            setColorAndLink(1, tosTitle)
+        )
+        spannableStringBuilder.append(" " + getString(R.string.privacy_statement_link) + " ")
+        spannableStringBuilder.append(
+            setColorAndLink(2, ppTitle)
+        )
+
+        val tvTerms = binding.tvPpTos
+        tvTerms.movementMethod = LinkMovementMethod.getInstance()
+        tvTerms.highlightColor = Color.TRANSPARENT
+        tvTerms.text = spannableStringBuilder
+
+//        tvTerms.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//            Html.fromHtml(
+//                String.format(
+//                    getString(R.string.privacy_statement),
+//                    setColorAndLink(1, tosTitle),
+//                    setColorAndLink(2, ppTitle)
+//                ), 0
+//            )
+//        } else {
+//            Html.fromHtml(
+//                String.format(
+//                    getString(R.string.privacy_statement),
+//                    setColorAndLink(1, tosTitle),
+//                    setColorAndLink(2, ppTitle)
+//                )
+//            )
+//        }
+    }
+
+    private fun setColorAndLink(tag: Int, string: String): SpannableString {
+        val spannable = SpannableString(string)
+        spannable.setSpan(object : ClickableSpan() {
+            override fun onClick(view: View) {
+                //if (FastClickUtil.isFastClick) return
+                if (1 == tag) {
+                    context?.toast("点击了用户协议")
+                    //WebPageActivity.launch(this@LoginActivity, BuildConfig.TermsOfService)
+                } else {
+                    context?.toast("点击了隐私协议")
+                    //WebPageActivity.launch(this@LoginActivity, BuildConfig.PrivacyPolicy)
+                }
+            }
+        }, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            spannable.setSpan(
+                ForegroundColorSpan(resources.getColor(R.color.app_color, null)),
+                0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        } else {
+            spannable.setSpan(
+                ForegroundColorSpan(resources.getColor(R.color.app_color)),
+                0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        return spannable
     }
 
     companion object {

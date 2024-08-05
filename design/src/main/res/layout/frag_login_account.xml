@@ -25,8 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="32dp"
-        android:textSize="13sp"
-        android:text="邮箱" />
+        android:text="邮箱"
+        android:textSize="13sp" />
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -107,11 +107,13 @@
             android:id="@+id/cb_agree_tos"
             android:layout_width="24dp"
             android:layout_height="24dp"
+            android:layout_gravity="center_vertical"
             android:layout_marginEnd="4dp" />
         <TextView
             android:id="@+id/tv_pp_tos"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
             android:text="同意《隐私政策》及《用户协议》"
             android:textSize="13sp" />
     </LinearLayout>

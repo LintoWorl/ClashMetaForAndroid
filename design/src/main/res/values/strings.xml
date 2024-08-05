@@ -327,6 +327,10 @@
     <string name="title_reset_pwd">Reset Password</string>
     <string name="title_register">Register</string>
     <string name="send_mail_code">Send</string>
+    <string name="privacy_statement_tos">Terms of Use</string>
+    <string name="privacy_statement_pp">Privacy Policy</string>
+    <string name="privacy_statement">Please read and agree to the </string>
+    <string name="privacy_statement_link"> and </string>
 
     <string name="conn_us_tg" translatable="false">https://t.me/mimivpn</string>
 </resources>
