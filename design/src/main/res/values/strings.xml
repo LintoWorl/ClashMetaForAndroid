@@ -93,6 +93,7 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="reset">Reset</string>
+    <string name="confirm">Confirm</string>
 
     <string name="clash_logcat">Clash Logcat</string>
     <string name="history">History</string>
