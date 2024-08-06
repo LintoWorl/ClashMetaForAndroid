@@ -1,6 +1,8 @@
 package com.github.kr328.clash.fragment
 
+import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -165,37 +167,19 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
         tvTerms.movementMethod = LinkMovementMethod.getInstance()
         tvTerms.highlightColor = Color.TRANSPARENT
         tvTerms.text = spannableStringBuilder
-
-//        tvTerms.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//            Html.fromHtml(
-//                String.format(
-//                    getString(R.string.privacy_statement),
-//                    setColorAndLink(1, tosTitle),
-//                    setColorAndLink(2, ppTitle)
-//                ), 0
-//            )
-//        } else {
-//            Html.fromHtml(
-//                String.format(
-//                    getString(R.string.privacy_statement),
-//                    setColorAndLink(1, tosTitle),
-//                    setColorAndLink(2, ppTitle)
-//                )
-//            )
-//        }
     }
 
     private fun setColorAndLink(tag: Int, string: String): SpannableString {
         val spannable = SpannableString(string)
+        val appStore = AppStore(requireContext())
         spannable.setSpan(object : ClickableSpan() {
             override fun onClick(view: View) {
-                //if (FastClickUtil.isFastClick) return
                 if (1 == tag) {
-                    context?.toast("点击了用户协议")
-                    //WebPageActivity.launch(this@LoginActivity, BuildConfig.TermsOfService)
+                    //context?.toast("点击了用户协议")
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(appStore.tosAddress)))
                 } else {
-                    context?.toast("点击了隐私协议")
-                    //WebPageActivity.launch(this@LoginActivity, BuildConfig.PrivacyPolicy)
+                    //context?.toast("点击了隐私协议")
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(appStore.ppAddress)))
                 }
             }
         }, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
