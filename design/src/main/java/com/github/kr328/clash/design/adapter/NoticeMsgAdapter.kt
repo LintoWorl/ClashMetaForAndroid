@@ -2,10 +2,13 @@ package com.github.kr328.clash.design.adapter
 
 import android.content.Context
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import app.hw.network.model.NoticeBean
 import com.github.kr328.clash.design.databinding.AdapterAppNoticeBinding
+import com.github.kr328.clash.design.dialog.CommonDialog
 import com.github.kr328.clash.design.util.layoutInflater
+import com.github.kr328.clash.design.util.onClickNew
 import io.noties.markwon.Markwon
 
 class NoticeMsgAdapter(
@@ -26,7 +29,13 @@ class NoticeMsgAdapter(
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val notice = noticeBeans[position]
         markwon.setMarkdown(holder.binding.tvNoticeTitle, notice.title)
-        markwon.setMarkdown(holder.binding.tvNoticeContent, notice.content)
+        //markwon.setMarkdown(holder.binding.tvNoticeContent, notice.content)
+        holder.binding.tvNoticeContent.text = notice.content
+        holder.binding.root.onClickNew {
+            CommonDialog.show((context as AppCompatActivity).supportFragmentManager) {
+                content = notice.content
+            }
+        }
     }
 
 }
