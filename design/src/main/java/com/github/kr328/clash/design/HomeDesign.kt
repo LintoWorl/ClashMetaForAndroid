@@ -45,6 +45,12 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
         }
     }
 
+    suspend fun setProxyName(name: String) {
+        withContext(Dispatchers.Main) {
+            binding.forwarded = name
+        }
+    }
+
     suspend fun setMode(mode: TunnelState.Mode) {
         withContext(Dispatchers.Main) {
             binding.mode = when (mode) {

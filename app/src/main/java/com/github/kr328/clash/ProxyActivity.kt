@@ -6,11 +6,14 @@ import com.github.kr328.clash.core.model.Proxy
 import com.github.kr328.clash.design.ProxyDesign
 import com.github.kr328.clash.design.model.ProxyState
 import com.github.kr328.clash.util.withClash
+import com.github.kr328.clash.vm.ViewModelManager
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 
 class ProxyActivity : BaseActivity<ProxyDesign>() {
     override suspend fun main() {
@@ -46,6 +49,7 @@ class ProxyActivity : BaseActivity<ProxyDesign>() {
                                 finish()
                             }
                         }
+
                         else -> Unit
                     }
                 }
@@ -56,11 +60,13 @@ class ProxyActivity : BaseActivity<ProxyDesign>() {
 
                             finish()
                         }
+
                         ProxyDesign.Request.ReloadAll -> {
                             names.indices.forEach { idx ->
                                 design.requests.trySend(ProxyDesign.Request.Reload(idx))
                             }
                         }
+
                         is ProxyDesign.Request.Reload -> {
                             launch {
                                 val group = reloadLock.withPermit {
@@ -81,15 +87,21 @@ class ProxyActivity : BaseActivity<ProxyDesign>() {
                                 )
                             }
                         }
+
                         is ProxyDesign.Request.Select -> {
                             withClash {
                                 patchSelector(names[it.index], it.name)
 
                                 states[it.index].now = it.name
+                                withContext(Dispatchers.Main) {
+                                    //通知选中的节点名称
+                                    ViewModelManager.appVM.selectProxyName.value = it.name
+                                }
                             }
 
                             design.requestRedrawVisible()
                         }
+
                         is ProxyDesign.Request.UrlTest -> {
                             launch {
                                 withClash {
@@ -99,6 +111,7 @@ class ProxyActivity : BaseActivity<ProxyDesign>() {
                                 design.requests.send(ProxyDesign.Request.Reload(it.index))
                             }
                         }
+
                         is ProxyDesign.Request.PatchMode -> {
                             design.showModeSwitchTips()
 

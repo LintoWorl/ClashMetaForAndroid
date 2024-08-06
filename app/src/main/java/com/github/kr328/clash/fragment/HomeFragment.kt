@@ -30,6 +30,7 @@ import com.github.kr328.clash.util.stopClashService
 import com.github.kr328.clash.util.withClash
 import com.github.kr328.clash.util.withProfile
 import com.github.kr328.clash.vm.MainViewModel
+import com.github.kr328.clash.vm.ViewModelManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -144,6 +145,11 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         viewModel.noticeMsgList.observe(viewLifecycleOwner) {
             design.initNoticeView(it)
         }
+
+        ViewModelManager.appVM.selectProxyName.observe(viewLifecycleOwner) {
+            if (it.isNullOrBlank()) return@observe
+            //launch { design.setProxyName(it) }//TODO
+        }
     }
 
     private fun fetchProfile(url: String) {
@@ -242,8 +248,8 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             FetchStatus.Action.Verifying -> {
                 text = getString(com.github.kr328.clash.design.R.string.verifying)
                 isIndeterminate = true
-                max = status.max
-                progress = status.progress
+                //max = status.max
+                //progress = status.progress
             }
 
             else -> {
