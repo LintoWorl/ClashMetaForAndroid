@@ -31,75 +31,91 @@
         <import type="com.github.kr328.clash.design.HomeDesign.Request" />
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="@{self.surface.insets.start}"
-        android:paddingEnd="@{self.surface.insets.end}">
+        android:paddingHorizontal="@dimen/main_padding_horizontal">
+        <LinearLayout
+            android:id="@+id/ll_app_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+            <View
+                android:layout_width="@dimen/main_logo_size"
+                android:layout_height="@dimen/main_logo_size"
+                android:layout_gravity="center"
+                android:background="@drawable/icon_app_logo" />
 
-        <RelativeLayout
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/application_name"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_proxy_mode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="@{clashRunning ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="@id/ll_app_logo"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/ll_app_logo">
+            <View
+                android:layout_width="@dimen/main_icon_size"
+                android:layout_height="@dimen/main_icon_size"
+                android:layout_marginEnd="4dp"
+                android:background="@drawable/ic_baseline_vpn_lock"
+                android:backgroundTint="@color/color_333" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/proxy_mode"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
+        </LinearLayout>
+        <com.github.kr328.clash.design.view.LargeActionCard
+            android:id="@+id/ll_start_vpn"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="false"
-            android:clipToPadding="false"
-            android:orientation="vertical"
-            android:paddingHorizontal="@dimen/main_padding_horizontal"
-            android:paddingTop="@{self.surface.insets.top}"
-            android:paddingBottom="@{self.surface.insets.bottom}">
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/main_card_margin_vertical"
+            android:onClick="@{() -> self.request(Request.ToggleStatus)}"
+            android:theme="@style/AppThemeDark"
+            app:cardBackgroundColor="@{clashRunning ? colorClashStarted : colorClashStopped}"
+            app:icon="@{clashRunning ? @drawable/ic_outline_check_circle : @drawable/ic_outline_not_interested}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:subtext="@{clashRunning ? @string/format_traffic_forwarded(forwarded) : @string/tap_to_start}"
+            app:text="@{clashRunning ? @string/running : @string/stopped}" />
 
-            <LinearLayout
-                android:id="@+id/ll_app_logo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:gravity="center_vertical"
-                android:minHeight="@dimen/main_top_banner_height"
-                android:orientation="horizontal"
-                android:visibility="gone">
-                <View
-                    android:layout_width="@dimen/main_logo_size"
-                    android:layout_height="@dimen/main_logo_size"
-                    android:layout_gravity="center"
-                    android:background="@drawable/icon_app_logo" />
+        <com.github.kr328.clash.design.view.BannerLayout
+            android:id="@+id/banner_notice_area"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_below="@id/ll_app_logo"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/ll_app_logo" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/application_name"
-                    android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6" />
-            </LinearLayout>
-
-            <com.github.kr328.clash.design.view.LargeActionCard
-                android:id="@+id/ll_start_vpn"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_marginVertical="@dimen/main_card_margin_vertical"
-                android:onClick="@{() -> self.request(Request.ToggleStatus)}"
-                android:theme="@style/AppThemeDark"
-                app:cardBackgroundColor="@{clashRunning ? colorClashStarted : colorClashStopped}"
-                app:icon="@{clashRunning ? @drawable/ic_outline_check_circle : @drawable/ic_outline_not_interested}"
-                app:subtext="@{clashRunning ? @string/format_traffic_forwarded(forwarded) : @string/tap_to_start}"
-                app:text="@{clashRunning ? @string/running : @string/stopped}" />
-
-            <com.github.kr328.clash.design.view.BannerLayout
-                android:id="@+id/banner_notice_area"
-                android:layout_width="match_parent"
-                android:layout_height="120dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="20dp" />
-
-            <com.github.kr328.clash.design.view.LargeActionCard
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/ll_start_vpn"
-                android:layout_marginTop="24dp"
-                android:onClick="@{() -> self.request(Request.OpenProxy)}"
-                android:visibility="@{clashRunning ? View.VISIBLE : View.GONE}"
-                app:icon="@drawable/ic_baseline_apps"
-                app:subtext="@{mode}"
-                app:text="@string/proxy" />
-        </RelativeLayout>
+        <com.github.kr328.clash.design.view.LargeActionCard
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ll_start_vpn"
+            android:layout_marginTop="24dp"
+            android:onClick="@{() -> self.request(Request.OpenProxy)}"
+            android:visibility="@{clashRunning ? View.VISIBLE : View.GONE}"
+            app:icon="@drawable/ic_baseline_apps"
+            app:layout_constraintTop_toBottomOf="@id/ll_start_vpn"
+            app:subtext="@{mode}"
+            app:text="@string/proxy" />
+        <!--</RelativeLayout>-->
         <!--</ScrollView>-->
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -60,7 +60,8 @@
     <dimen name="main_card_margin_vertical">5dp</dimen>
     <dimen name="main_label_margin_vertical">2dp</dimen>
     <dimen name="main_padding_horizontal">30dp</dimen>
-    <dimen name="main_logo_size">50dp</dimen>
+    <dimen name="main_logo_size">44dp</dimen>
+    <dimen name="main_icon_size">24dp</dimen>
     <dimen name="main_top_banner_height">90dp</dimen>
 
     <!--  Proxy Design -->

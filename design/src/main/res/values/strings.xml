@@ -332,6 +332,9 @@
     <string name="privacy_statement_pp">Privacy Policy</string>
     <string name="privacy_statement">Please read and agree to the </string>
     <string name="privacy_statement_link"> and </string>
+    <string name="proxy_mode">Proxy Mode</string>
+    <string name="proxy_mode_global">Global Proxy</string>
+    <string name="proxy_mode_smart">Smart  Proxy</string>
 
     <string name="conn_us_tg" translatable="false">https://t.me/mimivpn</string>
 </resources>

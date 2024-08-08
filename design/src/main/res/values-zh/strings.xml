@@ -237,7 +237,7 @@
     <string name="geox_geosite">Geosite Url</string>
     <string name="prefer_h3">Prefer h3</string>
     <string name="port_whitelist">Port Whitelist</string>
-    <string name="geox_files" >Geo Files</string>
+    <string name="geox_files">Geo Files</string>
     <string name="import_geoip_file">导入 GeoIP 数据库</string>
     <string name="press_to_import">Press to import...</string>
     <string name="import_geosite_file">导入 GeoSite 数据库</string>
@@ -265,4 +265,8 @@
     <string name="privacy_statement_pp">隐私协议</string>
     <string name="privacy_statement">请阅读并同意</string>
     <string name="privacy_statement_link">及</string>
+    <string name="proxy_mode">加速模式</string>
+    <string name="proxy_mode_global">全剧加速</string>
+    <string name="proxy_mode_smart">智能加速</string>
+
 </resources>
