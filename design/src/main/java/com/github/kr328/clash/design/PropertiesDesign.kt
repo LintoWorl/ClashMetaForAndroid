@@ -152,7 +152,7 @@ class PropertiesDesign(context: Context) : Design<PropertiesDesign.Request>(cont
     private fun ModelProgressBarConfigure.applyFrom(status: FetchStatus) {
         when (status.action) {
             FetchStatus.Action.FetchConfiguration -> {
-                text = context.getString(R.string.format_fetching_configuration, status.args[0])
+                text = context.getString(R.string.format_fetching_configuration)
                 isIndeterminate = true
             }
             FetchStatus.Action.FetchProviders -> {

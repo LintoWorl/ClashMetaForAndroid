@@ -64,7 +64,7 @@
     <string name="empty_name">빈칸</string>
     <string name="invalid_url">유효하지 않은 URL</string>
     <string name="loading">로딩중</string>
-    <string name="format_fetching_configuration">현재 %s 에서 구성 파일을 가져오는 중입니다.</string>
+    <string name="format_fetching_configuration">현재 구성 파일을 가져오는 중입니다.</string>
     <string name="format_fetching_provider">현재 외부 리소스 %s 을 가져오는 중입니다.</string>
     <string name="initializing">초기화 중입니다.</string>
     <string name="verifying">인증 중입니다.</string>

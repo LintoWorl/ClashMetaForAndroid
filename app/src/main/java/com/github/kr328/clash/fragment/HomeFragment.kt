@@ -83,6 +83,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         }
         if (!hidden) {
             observeClashStat()
+            launch { design.fetch() }
         }
     }
 
@@ -148,7 +149,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
         ViewModelManager.appVM.selectProxyName.observe(viewLifecycleOwner) {
             if (it.isNullOrBlank()) return@observe
-            //launch { design.setProxyName(it) }//TODO
+            launch { design.setProxyName(it) }//TODO
         }
     }
 
@@ -239,8 +240,8 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         when (status.action) {
             FetchStatus.Action.FetchConfiguration -> {
                 text = getString(
-                    com.github.kr328.clash.design.R.string.format_fetching_configuration,
-                    status.args[0]
+                    com.github.kr328.clash.design.R.string.format_fetching_configuration
+                    //status.args[0]
                 )
                 isIndeterminate = true
             }
@@ -248,8 +249,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             FetchStatus.Action.Verifying -> {
                 text = getString(com.github.kr328.clash.design.R.string.verifying)
                 isIndeterminate = true
-                //max = status.max
-                //progress = status.progress
             }
 
             else -> {

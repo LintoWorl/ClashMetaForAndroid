@@ -79,7 +79,7 @@
     <string name="invalid_url">Invalid URL</string>
     <string name="loading">Loading</string>
 
-    <string name="format_fetching_configuration">Fetching configuration from \'%s\'</string>
+    <string name="format_fetching_configuration">Fetching configurations</string>
     <string name="format_fetching_provider">Fetching provider \'%s\'</string>
     <string name="initializing">Initializing</string>
     <string name="verifying">Verifying</string>

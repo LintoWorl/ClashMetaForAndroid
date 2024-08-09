@@ -64,7 +64,7 @@
     <string name="empty_name">空の名前</string>
     <string name="invalid_url">無効なURL</string>
     <string name="loading">読み込み中</string>
-    <string name="format_fetching_configuration">%sのプロファイルをダウンロード中</string>
+    <string name="format_fetching_configuration">プロファイルをダウンロード中</string>
     <string name="format_fetching_provider">%s外部リソースをダウンロード中</string>
     <string name="initializing">初期化中</string>
     <string name="verifying">チェック中</string>
