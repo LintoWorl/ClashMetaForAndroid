@@ -37,6 +37,8 @@
     <string name="format_minutes">%d 分鐘</string>
     <string name="format_profile_activated">%s 已啟用</string>
     <string name="format_traffic_forwarded">%s 已轉送</string>
+    <string name="format_proxy_connect">%s 已连接</string>
+    <string name="no_proxy_connect">没有代理连接</string>
     <string name="global_mode">全域模式</string>
     <string name="history">歷史</string>
     <string name="import_from_file">從檔案匯入</string>

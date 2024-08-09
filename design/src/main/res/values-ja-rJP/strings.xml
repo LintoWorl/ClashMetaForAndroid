@@ -6,6 +6,8 @@
     <string name="tap_to_start">タップしてスタート</string>
     <string name="running">実行中</string>
     <string name="format_traffic_forwarded">%sが転送されました</string>
+    <string name="format_proxy_connect">%s が连接されました</string>
+    <string name="no_proxy_connect">No proxy Connected</string>
     <string name="proxy">プロキシ</string>
     <string name="direct_mode">ダイレクトモード</string>
     <string name="rule_mode">ルールモード</string>

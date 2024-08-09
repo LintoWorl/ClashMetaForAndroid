@@ -57,7 +57,7 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
 
     suspend fun setProxyName(name: String) {
         withContext(Dispatchers.Main) {
-            binding.forwarded = name
+            binding.proxyName = name
         }
     }
 
