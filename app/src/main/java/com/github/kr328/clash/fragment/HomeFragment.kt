@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -17,7 +18,9 @@ import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
+import com.github.kr328.clash.core.Clash
 import com.github.kr328.clash.core.model.FetchStatus
+import com.github.kr328.clash.core.model.TunnelState
 import com.github.kr328.clash.design.HomeDesign
 import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
 import com.github.kr328.clash.design.dialog.showModalProgressBar
@@ -108,14 +111,18 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                     design.requests.onReceive {
                         when (it) {
                             HomeDesign.Request.ToggleStatus -> {
-                                if (clashRunning)
-                                    activity.stopClashService()
-                                else
-                                    startClash()
+                                if (clashRunning) activity.stopClashService()
+                                else startClash()
                             }
 
                             HomeDesign.Request.OpenProxy ->
                                 startActivity(ProxyActivity::class.intent)
+
+                            HomeDesign.Request.ProxyRule ->
+                                updateProxyMode(TunnelState.Mode.Rule)
+
+                            HomeDesign.Request.ProxyGlobal ->
+                                updateProxyMode(TunnelState.Mode.Global)
                         }
                     }
                     if (clashRunning) {
@@ -126,6 +133,16 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         }
+    }
+
+    private suspend fun updateProxyMode(mode: TunnelState.Mode) {
+        withClash {
+            val o = queryOverride(Clash.OverrideSlot.Session)
+            o.mode = mode
+            patchOverride(Clash.OverrideSlot.Session, o)
+        }
+        design.setMode(mode)
+        context?.toast(R.string.mode_switch_tips)
     }
 
     private fun initObserver() {
@@ -151,6 +168,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             if (it.isNullOrBlank()) return@observe
             launch { design.setProxyName(it) }//TODO
         }
+
     }
 
     private fun fetchProfile(url: String) {

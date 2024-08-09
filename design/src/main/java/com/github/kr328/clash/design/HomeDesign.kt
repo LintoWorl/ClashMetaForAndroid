@@ -6,8 +6,10 @@ import app.hw.network.model.NoticeBean
 import com.github.kr328.clash.core.model.TunnelState
 import com.github.kr328.clash.core.util.trafficTotal
 import com.github.kr328.clash.design.adapter.NoticeMsgAdapter
+import com.github.kr328.clash.design.component.ProxyModeMenu
 import com.github.kr328.clash.design.databinding.DesignHomeBinding
 import com.github.kr328.clash.design.util.layoutInflater
+import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.resolveThemedColor
 import com.github.kr328.clash.design.util.root
 import kotlinx.coroutines.Dispatchers
@@ -17,7 +19,10 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
     enum class Request {
         ToggleStatus,
         OpenProxy,
+
         //OpenProviders
+        ProxyGlobal,
+        ProxyRule
     }
 
     private val binding = DesignHomeBinding
@@ -26,6 +31,11 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
     override val root: View
         get() = binding.root
     private lateinit var noticeAdapter: NoticeMsgAdapter
+
+    private var proxyMode: TunnelState.Mode? = null
+    private val modeMenu: ProxyModeMenu by lazy {
+        ProxyModeMenu(context, binding.tvProxyMode, proxyMode, requests)
+    }
 
     suspend fun setProfileName(name: String?) {
         withContext(Dispatchers.Main) {
@@ -52,12 +62,13 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
     }
 
     suspend fun setMode(mode: TunnelState.Mode) {
+        proxyMode = mode
         withContext(Dispatchers.Main) {
             binding.mode = when (mode) {
                 TunnelState.Mode.Direct -> context.getString(R.string.direct_mode)
-                TunnelState.Mode.Global -> context.getString(R.string.global_mode)
-                TunnelState.Mode.Rule -> context.getString(R.string.rule_mode)
-                else -> context.getString(R.string.rule_mode)
+                TunnelState.Mode.Global -> context.getString(R.string.proxy_mode_global)
+                TunnelState.Mode.Rule -> context.getString(R.string.proxy_mode_smart)
+                else -> context.getString(R.string.proxy_mode_smart)
             }
         }
     }
@@ -73,6 +84,8 @@ class HomeDesign(context: Context) : Design<HomeDesign.Request>(context) {
 
         binding.colorClashStarted = context.resolveThemedColor(R.attr.colorPrimary)
         binding.colorClashStopped = context.resolveThemedColor(R.attr.colorClashStopped)
+
+        binding.tvProxyMode.onClickNew { modeMenu.show() }
     }
 
     fun request(request: Request) {

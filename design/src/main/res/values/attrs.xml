@@ -47,4 +47,14 @@
         <attr name="android:background" />
         <attr name="android:foreground" />
     </declare-styleable>
+
+    <!-- 带drawable的文字显示控件自定义属性 -->
+    <declare-styleable name="DrawableTextView">
+        <attr name="drawableStart" format="reference" />
+        <attr name="drawableBottom" format="reference" />
+        <attr name="drawableEnd" format="reference" />
+        <attr name="drawableTop" format="reference" />
+        <attr name="drawableWidth" format="dimension" />
+        <attr name="drawableHeight" format="dimension" />
+    </declare-styleable>
 </resources>
