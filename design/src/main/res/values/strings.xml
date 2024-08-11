@@ -338,5 +338,5 @@
     <string name="proxy_mode_global">Global Proxy</string>
     <string name="proxy_mode_smart">Smart  Proxy</string>
 
-    <string name="conn_us_tg" translatable="false">https://t.me/mimivpn</string>
+    <string name="conn_us_tg" translatable="false">https://t.me/fhlvpn</string>
 </resources>

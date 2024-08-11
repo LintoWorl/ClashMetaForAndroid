@@ -99,6 +99,8 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             packageName, 0
         ).versionName + "\n" + Bridge.nativeCoreVersion()
         reqrdRefresh = false
+        if (BuildConfig.DEBUG) binding.itemAppLogs.show() else binding.itemAppLogs.hide()
+        binding.itemTgGroup.hide()
     }
 
     private fun initEvents() {
@@ -129,7 +131,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             )
         }
         binding.itemAppTos.onClickNew {
-            if (appStore.tosAddress.isNullOrEmpty()) return@onClickNew
+            if (appStore.tosAddress.isEmpty()) return@onClickNew
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW, Uri.parse(appStore.tosAddress)
