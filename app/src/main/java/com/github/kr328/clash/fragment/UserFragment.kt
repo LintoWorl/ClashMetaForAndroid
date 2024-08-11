@@ -95,12 +95,19 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.btnLogout.hide()
             binding.btnResetPwd.hide()
         }
-        binding.tvAppVersion.text = "v" + requireActivity().packageManager.getPackageInfo(
+        binding.tvAppVersion.text = requireActivity().packageManager.getPackageInfo(
             packageName, 0
         ).versionName + "\n" + Bridge.nativeCoreVersion()
         reqrdRefresh = false
-        if (BuildConfig.DEBUG) binding.itemAppLogs.show() else binding.itemAppLogs.hide()
+        if (BuildConfig.DEBUG) {
+            binding.itemAppLogs.show()
+            binding.dividerAboveLogs.show()
+        } else {
+            binding.itemAppLogs.hide()
+            binding.dividerAboveLogs.hide()
+        }
         binding.itemTgGroup.hide()
+        binding.dividerUnderTg.hide()
     }
 
     private fun initEvents() {

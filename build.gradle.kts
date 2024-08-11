@@ -38,8 +38,8 @@ subprojects {
             minSdk = 21
             targetSdk = 34
 
-            versionName = "0.0.1"
-            versionCode = 1000001
+            versionName = "v1.0.0"
+            versionCode = 1010000
 
             resValue("string", "release_name", "v$versionName")
             resValue("integer", "release_code", "$versionCode")
@@ -53,7 +53,7 @@ subprojects {
             if (!isApp) {
                 consumerProguardFiles("consumer-rules.pro")
             } else {
-                setProperty("archivesBaseName", "cmfa-$versionName")
+                setProperty("archivesBaseName", "fhl-$versionName")
             }
         }
 
@@ -75,7 +75,7 @@ subprojects {
             create("meta-alpha") {
                 isDefault = true
                 dimension = flavorDimensionList[0]
-                versionNameSuffix = ".Meta-Alpha"
+                //versionNameSuffix = ".Meta-Alpha"
 
                 buildConfigField("boolean", "PREMIUM", "Boolean.parseBoolean(\"false\")")
 
@@ -87,7 +87,7 @@ subprojects {
             create("meta") {
 
                 dimension = flavorDimensionList[0]
-                versionNameSuffix = ".Meta"
+                //versionNameSuffix = ".Meta"
 
                 buildConfigField("boolean", "PREMIUM", "Boolean.parseBoolean(\"false\")")
 

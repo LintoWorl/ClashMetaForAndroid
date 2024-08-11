@@ -232,6 +232,7 @@
                     android:textSize="14sp"
                     app:drawableEndCompat="@drawable/ic_baseline_arrow_enter" />
                 <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_under_tg"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp" />
 
@@ -342,6 +343,7 @@
                     android:textSize="14sp"
                     app:drawableEndCompat="@drawable/ic_baseline_arrow_enter" />
                 <com.google.android.material.divider.MaterialDivider
+                    android:id="@+id/divider_above_logs"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp" />
 
