@@ -12,7 +12,8 @@ import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.show
 import java.text.DecimalFormat
 
-class TrafficPlanAdapter(val context: Context) : RecyclerView.Adapter<TrafficPlanAdapter.Holder>() {
+class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean) -> Unit) :
+    RecyclerView.Adapter<TrafficPlanAdapter.Holder>() {
     class Holder(val binding: AdapterTrafficPlanBinding) : RecyclerView.ViewHolder(binding.root)
 
     var planList = emptyList<SubsProductBean>()
@@ -43,6 +44,9 @@ class TrafficPlanAdapter(val context: Context) : RecyclerView.Adapter<TrafficPla
                 holder.binding.divider.hide()
                 holder.binding.btnPlanMore.text = "详情"
             }
+        }
+        holder.binding.btnPlanBuy.onClickNew {
+            subsPlan(plan)
         }
     }
 }

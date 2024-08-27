@@ -50,9 +50,9 @@ object PaymentApi {
         return service.checkOrderStat(tradeNo)
     }
 
-    suspend fun createOrder(cycleName: String, planId: Int): ResponseData<String> {
+    suspend fun createOrder(cycleName: String, planId: Long): ResponseData<String> {
         val reqBody = RequestParam.Builder().apply {
-            put("cycle", cycleName)
+            put("period", cycleName)
             put("plan_id", planId)
         }.build().requestBody
         if (NetworkUtil.isVpnRunning(Global.application)) {

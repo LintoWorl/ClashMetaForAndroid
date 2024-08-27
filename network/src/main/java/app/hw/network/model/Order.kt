@@ -68,7 +68,7 @@ data class OrderBean(
  * }
  */
 data class PaymentBean(
-    var id: Long = 0,
+    var id: Int = 0,
     var name: String = "",
     var payment: String = ""
 )

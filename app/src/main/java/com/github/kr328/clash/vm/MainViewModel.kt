@@ -11,9 +11,11 @@ import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
 import app.hw.network.model.LoginResp
 import app.hw.network.model.NoticeBean
+import app.hw.network.model.PaymentBean
 import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
 import app.hw.network.model.UserInfo
+import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
@@ -41,6 +43,8 @@ class MainViewModel : ViewModel() {
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
     val lgnState: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
     val noticeMsgList: MutableLiveData<List<NoticeBean>> by lazy { MutableLiveData<List<NoticeBean>>() }
+    val subsOrderId: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    val paymentMethodList: MutableLiveData<List<PaymentBean>> by lazy { MutableLiveData<List<PaymentBean>>() }
 
     fun checkLoginStat() {
         RequestHandler.request({
@@ -137,6 +141,41 @@ class MainViewModel : ViewModel() {
             Logger.d("fetchSubsPlan fail:$msg")
             onFinish()
         })
+    }
+
+    fun createSubsPlanOrder(plan: SubsProductBean) {
+        RequestHandler.request({
+            PaymentApi.createOrder("month_price", plan.id)
+        }, {
+            subsOrderId.value = it
+        }, { code, msg ->
+            Global.application.toast(msg)
+        })
+    }
+
+    fun getPaymentMethod() {
+        RequestHandler.request({
+            PaymentApi.getPayMethod()
+        }, {
+            paymentMethodList.value = it
+        }, { code, msg ->
+            Global.application.toast(msg)
+        })
+    }
+
+    fun commitSubsOrder(paymentBean: PaymentBean) {
+        subsOrderId.value?.let {
+            RequestHandler.request({
+                PaymentApi.payOrder(it, paymentBean.id)
+            }, {}, { code, msg -> Global.application.toast(msg) })
+        }
+    }
+
+    fun cancelSubsOrder() {
+        subsOrderId.value?.let {
+            RequestHandler.request({ PaymentApi.cancelOrder(it) },
+                {}, { code, msg -> Global.application.toast(msg) })
+        }
     }
 
     suspend fun modifyUserPwd(context: Context, oldPwd: String, newPwd: String) {

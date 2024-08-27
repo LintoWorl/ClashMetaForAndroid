@@ -34,8 +34,8 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     private val mLoginFragment: LoginFragment by lazy { LoginFragment.newInstance() }
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
 
-    //private val mSubsFragment: StoreFragment by lazy { StoreFragment.newInstance() }
-    private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
+    private val mSubsFragment: StoreFragment by lazy { StoreFragment.newInstance() }
+    //private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
     private val mUserFragment: UserFragment by lazy { UserFragment.newInstance() }
     private val mChangePwdFragment: ChangePwdFragment by lazy { ChangePwdFragment.newInstance() }
     private lateinit var viewModel: MainViewModel
