@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import app.hw.network.model.PaymentBean
 import com.github.kr328.clash.design.databinding.AdapterPayMethodBinding
 import com.github.kr328.clash.design.util.layoutInflater
+import com.github.kr328.clash.design.util.onClickNew
 
 class PayMethodAdapter(val context: Context, val chosePayment: (PaymentBean) -> Unit) :
     RecyclerView.Adapter<PayMethodAdapter.Holder>() {
@@ -23,6 +24,9 @@ class PayMethodAdapter(val context: Context, val chosePayment: (PaymentBean) -> 
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val payMethod = payMethodList[position]
         holder.binding.tvPayMethod.text = payMethod.name
-
+        holder.binding.root.onClickNew {
+            chosePayment(payMethod)
+            holder.binding.ivPaymentChoiceStatus.isChecked = true
+        }
     }
 }

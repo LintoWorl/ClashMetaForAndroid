@@ -43,7 +43,7 @@ class MainViewModel : ViewModel() {
     val subsPlanList: MutableLiveData<List<SubsProductBean>> by lazy { MutableLiveData<List<SubsProductBean>>() }
     val lgnState: MutableLiveData<Boolean> by lazy { MutableLiveData<Boolean>() }
     val noticeMsgList: MutableLiveData<List<NoticeBean>> by lazy { MutableLiveData<List<NoticeBean>>() }
-    val subsOrderId: MutableLiveData<String> by lazy { MutableLiveData<String>() }
+    var subsOrderId: String = ""//MutableLiveData<String> by lazy { MutableLiveData<String>() }
     val paymentMethodList: MutableLiveData<List<PaymentBean>> by lazy { MutableLiveData<List<PaymentBean>>() }
 
     fun checkLoginStat() {
@@ -147,7 +147,7 @@ class MainViewModel : ViewModel() {
         RequestHandler.request({
             PaymentApi.createOrder("month_price", plan.id)
         }, {
-            subsOrderId.value = it
+            //subsOrderId.value = it
         }, { code, msg ->
             Global.application.toast(msg)
         })
@@ -164,17 +164,19 @@ class MainViewModel : ViewModel() {
     }
 
     fun commitSubsOrder(paymentBean: PaymentBean) {
-        subsOrderId.value?.let {
+        if (subsOrderId.isNotEmpty()) {
             RequestHandler.request({
-                PaymentApi.payOrder(it, paymentBean.id)
+                PaymentApi.payOrder(subsOrderId, paymentBean.id)
             }, {}, { code, msg -> Global.application.toast(msg) })
         }
     }
 
     fun cancelSubsOrder() {
-        subsOrderId.value?.let {
-            RequestHandler.request({ PaymentApi.cancelOrder(it) },
-                {}, { code, msg -> Global.application.toast(msg) })
+        if (subsOrderId.isNotEmpty()) {
+            RequestHandler.request({ PaymentApi.cancelOrder(subsOrderId) },
+                {
+                    Global.application.toast(if (it) "取消成功" else "取消失败了")
+                }, { code, msg -> Global.application.toast(msg) })
         }
     }
 

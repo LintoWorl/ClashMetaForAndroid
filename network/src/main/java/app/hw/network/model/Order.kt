@@ -36,8 +36,8 @@ data class OrderBean(
     var plan_id: Long = 0,
     var coupon_id: String = "",
     var payment_id: Long = 0,
-    var type: Int = 1,
-    var cycle: String = "",
+    var type: Int = 1,//订单类型 1新购2续费3升级
+    var period: String = "",//套餐类型
     var trade_no: String = "",
     var callback_no: String? = null,
     var total_amount: Int = 0,
@@ -46,15 +46,27 @@ data class OrderBean(
     var refund_amount: Int? = null,
     var balance_amount: Int? = null,
     var surplus_order_ids: Int? = null,
-    var status: Int = 0,
-    var commission_status: Int = 0,
+    var status: Int = 0,//订单状态 0待支付1开通中2已取消3已完成4已折抵
+    var commission_status: Int = 0,//佣金状态 0待确认1发放中2有效3无效
     var commission_balance: Int = 0,
     var paid_at: Long? = null,
     var created_at: Long = 0,
     var updated_at: Long = 0,
-    //TODO var plan
+    var plan: SubsProductBean? = null,
     var try_out_plan_id: Long = 0
 )
+
+class OrderStatus {
+    fun getStatusDesc(no: Int): String {
+        return when (no) {
+            1 -> "开通中"
+            2 -> "已取消"
+            3 -> "已完成"
+            4 -> "已折抵"
+            else -> "待支付"
+        }
+    }
+}
 
 /**
  * {

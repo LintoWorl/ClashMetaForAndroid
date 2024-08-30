@@ -83,6 +83,11 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".OrderListActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:label="@string/order_list" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="uiMode"
             android:exported="false"

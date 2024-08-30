@@ -1,6 +1,7 @@
 package com.github.kr328.clash.fragment
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,8 +9,15 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import app.hw.network.api.PaymentApi
+import app.hw.network.handler.RequestHandler
 import app.hw.network.model.PaymentBean
+import app.hw.network.model.SubsProductBean
 import com.github.kr328.clash.MainV2Activity
+import com.github.kr328.clash.OrderListActivity
+import com.github.kr328.clash.common.Global
+import com.github.kr328.clash.common.log.toast
+import com.github.kr328.clash.common.util.TimeFormat
 import com.github.kr328.clash.design.adapter.PayMethodAdapter
 import com.github.kr328.clash.design.adapter.TrafficPlanAdapter
 import com.github.kr328.clash.design.databinding.DialogOrderConfirmBinding
@@ -36,6 +44,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     private var requireRefresh: Boolean = false
     private var orderDialogBinding: DialogOrderConfirmBinding? = null
     private var chosenPayment: PaymentBean? = null
+    private var payMethods = emptyList<PaymentBean>()
+    //private var subsOrderId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,32 +78,24 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
 
     @SuppressLint("SetTextI18n")
     private fun initView() {
+        viewModel.getPaymentMethod()
         val refreshLayout = binding.refreshLayout
         refreshLayout.setOnRefreshListener {
             viewModel.fetchSubsPlan(!appStore.hasLoginApp) { it.finishRefresh() }
         }
         planAdapter = TrafficPlanAdapter(activity) { plan ->
             //创建flow，等待创建订单和获取支付方式两个接口
-            viewModel.getPaymentMethod()
-            viewModel.createSubsPlanOrder(plan)
-            val dialog = AppBottomSheetDialog(activity)
-
-            orderDialogBinding = DialogOrderConfirmBinding
-                .inflate(activity.layoutInflater, dialog.window?.decorView as ViewGroup?, false)
-            orderDialogBinding?.tvOrderDesc?.text = plan.name
-            val df = DecimalFormat("#.00")
-            orderDialogBinding?.tvOrderPrice?.text = "¥ " + df.format(plan.month_price / 100f)
-            orderDialogBinding?.tvOrderPay?.onClickNew {
-                chosenPayment?.apply {
-                    viewModel.commitSubsOrder(this)
-                }
-            }
-            orderDialogBinding?.tvOrderCancel?.onClickNew { viewModel.cancelSubsOrder() }
-
-            orderDialogBinding?.root?.let { dialog.setContentView(it) }
-            dialog.setCancelable(false)
-            dialog.setCanceledOnTouchOutside(false)
-            dialog.show()
+            //viewModel.getPaymentMethod()
+            //viewModel.createSubsPlanOrder(plan)
+            RequestHandler.request({
+                PaymentApi.createOrder("month_price", plan.id)
+            }, {
+                viewModel.subsOrderId = it
+                createSubsOrder(plan)
+            }, { code, msg ->
+                Global.application.toast(msg)
+                activity.startActivity(Intent(activity, OrderListActivity::class.java))
+            })
         }
         binding.rvTrafficPlan.apply {
             adapter = planAdapter
@@ -113,21 +115,10 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         viewModel.lgnState.observe(viewLifecycleOwner) {
             requireRefresh = true
         }
-        viewModel.subsOrderId.observe(viewLifecycleOwner) {
-            orderDialogBinding?.tvOrderNo?.text = it
-        }
+
         viewModel.paymentMethodList.observe(viewLifecycleOwner) {
-            val paymentAdapter = PayMethodAdapter(activity) {
-                chosenPayment = it
-            }
-            paymentAdapter.payMethodList = it
-            orderDialogBinding?.rvPayMethods?.apply {
-                adapter = paymentAdapter
-                layoutManager =
-                    LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
-                itemAnimator = null
-                isNestedScrollingEnabled = false
-            }
+            chosenPayment = it[0]
+            payMethods = it
         }
     }
 
@@ -142,6 +133,45 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
             }
         }
         requireRefresh = false
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun createSubsOrder(plan: SubsProductBean) {
+        val dialog = AppBottomSheetDialog(activity)
+
+        val binding = DialogOrderConfirmBinding
+            .inflate(activity.layoutInflater, dialog.window?.decorView as ViewGroup?, false)
+        binding.tvOrderDesc.text = plan.name
+        binding.tvOrderNo.text = viewModel.subsOrderId
+        binding.tvOrderTime.text = TimeFormat.millis2String(System.currentTimeMillis())
+        val df = DecimalFormat("#.00")
+        binding.tvOrderPrice.text = "¥ " + df.format(plan.month_price / 100f)
+        binding.tvOrderPay.onClickNew {
+            chosenPayment?.apply {
+                viewModel.commitSubsOrder(this)
+            }
+        }
+        binding.tvOrderCancel.onClickNew {
+            viewModel.cancelSubsOrder()
+            dialog.dismiss()
+        }
+
+        val paymentAdapter = PayMethodAdapter(activity) { payment ->
+            chosenPayment = payment// 需更新支付方式的选中状态 FIXME
+        }
+        paymentAdapter.payMethodList = payMethods
+        binding.rvPayMethods.apply {
+            adapter = paymentAdapter
+            layoutManager =
+                LinearLayoutManager(requireActivity(), LinearLayoutManager.VERTICAL, false)
+            itemAnimator = null
+            isNestedScrollingEnabled = false
+        }
+
+        binding.root.let { dialog.setContentView(it) }
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
     }
 
     companion object {

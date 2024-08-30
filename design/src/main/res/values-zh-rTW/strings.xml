@@ -260,4 +260,5 @@
     <string name="title_reset_pwd">重置密码</string>
     <string name="title_register">注册</string>
     <string name="send_mail_code">发送</string>
+    <string name="order_list">我的訂單</string>
 </resources>
