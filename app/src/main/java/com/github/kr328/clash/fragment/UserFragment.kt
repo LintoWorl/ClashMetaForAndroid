@@ -18,6 +18,7 @@ import com.github.kr328.clash.LogsActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.MetaFeatureSettingsActivity
 import com.github.kr328.clash.NetworkSettingsActivity
+import com.github.kr328.clash.OrderListActivity
 import com.github.kr328.clash.OverrideSettingsActivity
 import com.github.kr328.clash.R
 import com.github.kr328.clash.common.log.toast
@@ -158,6 +159,10 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
         }
         binding.tvAccountEmail.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
+        }
+
+        binding.itemMyOrders.onClickNew {
+            startActivity(OrderListActivity::class.intent)
         }
 
         binding.itemAppSetting.onClickNew {

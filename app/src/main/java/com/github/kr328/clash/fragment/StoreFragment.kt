@@ -1,7 +1,6 @@
 package com.github.kr328.clash.fragment
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,14 +17,13 @@ import com.github.kr328.clash.OrderListActivity
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.TimeFormat
+import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.design.adapter.PayMethodAdapter
 import com.github.kr328.clash.design.adapter.TrafficPlanAdapter
 import com.github.kr328.clash.design.databinding.DialogOrderConfirmBinding
-import com.github.kr328.clash.design.databinding.DialogProfilesMenuBinding
 import com.github.kr328.clash.design.databinding.FragTrafficStoreBinding
 import com.github.kr328.clash.design.dialog.AppBottomSheetDialog
 import com.github.kr328.clash.design.dialog.showModalProgressBar
-import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
@@ -42,7 +40,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var planAdapter: TrafficPlanAdapter
     private lateinit var appStore: AppStore
     private var requireRefresh: Boolean = false
-    private var orderDialogBinding: DialogOrderConfirmBinding? = null
+    //private var orderDialogBinding: DialogOrderConfirmBinding? = null
     private var chosenPayment: PaymentBean? = null
     private var payMethods = emptyList<PaymentBean>()
     //private var subsOrderId: String = ""
@@ -84,9 +82,6 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
             viewModel.fetchSubsPlan(!appStore.hasLoginApp) { it.finishRefresh() }
         }
         planAdapter = TrafficPlanAdapter(activity) { plan ->
-            //创建flow，等待创建订单和获取支付方式两个接口
-            //viewModel.getPaymentMethod()
-            //viewModel.createSubsPlanOrder(plan)
             RequestHandler.request({
                 PaymentApi.createOrder("month_price", plan.id)
             }, {
@@ -94,7 +89,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
                 createSubsOrder(plan)
             }, { code, msg ->
                 Global.application.toast(msg)
-                activity.startActivity(Intent(activity, OrderListActivity::class.java))
+                startActivity(OrderListActivity::class.intent)
             })
         }
         binding.rvTrafficPlan.apply {

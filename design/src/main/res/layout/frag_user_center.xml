@@ -106,9 +106,9 @@
                 android:background="@drawable/bg_user_center_item"
                 android:orientation="vertical"
                 android:paddingHorizontal="20dp"
-                android:paddingVertical="4dp"
-                android:visibility="gone">
+                android:paddingVertical="4dp">
                 <TextView
+                    android:id="@+id/item_my_orders"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_baseline_arrow_enter"
@@ -121,6 +121,7 @@
                     android:layout_height="0.5dp"
                     app:dividerColor="@color/color_ccc" />
                 <TextView
+                    android:id="@+id/item_my_wallet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_baseline_arrow_enter"
@@ -133,7 +134,7 @@
                     android:layout_height="0.5dp"
                     app:dividerColor="@color/color_ccc" />
                 <TextView
-                    android:id="@+id/btn_my_traffic"
+                    android:id="@+id/item_my_traffic"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_baseline_arrow_enter"
@@ -145,6 +146,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp" />
                 <TextView
+                    android:id="@+id/item_my_profit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawableEnd="@drawable/ic_baseline_arrow_enter"

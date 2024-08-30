@@ -19,8 +19,6 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
 
     init {
         binding.activityBarLayout.applyFrom(context)
-        //binding.titleBar.titleBarText.text = "我的订单"
-        //binding.titleBar.titleBarGoback.onClickNew { context.finish() }
         binding.rvSubsPlanOrder.apply {
             adapter = orderAdapter
             layoutManager =
