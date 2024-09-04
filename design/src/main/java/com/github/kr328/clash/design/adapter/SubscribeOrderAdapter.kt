@@ -15,7 +15,7 @@ import java.text.DecimalFormat
 /**
  * 我的订单管理界面的列表
  */
-class SubscribeOrderAdapter(val context: Context, val chosePayment: (OrderBean) -> Unit) :
+class SubscribeOrderAdapter(val context: Context, val clickedItem: (OrderBean) -> Unit) :
     RecyclerView.Adapter<SubscribeOrderAdapter.Holder>() {
     class Holder(val binding: AdapterSubscribeOrderBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -30,15 +30,15 @@ class SubscribeOrderAdapter(val context: Context, val chosePayment: (OrderBean) 
 
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: Holder, position: Int) {
-        val payMethod = orderBeans[position]
+        val orderBean = orderBeans[position]
         holder.binding.tvSubsOrderTitle.text =
-            payMethod.plan?.name?.takeIf { it.isNotEmpty() } ?: "默认套餐"
+            orderBean.plan?.name?.takeIf { it.isNotEmpty() } ?: "默认套餐"
         val df = DecimalFormat("#.00")
-        holder.binding.tvSubsOrderPrice.text = "¥ " + df.format(payMethod.total_amount / 100f)
-        holder.binding.tvSubsOrderTime.text = TimeFormat.millis2String(payMethod.created_at * 1000L)
-        holder.binding.tvSubsOrderState.text = OrderStatus().getStatusDesc(payMethod.status)
+        holder.binding.tvSubsOrderPrice.text = "¥ " + df.format(orderBean.total_amount / 100f)
+        holder.binding.tvSubsOrderTime.text = TimeFormat.millis2String(orderBean.created_at * 1000L)
+        holder.binding.tvSubsOrderState.text = OrderStatus().getStatusDesc(orderBean.status)
         holder.binding.root.onClickNew {
-            chosePayment(payMethod)
+            clickedItem(orderBean)
         }
     }
 }
