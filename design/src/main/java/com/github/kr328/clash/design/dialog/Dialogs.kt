@@ -28,8 +28,8 @@ class AppBottomSheetDialog(context: Context) : BottomSheetDialog(context) {
         setCancelable(true)
 
         window!!.apply {
-            isSystemBarsTranslucentCompat = true
-            isAllowForceDarkCompat = false
+            isSystemBarsTranslucentCompat = false
+            isAllowForceDarkCompat = true
         }
 
         findViewById<ViewGroup>(com.google.android.material.R.id.container)?.apply {

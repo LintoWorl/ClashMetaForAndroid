@@ -2,6 +2,9 @@ package com.github.kr328.clash.vm
 
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import app.hw.network.api.OthersApi
@@ -167,7 +170,16 @@ class MainViewModel : ViewModel() {
         if (subsOrderId.isNotEmpty()) {
             RequestHandler.request({
                 PaymentApi.payOrder(subsOrderId, paymentBean.id)
-            }, {}, { code, msg -> Global.application.toast(msg) })
+            }, {
+                Logger.d("submit order:$it")
+                if (it.isEmpty()) {
+                    Global.application.toast("支付订单失败！请重试")
+                    return@request
+                }
+                val actionIntent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                actionIntent.addFlags(FLAG_ACTIVITY_NEW_TASK)
+                Global.application.startActivity(actionIntent)
+            }, { code, msg -> Global.application.toast(msg) })
         }
     }
 

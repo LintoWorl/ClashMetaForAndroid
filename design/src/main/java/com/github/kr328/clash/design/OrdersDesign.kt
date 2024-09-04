@@ -2,12 +2,19 @@ package com.github.kr328.clash.design
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import app.hw.network.api.PaymentApi
+import app.hw.network.handler.RequestHandler
 import app.hw.network.model.OrderBean
 import app.hw.network.model.SubsProductBean
+import com.github.kr328.clash.common.Global
+import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.TimeFormat
 import com.github.kr328.clash.design.adapter.PayMethodAdapter
 import com.github.kr328.clash.design.adapter.SubscribeOrderAdapter
@@ -65,18 +72,38 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         binding.tvOrderTime.text = TimeFormat.millis2String(order.created_at * 1000L)
         val df = DecimalFormat("#.00")
         binding.tvOrderPrice.text = "¥ " + df.format(plan?.month_price?.div(100f) ?: 0)
+        val paymentAdapter = PayMethodAdapter(context) { _ -> }
         binding.tvOrderPay.onClickNew {
-            //TODO 提交订单进行支付
+            //TO 提交订单进行支付
+            RequestHandler.request({
+                PaymentApi.payOrder(order.trade_no, paymentAdapter.theChosenPayMethod.id)
+            }, {
+                Logger.d("submit order:$it")
+                if (it.isNullOrEmpty()) {
+                    Global.application.toast("支付订单失败！请重试")
+                    return@request
+                }
+                val actionIntent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
+                context.startActivity(actionIntent)
+            }, { code, msg -> Global.application.toast(msg) })
         }
         binding.tvOrderCancel.onClickNew {
-            //viewModel.cancelSubsOrder()//取消订单 TODO
+            RequestHandler.request({ PaymentApi.cancelOrder(order.trade_no) },
+                {
+                    Global.application.toast(if (it) "取消成功" else "取消失败了")
+                }, { code, msg -> Global.application.toast(msg) })
             dialog.dismiss()
         }
 
-        val paymentAdapter = PayMethodAdapter(context) { payment ->
-            //chosenPayment = payment// 需更新支付方式的选中状态 FIXME
-        }
-        //paymentAdapter.payMethodList = payMethods //FIXME 添加支付方式
+        RequestHandler.request({
+            PaymentApi.getPayMethod()
+        }, {
+            paymentAdapter.payMethodList = it
+            paymentAdapter.notifyDataSetChanged()
+        }, { code, msg ->
+            Global.application.toast(msg)
+        })
+
         binding.rvPayMethods.apply {
             adapter = paymentAdapter
             layoutManager =

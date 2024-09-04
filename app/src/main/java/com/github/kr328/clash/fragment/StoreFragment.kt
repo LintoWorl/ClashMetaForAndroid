@@ -144,6 +144,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         binding.tvOrderPay.onClickNew {
             chosenPayment?.apply {
                 viewModel.commitSubsOrder(this)
+                dialog.dismiss()
             }
         }
         binding.tvOrderCancel.onClickNew {
