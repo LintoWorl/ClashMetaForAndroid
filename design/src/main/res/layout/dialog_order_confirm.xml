@@ -23,6 +23,7 @@
         android:id="@+id/rv_pay_methods"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_label_payway" />
 
@@ -56,12 +57,12 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        tools:text="8.8元月套餐"
         android:textColor="@color/color_333"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/tv_desc_label"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_desc_label" />
+        app:layout_constraintTop_toTopOf="@id/tv_desc_label"
+        tools:text="8.8元月套餐" />
 
     <TextView
         android:id="@+id/tv_price_label"
@@ -80,13 +81,13 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        tools:text="¥8.80"
         android:textColor="@color/black"
         android:textSize="15sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/tv_price_label"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_price_label" />
+        app:layout_constraintTop_toTopOf="@id/tv_price_label"
+        tools:text="¥8.80" />
 
     <TextView
         android:id="@+id/tv_orderno_label"
@@ -105,12 +106,12 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        tools:text="202408271108268787人文7565443"
         android:textColor="@color/color_333"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/tv_orderno_label"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_orderno_label" />
+        app:layout_constraintTop_toTopOf="@id/tv_orderno_label"
+        tools:text="202408271108268787人文7565443" />
 
     <TextView
         android:id="@+id/tv_time_label"
@@ -129,12 +130,12 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        tools:text="2024-08-27 11:17:28"
         android:textColor="@color/color_333"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/tv_time_label"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_time_label" />
+        app:layout_constraintTop_toTopOf="@id/tv_time_label"
+        tools:text="2024-08-27 11:17:28" />
 
     <TextView
         android:id="@+id/tv_order_pay"

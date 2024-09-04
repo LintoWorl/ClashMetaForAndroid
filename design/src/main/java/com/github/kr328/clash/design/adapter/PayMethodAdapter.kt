@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.hw.network.model.PaymentBean
+import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.AdapterPayMethodBinding
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.onClickNew
@@ -32,12 +33,18 @@ class PayMethodAdapter(val context: Context, val chosePayment: (PaymentBean) -> 
         val payMethod = payMethodList[position]
         holder.binding.tvPayMethod.text = payMethod.name
         holder.binding.ivPaymentChoiceStatus.isChecked = lastCheckedPos == position
+        if (lastCheckedPos == position) {
+            holder.binding.ivPayItemBg.setBackgroundResource(R.drawable.bg_item_selected)
+        } else {
+            holder.binding.ivPayItemBg.setBackgroundResource(R.drawable.bg_pay_item_unsel)
+        }
         holder.binding.root.onClickNew {
             chosePayment(payMethod)
             holder.binding.ivPaymentChoiceStatus.isChecked = true
             if (lastCheckedPos != position) {
                 notifyItemChanged(lastCheckedPos)
             }
+            holder.binding.ivPayItemBg.setBackgroundResource(R.drawable.bg_item_selected)
             lastCheckedPos = position
         }
     }
