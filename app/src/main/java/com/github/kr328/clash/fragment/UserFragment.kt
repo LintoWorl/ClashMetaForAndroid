@@ -73,6 +73,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
         super.onHiddenChanged(hidden)
         if (!hidden && reqrdRefresh) {
             initView()
+            viewModel.fetchSubscribeInfo()
         }
     }
 

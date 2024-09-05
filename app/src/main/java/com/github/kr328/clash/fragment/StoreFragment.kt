@@ -82,6 +82,12 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
             viewModel.fetchSubsPlan(!appStore.hasLoginApp) { it.finishRefresh() }
         }
         planAdapter = TrafficPlanAdapter(activity) { plan ->
+            //检测用户身份，游客用户需先登录
+            if (!viewModel.userHasLogin) {
+                viewModel.prevFragIdx = MainViewModel.IDX_FRAG_SUBS
+                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
+                return@TrafficPlanAdapter
+            }
             RequestHandler.request({
                 PaymentApi.createOrder("month_price", plan.id)
             }, {

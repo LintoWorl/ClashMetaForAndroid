@@ -35,6 +35,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     private val mHomeFragment: HomeFragment by lazy { HomeFragment.newInstance() }
 
     private val mSubsFragment: StoreFragment by lazy { StoreFragment.newInstance() }
+
     //private val mSubsFragment: ProductFragment by lazy { ProductFragment.newInstance() }
     private val mUserFragment: UserFragment by lazy { UserFragment.newInstance() }
     private val mChangePwdFragment: ChangePwdFragment by lazy { ChangePwdFragment.newInstance() }
@@ -51,6 +52,14 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
                 MainViewModel.IDX_FRAG_XPWD -> {
                     showFragmentByIndex(MainViewModel.IDX_FRAG_USER)
+                }
+
+                MainViewModel.IDX_FRAG_LOGIN -> {
+                    if (viewModel.prevFragIdx == MainViewModel.IDX_FRAG_SUBS) {
+                        showFragmentByIndex(MainViewModel.IDX_FRAG_SUBS)
+                    } else {
+                        finish()
+                    }
                 }
 
                 else -> {

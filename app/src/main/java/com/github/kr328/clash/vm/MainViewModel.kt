@@ -40,6 +40,7 @@ class MainViewModel : ViewModel() {
     }
 
     var userHasLogin: Boolean = false
+    var prevFragIdx: Int = IDX_FRAG_LOGIN
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }
     val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
     val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }
