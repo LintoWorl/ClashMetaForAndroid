@@ -29,6 +29,7 @@ gradle-app.setting
 
 # Ignore builtin geofiles
 app/src/main/assets
+app/meta
 
 # KeyStore
 signing.properties
