@@ -140,7 +140,10 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         binding.tvOrderNo.text = viewModel.subsOrderId
         binding.tvOrderTime.text = TimeFormat.millis2String(System.currentTimeMillis())
         val df = DecimalFormat("#.00")
-        binding.tvOrderPrice.text = "¥ " + df.format(plan.month_price / 100f)
+        val priceVal = plan.month_price / 100f
+        binding.tvOrderPrice.text =
+            "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
+        //binding.tvOrderPrice.text = "¥ " + df.format(plan.month_price / 100f)
         binding.tvOrderPay.onClickNew {
             chosenPayment?.apply {
                 viewModel.commitSubsOrder(this)

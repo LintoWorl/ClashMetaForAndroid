@@ -45,7 +45,7 @@ data class OrderBean(
     var surplus_amount: Int? = null,
     var refund_amount: Int? = null,
     var balance_amount: Int? = null,
-    var surplus_order_ids: Int? = null,
+    var surplus_order_ids: IntArray? = null,
     var status: Int = 0,//订单状态 0待支付1开通中2已取消3已完成4已折抵
     var commission_status: Int = 0,//佣金状态 0待确认1发放中2有效3无效
     var commission_balance: Int = 0,

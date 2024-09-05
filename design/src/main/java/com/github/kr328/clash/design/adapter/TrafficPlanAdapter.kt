@@ -30,7 +30,9 @@ class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean) -
         val plan = planList[position]
         holder.binding.tvPlanTitle.text = plan.name
         val df = DecimalFormat("#.00")
-        holder.binding.tvPlanPrice.text = "¥ " + df.format(plan.month_price / 100f)
+        val priceVal = plan.month_price / 100f
+        holder.binding.tvPlanPrice.text =
+            "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
         holder.binding.tvPlanPeriod.text = "月付"
         holder.binding.tvPlanIntro.text = plan.sort ?: "88GB 流量"
         holder.binding.tvPlanDesc.text = plan.content

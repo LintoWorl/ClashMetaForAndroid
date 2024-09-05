@@ -53,10 +53,14 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
     }
 
     private fun checkDetail(orderBean: OrderBean) {
-        if (orderBean.status == 0) {
-            payOrder(orderBean)
-        } else if (orderBean.status == 2) {
-            showOrderDetail(orderBean)
+        when (orderBean.status) {
+            0 -> {
+                payOrder(orderBean)
+            }
+
+            2, 3 -> {
+                showOrderDetail(orderBean)
+            }
         }
     }
 
@@ -70,8 +74,13 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         binding.tvOrderDesc.text = plan?.name
         binding.tvOrderNo.text = order.trade_no
         binding.tvOrderTime.text = TimeFormat.millis2String(order.created_at * 1000L)
-        val df = DecimalFormat("#.00")
-        binding.tvOrderPrice.text = "¥ " + df.format(plan?.month_price?.div(100f) ?: 0)
+        plan?.apply {
+            val df = DecimalFormat("#.00")
+            val priceVal = month_price / 100f
+            binding.tvOrderPrice.text =
+                "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
+        }
+
         val paymentAdapter = PayMethodAdapter(context) { _ -> }
         binding.tvOrderPay.onClickNew {
             //TO 提交订单进行支付
@@ -137,8 +146,12 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         binding.tvOrderDesc.text = plan?.name
         binding.tvOrderNo.text = orderBean.trade_no
         binding.tvOrderTime.text = TimeFormat.millis2String(orderBean.created_at * 1000L)
-        val df = DecimalFormat("#.00")
-        binding.tvOrderPrice.text = "¥ " + df.format(plan?.month_price?.div(100f) ?: 0)
+        plan?.apply {
+            val df = DecimalFormat("#.00")
+            val priceVal = month_price / 100f
+            binding.tvOrderPrice.text =
+                "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
+        }
 
         binding.root.let { dialog.setContentView(it) }
         dialog.show()

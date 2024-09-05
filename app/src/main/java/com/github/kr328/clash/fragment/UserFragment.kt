@@ -78,7 +78,6 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
 
     @SuppressLint("SetTextI18n")
     private fun initView() {
-        //val appStore = AppStore(activity)
         if (viewModel.userHasLogin) {
             launch { viewModel.fetchUserAccountInfo(activity) }
 
@@ -113,7 +112,6 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun initEvents() {
         binding.btnLogout.onClickNew {
-            //val appStore = AppStore(activity)
             appStore.hasLoginApp = false
             appStore.enteredHome = false
             appStore.authData = ""
@@ -124,12 +122,6 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             context?.toast("退出登录成功")
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
             //请求退出登录API
-            /*RequestHandler.request({
-                UserAccountApi.logout()
-            }, {
-            }, { _, msg ->
-                Logger.e("Logout fail:$msg")
-            })*/
         }
         binding.itemOfficialWeb.onClickNew {
             startActivity(

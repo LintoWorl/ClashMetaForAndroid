@@ -34,7 +34,10 @@ class SubscribeOrderAdapter(val context: Context, val clickedItem: (OrderBean) -
         holder.binding.tvSubsOrderTitle.text =
             orderBean.plan?.name?.takeIf { it.isNotEmpty() } ?: "默认套餐"
         val df = DecimalFormat("#.00")
-        holder.binding.tvSubsOrderPrice.text = "¥ " + df.format(orderBean.total_amount / 100f)
+        val priceVal = orderBean.total_amount / 100f
+        holder.binding.tvSubsOrderPrice.text =
+            "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
+        //holder.binding.tvSubsOrderPrice.text = "¥ " + df.format(orderBean.total_amount / 100f)
         holder.binding.tvSubsOrderTime.text = TimeFormat.millis2String(orderBean.created_at * 1000L)
         holder.binding.tvSubsOrderState.text = OrderStatus().getStatusDesc(orderBean.status)
         holder.binding.root.onClickNew {
