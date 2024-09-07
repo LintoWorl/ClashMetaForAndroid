@@ -5,13 +5,16 @@ import android.os.Build
 import android.os.Looper
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.common.constants.Authorities
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
+import com.github.kr328.clash.design.dialog.CommonDialog
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.fragment.ChangePwdFragment
@@ -89,6 +92,24 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     override suspend fun main() {
         binding = DesignMainV2Binding.inflate(layoutInflater)
         setContentView(binding.root)
+        if (!NetworkUtil.isNetConnected(this)) {
+            CommonDialog.show(supportFragmentManager) {
+                title = "提示"
+                content = "网络连接失败，请检查网络设置！"
+                rightButton = "重试"
+                listener = object : CommonDialog.OnClickListener{
+                    override fun onPositiveClick(dialog: CommonDialog, clue: String) {
+                        if (NetworkUtil.isNetConnected(this@MainV2Activity)) {
+                            dialog.dismiss()
+                        }
+                    }
+
+                    override fun onNegativeClick(dialog: CommonDialog) {
+                        dialog.dismiss()
+                    }
+                }
+            }
+        }
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
         appStore = AppStore(this)
         if (!appStore.hasLoginApp && !appStore.enteredHome) {

@@ -88,6 +88,7 @@ open class CommonDialog() : DialogFragment() {
 
     private fun initViews() {
         val markwon = Markwon.create(Global.application)
+        binding.dialogTvTitle.show()
         binding.dialogTvTitle.text =
             if (title == null || title?.isEmpty() == true) {
                 getString(R.string.launch_name)
@@ -111,13 +112,18 @@ open class CommonDialog() : DialogFragment() {
 
     private fun initEvents() {
         binding.dialogBtnPositive.onClickNew {
-            dlgListener?.onPositiveClick(this, "")
-            dismissByCancel = true
-            dismiss()
+            dlgListener?.apply {
+                onPositiveClick(this@CommonDialog, "")
+            }
+            if (dlgListener == null) {
+                dismiss()
+            }
         }
         binding.dialogBtnNegative.onClickNew {
-            dlgListener?.onNegativeClick(this)
-            dismiss()
+            dlgListener?.apply { onNegativeClick(this@CommonDialog) }
+            if (dlgListener == null) {
+                dismiss()
+            }
         }
     }
 
