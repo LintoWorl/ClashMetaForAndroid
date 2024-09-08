@@ -20,6 +20,7 @@
     <string name="format_profile_activated">%s Activated</string>
 
     <string name="order_list">My Orders</string>
+    <string name="traffic_records">Traffic Records</string>
     <string name="logs">Logs</string>
     <string name="settings">Settings</string>
     <string name="help">Help</string>

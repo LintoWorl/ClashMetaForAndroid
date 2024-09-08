@@ -5,6 +5,7 @@ import app.hw.network.model.AppConfig
 import app.hw.network.model.CheckStat
 import app.hw.network.model.LoginResp
 import app.hw.network.model.ProductSubsInfo
+import app.hw.network.model.TrafficBean
 import app.hw.network.model.UserInfo
 import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.common.Global
@@ -146,5 +147,15 @@ object UserAccountApi {
             return service2.transferBonus(reqBody)
         }
         return service.transferBonus(reqBody)
+    }
+
+    suspend fun getTrafficLog(): ResponseData<List<TrafficBean>> {
+        val reqBody = RequestParam.Builder().apply {
+
+        }.build().requestBody
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.trafficRecord()
+        }
+        return service.trafficRecord()
     }
 }

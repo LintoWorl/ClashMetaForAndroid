@@ -88,6 +88,11 @@
             android:exported="false"
             android:label="@string/order_list" />
         <activity
+            android:name=".TrafficRecordActivity"
+            android:configChanges="uiMode"
+            android:exported="false"
+            android:label="@string/traffic_records" />
+        <activity
             android:name=".MainActivity"
             android:configChanges="uiMode"
             android:exported="false"

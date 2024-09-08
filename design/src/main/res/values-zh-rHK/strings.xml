@@ -261,4 +261,5 @@
     <string name="title_register">注册</string>
     <string name="send_mail_code">发送</string>
     <string name="order_list">我的訂單</string>
+    <string name="traffic_records">流量记录</string>
 </resources>

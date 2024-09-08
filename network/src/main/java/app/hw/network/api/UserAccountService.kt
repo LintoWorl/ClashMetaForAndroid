@@ -4,6 +4,7 @@ import app.hw.network.model.AppConfig
 import app.hw.network.model.CheckStat
 import app.hw.network.model.LoginResp
 import app.hw.network.model.ProductSubsInfo
+import app.hw.network.model.TrafficBean
 import app.hw.network.model.UserInfo
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -101,4 +102,10 @@ internal interface UserAccountService {
 
     @POST("user/transfer")
     suspend fun transferBonus(@Body requestBody: RequestBody): ResponseData<Boolean>
+
+    /**
+     * 获取流量记录
+     */
+    @GET("user/stat/getTrafficLog")
+    suspend fun trafficRecord(): ResponseData<List<TrafficBean>>
 }

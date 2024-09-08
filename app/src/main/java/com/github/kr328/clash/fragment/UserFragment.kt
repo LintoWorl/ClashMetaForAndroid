@@ -21,6 +21,7 @@ import com.github.kr328.clash.NetworkSettingsActivity
 import com.github.kr328.clash.OrderListActivity
 import com.github.kr328.clash.OverrideSettingsActivity
 import com.github.kr328.clash.R
+import com.github.kr328.clash.TrafficRecordActivity
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.encode
 import com.github.kr328.clash.common.util.intent
@@ -92,7 +93,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.tvAccountEmail.text = "尚未登录，马上登录 >>"
             binding.tvAccountEmail.isClickable = true
             binding.tvAccountEmail.isEnabled = true
-            binding.llOrderTraffics.hide()
+            binding.llOrderTraffics.show()
             binding.tvLastLogin.hide()
             binding.llSubsInfo.hide()
             binding.btnLogout.hide()
@@ -158,6 +159,9 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
 
         binding.itemMyOrders.onClickNew {
             startActivity(OrderListActivity::class.intent)
+        }
+        binding.itemMyTraffic.onClickNew {
+            startActivity(TrafficRecordActivity::class.intent)
         }
 
         binding.itemAppSetting.onClickNew {
