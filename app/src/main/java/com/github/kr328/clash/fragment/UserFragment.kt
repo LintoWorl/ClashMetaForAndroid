@@ -84,6 +84,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
 
             binding.tvAccountEmail.isClickable = false
             binding.tvAccountEmail.isEnabled = false
+            binding.llOrderTraffics.show()
             binding.btnLogout.show()
             binding.btnResetPwd.show()
             binding.llSubsInfo.show()
@@ -91,6 +92,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.tvAccountEmail.text = "尚未登录，马上登录 >>"
             binding.tvAccountEmail.isClickable = true
             binding.tvAccountEmail.isEnabled = true
+            binding.llOrderTraffics.hide()
             binding.tvLastLogin.hide()
             binding.llSubsInfo.hide()
             binding.btnLogout.hide()
