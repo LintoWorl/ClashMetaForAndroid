@@ -4,12 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import app.hw.network.model.NoticeBean
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProxyActivity
@@ -42,7 +40,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 
 class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
@@ -87,6 +84,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         if (!hidden) {
             observeClashStat()
             launch { design.fetch() }
+            viewModel.fetchNoticeInfo()
         }
     }
 
