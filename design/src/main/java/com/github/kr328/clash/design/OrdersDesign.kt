@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.hw.network.api.PaymentApi
@@ -23,10 +24,10 @@ import com.github.kr328.clash.design.databinding.DialogOrderConfirmBinding
 import com.github.kr328.clash.design.databinding.DialogOrderFinishBinding
 import com.github.kr328.clash.design.dialog.AppBottomSheetDialog
 import com.github.kr328.clash.design.util.applyFrom
+import com.github.kr328.clash.design.util.formatPrice
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.root
-import java.text.DecimalFormat
 
 class OrdersDesign(context: Activity) : Design<Unit>(context) {
     private val binding =
@@ -49,7 +50,8 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
 
     fun updateList(list: List<OrderBean>) {
         orderAdapter.orderBeans = list
-        orderAdapter.notifyDataSetChanged()
+        orderAdapter.notifyItemRangeInserted(0, list.size)
+        //orderAdapter.notifyDataSetChanged()
     }
 
     private fun checkDetail(orderBean: OrderBean) {
@@ -75,10 +77,7 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         binding.tvOrderNo.text = order.trade_no
         binding.tvOrderTime.text = TimeFormat.millis2String(order.created_at * 1000L)
         plan?.apply {
-            val df = DecimalFormat("#.00")
-            val priceVal = month_price / 100f
-            binding.tvOrderPrice.text =
-                "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
+            getPlanPrice(this, binding.tvOrderPrice)
         }
 
         val paymentAdapter = PayMethodAdapter(context) { _ -> }
@@ -108,7 +107,8 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
             PaymentApi.getPayMethod()
         }, {
             paymentAdapter.payMethodList = it
-            paymentAdapter.notifyDataSetChanged()
+            paymentAdapter.notifyItemRangeInserted(0, it.size)
+            //paymentAdapter.notifyDataSetChanged()
         }, { code, msg ->
             Global.application.toast(msg)
         })
@@ -122,8 +122,6 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         }
 
         binding.root.let { dialog.setContentView(it) }
-        //dialog.setCancelable(false)
-        //dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
 
@@ -147,13 +145,63 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         binding.tvOrderNo.text = orderBean.trade_no
         binding.tvOrderTime.text = TimeFormat.millis2String(orderBean.created_at * 1000L)
         plan?.apply {
-            val df = DecimalFormat("#.00")
-            val priceVal = month_price / 100f
-            binding.tvOrderPrice.text =
-                "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
+            getPlanPrice(plan, binding.tvOrderPrice)
         }
 
         binding.root.let { dialog.setContentView(it) }
         dialog.show()
     }
+
+    @SuppressLint("SetTextI18n")
+    private fun getPlanPrice(subsPlan: SubsProductBean, binding: TextView) {
+        //val df = DecimalFormat("#.00")
+        var subsPrice = subsPlan.month_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.quarter_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.half_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.two_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.three_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+    }
+
 }

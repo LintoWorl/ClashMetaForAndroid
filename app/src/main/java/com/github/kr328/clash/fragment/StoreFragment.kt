@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,13 +25,13 @@ import com.github.kr328.clash.design.databinding.DialogOrderConfirmBinding
 import com.github.kr328.clash.design.databinding.FragTrafficStoreBinding
 import com.github.kr328.clash.design.dialog.AppBottomSheetDialog
 import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.design.util.formatPrice
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import java.text.DecimalFormat
 
 class StoreFragment : Fragment(), CoroutineScope by MainScope() {
 
@@ -40,6 +41,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var planAdapter: TrafficPlanAdapter
     private lateinit var appStore: AppStore
     private var requireRefresh: Boolean = false
+
     //private var orderDialogBinding: DialogOrderConfirmBinding? = null
     private var chosenPayment: PaymentBean? = null
     private var payMethods = emptyList<PaymentBean>()
@@ -81,7 +83,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         refreshLayout.setOnRefreshListener {
             viewModel.fetchSubsPlan(!appStore.hasLoginApp) { it.finishRefresh() }
         }
-        planAdapter = TrafficPlanAdapter(activity) { plan ->
+        planAdapter = TrafficPlanAdapter(activity) { plan, period ->
             //检测用户身份，游客用户需先登录
             if (!viewModel.userHasLogin) {
                 viewModel.prevFragIdx = MainViewModel.IDX_FRAG_SUBS
@@ -89,7 +91,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
                 return@TrafficPlanAdapter
             }
             RequestHandler.request({
-                PaymentApi.createOrder("month_price", plan.id)
+                PaymentApi.createOrder(period, plan.id)
             }, {
                 viewModel.subsOrderId = it
                 createSubsOrder(plan)
@@ -145,11 +147,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         binding.tvOrderDesc.text = plan.name
         binding.tvOrderNo.text = viewModel.subsOrderId
         binding.tvOrderTime.text = TimeFormat.millis2String(System.currentTimeMillis())
-        val df = DecimalFormat("#.00")
-        val priceVal = plan.month_price / 100f
-        binding.tvOrderPrice.text =
-            "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
         //binding.tvOrderPrice.text = "¥ " + df.format(plan.month_price / 100f)
+        setPlanPrice(plan, binding.tvOrderPrice)
         binding.tvOrderPay.onClickNew {
             chosenPayment?.apply {
                 viewModel.commitSubsOrder(this)
@@ -162,7 +161,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         val paymentAdapter = PayMethodAdapter(activity) { payment ->
-            chosenPayment = payment// 需更新支付方式的选中状态 FIXME
+            chosenPayment = payment// 需更新支付方式的选中状态
         }
         paymentAdapter.payMethodList = payMethods
         binding.rvPayMethods.apply {
@@ -177,6 +176,58 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         dialog.setCancelable(false)
         dialog.setCanceledOnTouchOutside(false)
         dialog.show()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setPlanPrice(subsPlan: SubsProductBean, binding: TextView) {
+        //val df = DecimalFormat("#.00")
+        var subsPrice = subsPlan.month_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.quarter_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.half_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.two_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
+
+        subsPrice = subsPlan.three_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                binding.text = it.formatPrice()
+                return
+            }
+        }
     }
 
     companion object {

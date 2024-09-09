@@ -6,12 +6,14 @@ import com.github.kr328.clash.common.compat.preferredLocale
 import com.github.kr328.clash.core.model.Provider
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.service.model.Profile
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
 const val DATE_DATE_ONLY = "yyyy-MM-dd"
 private const val DATE_TIME_ONLY = "HH:mm:ss.SSS"
 private const val DATE_ALL = "$DATE_DATE_ONLY $DATE_TIME_ONLY"
+private val PRICE_FORMAT = DecimalFormat("#.00")
 
 fun Profile.Type.toString(context: Context): String {
     return when (this) {
@@ -81,6 +83,11 @@ fun Long.toBytesString(): String {
         else ->
             "$this Bytes"
     }
+}
+
+fun Float.formatPrice(): String {
+    val df = PRICE_FORMAT //?: DecimalFormat("#.00")
+    return "¥ " + if (this < 1.0f) "0${df.format(this)}元" else "${df.format(this)}元"
 }
 
 fun Double.toProgress(): Int {

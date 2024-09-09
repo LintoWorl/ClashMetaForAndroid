@@ -6,13 +6,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.hw.network.model.SubsProductBean
 import com.github.kr328.clash.design.databinding.AdapterTrafficPlanBinding
+import com.github.kr328.clash.design.util.formatPrice
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.show
-import java.text.DecimalFormat
 
-class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean) -> Unit) :
+class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean, String) -> Unit) :
     RecyclerView.Adapter<TrafficPlanAdapter.Holder>() {
     class Holder(val binding: AdapterTrafficPlanBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -28,13 +28,9 @@ class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean) -
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val plan = planList[position]
+        val payPeriod = getPlanPrice(plan, holder.binding)
         holder.binding.tvPlanTitle.text = plan.name
-        val df = DecimalFormat("#.00")
-        val priceVal = plan.month_price / 100f
-        holder.binding.tvPlanPrice.text =
-            "¥ " + if (priceVal < 1.0f) "0${df.format(priceVal)}" else df.format(priceVal)
-        holder.binding.tvPlanPeriod.text = "月付"
-        holder.binding.tvPlanIntro.text = plan.sort ?: "88GB 流量"
+        holder.binding.tvPlanIntro.text = "${plan.transfer_enable}GB 流量"
         holder.binding.tvPlanDesc.text = plan.content
         holder.binding.btnPlanMore.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
@@ -48,7 +44,69 @@ class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean) -
             }
         }
         holder.binding.btnPlanBuy.onClickNew {
-            subsPlan(plan)
+            subsPlan(plan, payPeriod)
         }
+    }
+
+    private fun getPlanPrice(
+        subsPlan: SubsProductBean,
+        binding: AdapterTrafficPlanBinding
+    ): String {
+        var subsPrice = subsPlan.month_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                setPriceText(it, "月付", binding)
+                return "month_price"
+            }
+        }
+
+        subsPrice = subsPlan.quarter_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                setPriceText(it, "季付", binding)
+                return "quarter_price"
+            }
+        }
+
+        subsPrice = subsPlan.half_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                setPriceText(it, "半年付", binding)
+                return "half_year_price"
+            }
+        }
+
+        subsPrice = subsPlan.year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                setPriceText(it, "年付", binding)
+                return "year_price"
+            }
+        }
+
+        subsPrice = subsPlan.two_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                setPriceText(it, "两年付", binding)
+                return "two_year_price"
+            }
+        }
+
+        subsPrice = subsPlan.three_year_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                setPriceText(it, "三年付", binding)
+                return "three_year_price"
+            }
+        }
+        return "month_price"
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun setPriceText(price: Float, payDesc: String, binding: AdapterTrafficPlanBinding) {
+        //val df = DecimalFormat("#.00")
+        binding.tvPlanPrice.text = price.formatPrice()
+        //"¥ " + if (price < 1.0f) "0${df.format(price)}元" else "${df.format(price)}元"
+        binding.tvPlanPeriod.text = payDesc
     }
 }
