@@ -1,10 +1,11 @@
 package app.hw.network
 
 import app.hw.network.api.INetworkBaseInfo
+import app.hw.network.contant.Constant.DM_DIRECT
+import app.hw.network.contant.Constant.PROTOCOL_HTTPS
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
 import app.hw.network.util.DnsUtil
-import app.hw.network.util.NetworkUtil
 import app.hw.network.util.UnsafeOkHttpClient
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
@@ -40,7 +41,7 @@ object RetrofitManager {
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
             Logger.d("init network, request the Ip")
-            strIp = DnsUtil().getIpByHost(networkInfo.getAppContext(), "eight.8jiasu.com")
+            strIp = DnsUtil().getIpByHost(networkInfo.getAppContext(), DM_DIRECT)
             Logger.d("init network, receive the Ip: $strIp")
         }
     }
@@ -55,7 +56,7 @@ object RetrofitManager {
         override fun lookup(hostname: String): List<InetAddress> {
             android.util.Log.d(Logger.TAG_HTTP, "lookup hostname:$hostname, the parsedIp is:$strIp")
             if (strIp.isEmpty()) {
-                strIp = DnsUtil().getIpByHost(Global.application, "eight.8jiasu.com")
+                strIp = DnsUtil().getIpByHost(Global.application, DM_DIRECT)
                 android.util.Log.d(Logger.TAG_HTTP, "got the hostname's ip:$strIp")
             }
             val ipList: List<InetAddress>
@@ -63,7 +64,7 @@ object RetrofitManager {
                 ipList = ArrayList()
                 ipList.add(InetAddress.getByName(strIp))
             } else {
-                ipList = Dns.SYSTEM.lookup("eight.8jiasu.com")
+                ipList = Dns.SYSTEM.lookup(DM_DIRECT)
             }
             return ipList
         }
@@ -97,7 +98,7 @@ object RetrofitManager {
         .build()
     private val retrofit: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         Retrofit.Builder()
-            .baseUrl("https://eight.8jiasu.com/api/v1/")
+            .baseUrl("${PROTOCOL_HTTPS}${DM_DIRECT}/api/v1/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()

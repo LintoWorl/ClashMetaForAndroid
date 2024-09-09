@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import app.hw.network.RetrofitManager
 import app.hw.network.api.INetworkBaseInfo
+import app.hw.network.contant.Constant.DM_BACKUP
+import app.hw.network.contant.Constant.PROTOCOL_HTTPS
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.currentProcessName
 import com.github.kr328.clash.common.log.Logger
@@ -69,7 +71,7 @@ class MainApplication : Application() {
             }
 
             override fun baseServerUrl(): String {
-                return "https://www.ifeng.com/api/v1/"
+                return "${PROTOCOL_HTTPS}${DM_BACKUP}/api/v1/"
             }
 
             override fun appVerCode(): String {

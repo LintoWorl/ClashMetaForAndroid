@@ -3,6 +3,7 @@ package app.hw.network
 import android.annotation.SuppressLint
 import android.util.Log
 import app.hw.network.RetrofitManager.baseInfo
+import app.hw.network.contant.Constant.DM_BACKUP
 import app.hw.network.util.NetworkUtil
 import app.hw.network.util.SecureSSLSocketFactory
 import com.github.kr328.clash.common.log.Logger.TAG_EXP
@@ -50,7 +51,7 @@ object UrlConnManager {
         conn.useCaches = true
         if (addHeader) {
             conn.setRequestProperty("vercode", baseInfo.appVerCode())
-            conn.setRequestProperty("Host", "www.ifeng.com")
+            conn.setRequestProperty("Host", DM_BACKUP)
             val netCountryCode = NetworkUtil.networkCountryISO(baseInfo.getAppContext())
             val localeCountry = Locale.getDefault().country
             conn.setRequestProperty("loc", "${netCountryCode}_$localeCountry")
