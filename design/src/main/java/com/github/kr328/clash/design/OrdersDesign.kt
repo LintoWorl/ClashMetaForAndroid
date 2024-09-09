@@ -46,6 +46,16 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
             itemAnimator = null
             isNestedScrollingEnabled = false
         }
+        val refreshLayout = binding.refreshLayout
+        refreshLayout.setOnRefreshListener { refresh ->
+            RequestHandler.request({
+                PaymentApi.getOrderList()
+            }, {
+                updateList(it)
+                refresh.finishRefresh()
+            }, { code, msg -> refresh.finishRefresh() })
+        }
+        //refreshLayout.autoRefresh()
     }
 
     fun updateList(list: List<OrderBean>) {

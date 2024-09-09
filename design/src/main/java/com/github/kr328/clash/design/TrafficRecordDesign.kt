@@ -4,6 +4,9 @@ import android.app.Activity
 import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import app.hw.network.api.PaymentApi
+import app.hw.network.api.UserAccountApi
+import app.hw.network.handler.RequestHandler
 import app.hw.network.model.TrafficBean
 import com.github.kr328.clash.design.adapter.TrafficRecordAdapter
 import com.github.kr328.clash.design.databinding.DesignTrafficRecordBinding
@@ -27,11 +30,20 @@ class TrafficRecordDesign(context: Activity) : Design<Unit>(context) {
             itemAnimator = null
             isNestedScrollingEnabled = false
         }
+        val refreshLayout = binding.refreshLayout
+        refreshLayout.setOnRefreshListener { refresh ->
+            RequestHandler.request({
+                UserAccountApi.getTrafficLog()
+            }, {
+                updateList(it)
+                refresh.finishRefresh()
+            }, { code, msg -> refresh.finishRefresh() })
+        }
     }
 
     fun updateList(list: List<TrafficBean>) {
         recordAdapter.orderBeans = list
-        recordAdapter.notifyDataSetChanged()
+        recordAdapter.notifyItemRangeInserted(0, list.size)
     }
 
 }
