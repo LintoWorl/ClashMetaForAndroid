@@ -27,10 +27,15 @@ class TrafficRecordActivity : BaseActivity<TrafficRecordDesign>() {
         RequestHandler.request({
             UserAccountApi.getTrafficLog()
         }, {
-            design.updateList(it)
+            if (it.isEmpty()) {
+                design.emptyPage()
+            } else {
+                design.updateList(it)
+            }
             finished()
         }, { code, msg ->
             finished()
+            design.emptyPage()
             toast(msg)
         })
     }

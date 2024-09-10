@@ -8,10 +8,13 @@ import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.TrafficBean
+import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.design.adapter.TrafficRecordAdapter
 import com.github.kr328.clash.design.databinding.DesignTrafficRecordBinding
 import com.github.kr328.clash.design.util.applyFrom
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.root
+import com.github.kr328.clash.design.util.show
 
 class TrafficRecordDesign(context: Activity) : Design<Unit>(context) {
     private val binding =
@@ -35,9 +38,18 @@ class TrafficRecordDesign(context: Activity) : Design<Unit>(context) {
             RequestHandler.request({
                 UserAccountApi.getTrafficLog()
             }, {
-                updateList(it)
                 refresh.finishRefresh()
-            }, { code, msg -> refresh.finishRefresh() })
+                if (it.isEmpty() && recordAdapter.orderBeans.isEmpty()) {
+                    emptyPage()
+                } else {
+                    updateList(it)
+                }
+            }, { code, msg ->
+                refresh.finishRefresh()
+                if (recordAdapter.orderBeans.isEmpty()) {
+                    emptyPage()
+                }
+            })
         }
     }
 
@@ -46,4 +58,10 @@ class TrafficRecordDesign(context: Activity) : Design<Unit>(context) {
         recordAdapter.notifyItemRangeInserted(0, list.size)
     }
 
+    fun emptyPage() {
+        binding.refreshLayout.hide()
+        binding.layoutEmpty.root.show()
+        binding.layoutEmpty.tvEmptyDesc.text =
+            if (NetworkUtil.isNetConnected(context)) "数据为空，请联系服务管理员" else "网络连接异常，请检查网络设置"
+    }
 }

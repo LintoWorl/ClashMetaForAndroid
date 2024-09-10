@@ -13,6 +13,7 @@ import app.hw.network.api.PaymentApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.OrderBean
 import app.hw.network.model.SubsProductBean
+import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
@@ -25,9 +26,11 @@ import com.github.kr328.clash.design.databinding.DialogOrderFinishBinding
 import com.github.kr328.clash.design.dialog.AppBottomSheetDialog
 import com.github.kr328.clash.design.util.applyFrom
 import com.github.kr328.clash.design.util.formatPrice
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.root
+import com.github.kr328.clash.design.util.show
 
 class OrdersDesign(context: Activity) : Design<Unit>(context) {
     private val binding =
@@ -51,17 +54,35 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
             RequestHandler.request({
                 PaymentApi.getOrderList()
             }, {
-                updateList(it)
                 refresh.finishRefresh()
-            }, { code, msg -> refresh.finishRefresh() })
+                if (it.isEmpty() && orderAdapter.orderBeans.isEmpty()) {
+                    emptyPage()
+                } else {
+                    updateList(it)
+                }
+            }, { code, msg ->
+                refresh.finishRefresh()
+                if (orderAdapter.orderBeans.isEmpty()) {
+                    emptyPage()
+                }
+            })
         }
         //refreshLayout.autoRefresh()
     }
 
     fun updateList(list: List<OrderBean>) {
+        binding.refreshLayout.show()
+        binding.layoutEmpty.root.hide()
         orderAdapter.orderBeans = list
         orderAdapter.notifyItemRangeInserted(0, list.size)
         //orderAdapter.notifyDataSetChanged()
+    }
+
+    fun emptyPage() {
+        binding.refreshLayout.hide()
+        binding.layoutEmpty.root.show()
+        binding.layoutEmpty.tvEmptyDesc.text =
+            if (NetworkUtil.isNetConnected(context)) "数据为空，请联系服务管理员" else "网络连接异常，请检查网络设置"
     }
 
     private fun checkDetail(orderBean: OrderBean) {

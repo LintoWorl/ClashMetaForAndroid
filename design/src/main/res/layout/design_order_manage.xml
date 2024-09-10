@@ -26,9 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="0dp"
-        android:layout_marginBottom="40dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_title">
+        android:layout_marginBottom="40dp">
 
         <com.scwang.smart.refresh.header.BezierRadarHeader
             android:id="@+id/refresh_header"
@@ -40,4 +38,10 @@
             android:layout_height="match_parent" />
     </com.scwang.smart.refresh.layout.SmartRefreshLayout>
 
+    <include
+        android:id="@+id/layout_empty"
+        layout="@layout/common_empty_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
 </LinearLayout>
