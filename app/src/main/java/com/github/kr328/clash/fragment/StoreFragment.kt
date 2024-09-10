@@ -90,6 +90,9 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
                 viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
                 return@TrafficPlanAdapter
             }
+            if (payMethods.isEmpty()) {
+                viewModel.getPaymentMethod()
+            }
             RequestHandler.request({
                 PaymentApi.createOrder(period, plan.id)
             }, {
@@ -120,6 +123,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         }
 
         viewModel.paymentMethodList.observe(viewLifecycleOwner) {
+            if (it.isNullOrEmpty()) return@observe
             chosenPayment = it[0]
             payMethods = it
         }
