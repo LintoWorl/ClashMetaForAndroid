@@ -13,6 +13,7 @@ import app.hw.network.api.PaymentApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.PaymentBean
 import app.hw.network.model.SubsProductBean
+import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.OrderListActivity
 import com.github.kr328.clash.common.Global
@@ -26,7 +27,9 @@ import com.github.kr328.clash.design.databinding.FragTrafficStoreBinding
 import com.github.kr328.clash.design.dialog.AppBottomSheetDialog
 import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.util.formatPrice
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.onClickNew
+import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -115,8 +118,19 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     @SuppressLint("NotifyDataSetChanged")
     private fun initObserver() {
         viewModel.subsPlanList.observe(viewLifecycleOwner) {
-            planAdapter.planList = it
-            planAdapter.notifyDataSetChanged()
+            if (planAdapter.planList.isEmpty() && it.isNullOrEmpty()) {
+                binding.refreshLayout.hide()
+                binding.layoutEmpty.root.show()
+                binding.layoutEmpty.tvEmptyDesc.text =
+                    if (NetworkUtil.isNetConnected(activity)) "数据为空，请联系服务管理员" else "网络连接异常，请检查网络设置"
+                return@observe
+            }
+            if (it.isNotEmpty()) {
+                binding.refreshLayout.show()
+                binding.layoutEmpty.root.hide()
+                planAdapter.planList = it
+                planAdapter.notifyDataSetChanged()
+            }
         }
         viewModel.lgnState.observe(viewLifecycleOwner) {
             requireRefresh = true
@@ -127,6 +141,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
             chosenPayment = it[0]
             payMethods = it
         }
+
+        binding.layoutEmpty.root.onClickNew { fetchData() }
     }
 
     private fun fetchData() {
