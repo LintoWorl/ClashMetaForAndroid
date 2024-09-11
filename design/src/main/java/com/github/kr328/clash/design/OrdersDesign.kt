@@ -113,12 +113,16 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
 
         val paymentAdapter = PayMethodAdapter(context) { _ -> }
         binding.tvOrderPay.onClickNew {
+            if (paymentAdapter.payMethodList.isEmpty()) {
+                Global.application.toast("请先设置支付方式")
+                return@onClickNew
+            }
             //TO 提交订单进行支付
             RequestHandler.request({
                 PaymentApi.payOrder(order.trade_no, paymentAdapter.theChosenPayMethod.id)
             }, {
                 Logger.d("submit order:$it")
-                if (it.isNullOrEmpty()) {
+                if (it.isEmpty()) {
                     Global.application.toast("支付订单失败！请重试")
                     return@request
                 }
