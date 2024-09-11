@@ -1,6 +1,7 @@
 package app.hw.network.api
 
 import app.hw.network.RetrofitManager
+import app.hw.network.model.CouponBean
 import app.hw.network.model.OrderBean
 import app.hw.network.model.PaymentBean
 import app.hw.network.model.SubsProductBean
@@ -50,10 +51,18 @@ object PaymentApi {
         return service.checkOrderStat(tradeNo)
     }
 
-    suspend fun createOrder(cycleName: String, planId: Long): ResponseData<String> {
+    suspend fun checkCoupon(couponCode: String, planId: Int): ResponseData<CouponBean> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.checkCoupon(couponCode, planId)
+        }
+        return service.checkCoupon(couponCode, planId)
+    }
+
+    suspend fun createOrder(cycleName: String, planId: Int, couponCode: String?): ResponseData<String> {
         val reqBody = RequestParam.Builder().apply {
             put("period", cycleName)
             put("plan_id", planId)
+            put("coupon_code", couponCode)
         }.build().requestBody
         if (NetworkUtil.isVpnRunning(Global.application)) {
             return service2.saveOrder(reqBody)

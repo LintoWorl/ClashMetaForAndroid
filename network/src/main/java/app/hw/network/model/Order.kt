@@ -69,6 +69,41 @@ class OrderStatus {
 }
 
 /**
+ * data: {
+ *     id: 12,
+ *     code: 'OK2024',
+ *     name: '202401九折',
+ *     type: 2,
+ *     value: 10,
+ *     show: 1,
+ *     limit_use: 72,
+ *     limit_use_with_user: null,
+ *     limit_plan_ids: null,
+ *     limit_period: null,
+ *     started_at: 1717236000,
+ *     ended_at: 1725098400,
+ *     created_at: 1704425387,
+ *     updated_at: 1720019155
+ *   }
+ */
+data class CouponBean(
+    var id: Int,
+    var code: String,
+    var name: String,
+    var type: Int,
+    var value: Int,
+    var show: Int,
+    var limit_use: Int,
+    var limit_use_with_user: String,
+    var limit_plan_ids: IntArray? = null,
+    var limit_period: String,
+    var started_at: Long,
+    var ended_at: Long,
+    var created_at: Long,
+    var updated_at: Long
+)
+
+/**
  * {
  *   "data": [
  *     {

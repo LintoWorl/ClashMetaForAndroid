@@ -58,7 +58,7 @@ data class ProductSubsInfo(
  * }
  */
 data class SubsProductBean(
-    var id: Long = 0,
+    var id: Int = 0,
     var group_id: Long = 0,
     var transfer_enable: Long = 0,
     var speed_limit: String? = null,

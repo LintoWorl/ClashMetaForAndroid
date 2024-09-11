@@ -1,5 +1,6 @@
 package app.hw.network.api
 
+import app.hw.network.model.CouponBean
 import app.hw.network.model.OrderBean
 import app.hw.network.model.PaymentBean
 import app.hw.network.model.SubsProductBean
@@ -33,6 +34,12 @@ internal interface PaymentService {
 
     @GET("user/order/check")
     suspend fun checkOrderStat(@Query("trade_no") tradeNo: String): ResponseData<Int>
+
+    @GET("user/coupon/check")
+    suspend fun checkCoupon(
+        @Query("code") code: String,
+        @Query("plan_id") planId: Int
+    ): ResponseData<CouponBean>
 
     @POST("user/order/save")
     suspend fun saveOrder(@Body requestBody: RequestBody): ResponseData<String>

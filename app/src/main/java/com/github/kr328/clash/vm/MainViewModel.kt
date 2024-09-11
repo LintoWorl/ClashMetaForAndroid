@@ -151,9 +151,9 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    fun createSubsPlanOrder(plan: SubsProductBean) {
+    fun validateCoupon(couponCode: String, plan: SubsProductBean) {
         RequestHandler.request({
-            PaymentApi.createOrder("month_price", plan.id)
+            PaymentApi.checkCoupon(couponCode, plan.id)
         }, {
             //subsOrderId.value = it
         }, { code, msg ->

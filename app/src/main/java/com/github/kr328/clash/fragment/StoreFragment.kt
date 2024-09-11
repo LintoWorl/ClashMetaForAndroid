@@ -86,26 +86,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         refreshLayout.setOnRefreshListener {
             viewModel.fetchSubsPlan(!appStore.hasLoginApp) { it.finishRefresh() }
         }
-        planAdapter = TrafficPlanAdapter(activity) { plan, period ->
-            //检测用户身份，游客用户需先登录
-            if (!viewModel.userHasLogin) {
-                viewModel.prevFragIdx = MainViewModel.IDX_FRAG_SUBS
-                viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
-                return@TrafficPlanAdapter
-            }
-            if (payMethods.isEmpty()) {
-                viewModel.getPaymentMethod()
-            }
-            RequestHandler.request({
-                PaymentApi.createOrder(period, plan.id)
-            }, {
-                viewModel.subsOrderId = it
-                createSubsOrder(plan)
-            }, { code, msg ->
-                Global.application.toast(msg)
-                startActivity(OrderListActivity::class.intent)
-            })
-        }
+        planAdapter = TrafficPlanAdapter(activity, this::subscribeThePlan)
         binding.rvTrafficPlan.apply {
             adapter = planAdapter
             layoutManager =
@@ -156,6 +137,28 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
             }
         }
         requireRefresh = false
+    }
+
+    private fun subscribeThePlan(plan: SubsProductBean, period: String) {
+        //检测用户身份，游客用户需先登录
+        if (!viewModel.userHasLogin) {
+            viewModel.prevFragIdx = MainViewModel.IDX_FRAG_SUBS
+            viewModel.fragIndex.value = MainViewModel.IDX_FRAG_LOGIN
+            return
+        }
+        if (payMethods.isEmpty()) {
+            viewModel.getPaymentMethod()
+        }
+        //弹框编辑优惠券//TODO
+        RequestHandler.request({
+            PaymentApi.createOrder(period, plan.id, "")//FIXME
+        }, {
+            viewModel.subsOrderId = it
+            createSubsOrder(plan)
+        }, { code, msg ->
+            Global.application.toast(msg)
+            startActivity(OrderListActivity::class.intent)
+        })
     }
 
     @SuppressLint("SetTextI18n")
