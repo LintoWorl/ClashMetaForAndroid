@@ -35,6 +35,7 @@ class LoginResp {
 class UserInfo {
     var email: String = ""
     var transfer_enable: Long = 0
+    var t: Long = 0
     var last_login_at: Long = 0//最后登录时间，时间戳
     var created_at: Long = 0//创建时间，时间戳
     var banned: Int = 0//是否封禁使用

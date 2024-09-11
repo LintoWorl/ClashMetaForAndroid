@@ -102,17 +102,21 @@ class MainViewModel : ViewModel() {
                 isIndeterminate = true
                 text = "更新数据，请稍候..."
             }
-            RequestHandler.request({
-                UserAccountApi.userAccountInfo()
-            }, {
-                Logger.d("got userInfo:${it.email}")
-                userInfo.value = it
-                onResult()
-            }, { code, msg ->
-                context.toast(msg)
-                onResult()
-            })
+            updateUserInfo { onResult() }
         }
+    }
+
+    fun updateUserInfo(finished: () -> Unit = {}) {
+        RequestHandler.request({
+            UserAccountApi.userAccountInfo()
+        }, {
+            Logger.d("got userInfo:${it.email}, lastLgn:${it.last_login_at}")
+            userInfo.value = it
+            finished()
+        }, { code, msg ->
+            Global.application.toast(msg)
+            finished()
+        })
     }
 
     fun fetchSubscribeInfo() {

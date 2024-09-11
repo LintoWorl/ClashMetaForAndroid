@@ -76,6 +76,9 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             initView()
             viewModel.fetchSubscribeInfo()
         }
+        if (!hidden) {
+            viewModel.updateUserInfo()
+        }
     }
 
     @SuppressLint("SetTextI18n")
@@ -93,7 +96,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.tvAccountEmail.text = "尚未登录，马上登录 >>"
             binding.tvAccountEmail.isClickable = true
             binding.tvAccountEmail.isEnabled = true
-            binding.llOrderTraffics.show()
+            binding.llOrderTraffics.hide()
             binding.tvLastLogin.hide()
             binding.llSubsInfo.hide()
             binding.btnLogout.hide()
@@ -188,16 +191,30 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
     @SuppressLint("SetTextI18n")
     private fun initObserver() {
         viewModel.subsInfo.observe(viewLifecycleOwner) {
+            if (it.plan == null || it.expired_at <= 0) {
+                binding.llSubsInfo.hide()
+                return@observe
+            }
             val subsPlan = it?.plan ?: return@observe
+            binding.llSubsInfo.show()
             binding.tvSubsTitle.text = subsPlan.name
         }
         viewModel.userInfo.observe(viewLifecycleOwner) {
             binding.tvAccountEmail.text = it.email
-            binding.tvLastLogin.show()
-            binding.tvSubsDesc.text =
-                "套餐到期时间：${it.expired_at.toDateStr(DATE_DATE_ONLY)}"
-            binding.tvLastLogin.text =
-                "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
+            if (it.expired_at > 0) {
+                binding.tvSubsDesc.text =
+                    "套餐到期时间：${it.expired_at.toDateStr(DATE_DATE_ONLY)}"
+            } else {
+                binding.llSubsInfo.hide()
+            }
+            //val lastLgnTime = if (it.last_login_at > 0) it.last_login_at else it.created_at
+            if (it.last_login_at > 0) {
+                binding.tvLastLogin.show()
+                binding.tvLastLogin.text =
+                    "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
+            } else {
+                binding.tvLastLogin.hide()
+            }
         }
         viewModel.lgnState.observe(viewLifecycleOwner) {
             reqrdRefresh = true
