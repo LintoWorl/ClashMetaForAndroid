@@ -25,6 +25,7 @@ import com.github.kr328.clash.design.adapter.TrafficPlanAdapter
 import com.github.kr328.clash.design.databinding.DialogOrderConfirmBinding
 import com.github.kr328.clash.design.databinding.FragTrafficStoreBinding
 import com.github.kr328.clash.design.dialog.AppBottomSheetDialog
+import com.github.kr328.clash.design.dialog.EditableDialog
 import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.util.formatPrice
 import com.github.kr328.clash.design.util.hide
@@ -48,7 +49,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     //private var orderDialogBinding: DialogOrderConfirmBinding? = null
     private var chosenPayment: PaymentBean? = null
     private var payMethods = emptyList<PaymentBean>()
-    //private var subsOrderId: String = ""
+    //private var chosenPlan: SubsProductBean? = null
+    //private var chosenPlanPayCycle: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -149,9 +151,35 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         if (payMethods.isEmpty()) {
             viewModel.getPaymentMethod()
         }
-        //弹框编辑优惠券//TODO
+
+        //弹框编辑优惠券
+        EditableDialog.show(activity.supportFragmentManager) {
+            title = "优惠券"
+            leftButton = "不用了"
+            rightButton = "去验证"
+            listener = object : EditableDialog.OnClickListener {
+                override fun onPositiveClick(dialog: EditableDialog, editContent: String) {
+                    if (editContent.isEmpty()) {
+                        activity.toast("输入的优惠券码不能为空～")
+                        return
+                    }
+                    viewModel.validateCoupon(editContent, plan) {
+                        questOrder(plan, period, it.code)
+                        dialog.dismiss()
+                    }
+                }
+
+                override fun onNegativeClick(dialog: EditableDialog) {
+                    questOrder(plan, period, "")
+                    dialog.dismiss()
+                }
+            }
+        }
+    }
+
+    private fun questOrder(plan: SubsProductBean, period: String, coupon: String) {
         RequestHandler.request({
-            PaymentApi.createOrder(period, plan.id, "")//FIXME
+            PaymentApi.createOrder(period, plan.id, coupon)
         }, {
             viewModel.subsOrderId = it
             createSubsOrder(plan)

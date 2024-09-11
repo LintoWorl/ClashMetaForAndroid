@@ -52,13 +52,21 @@ object PaymentApi {
     }
 
     suspend fun checkCoupon(couponCode: String, planId: Int): ResponseData<CouponBean> {
+        val reqBody = RequestParam.Builder().apply {
+            put("code", couponCode)
+            put("plan_id", planId)
+        }.build().requestBody
         if (NetworkUtil.isVpnRunning(Global.application)) {
-            return service2.checkCoupon(couponCode, planId)
+            return service2.checkCoupon(reqBody)
         }
-        return service.checkCoupon(couponCode, planId)
+        return service.checkCoupon(reqBody)
     }
 
-    suspend fun createOrder(cycleName: String, planId: Int, couponCode: String?): ResponseData<String> {
+    suspend fun createOrder(
+        cycleName: String,
+        planId: Int,
+        couponCode: String?
+    ): ResponseData<String> {
         val reqBody = RequestParam.Builder().apply {
             put("period", cycleName)
             put("plan_id", planId)

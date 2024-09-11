@@ -12,6 +12,7 @@ import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
+import app.hw.network.model.CouponBean
 import app.hw.network.model.LoginResp
 import app.hw.network.model.NoticeBean
 import app.hw.network.model.PaymentBean
@@ -49,6 +50,7 @@ class MainViewModel : ViewModel() {
     val noticeMsgList: MutableLiveData<List<NoticeBean>> by lazy { MutableLiveData<List<NoticeBean>>() }
     var subsOrderId: String = ""//MutableLiveData<String> by lazy { MutableLiveData<String>() }
     val paymentMethodList: MutableLiveData<List<PaymentBean>> by lazy { MutableLiveData<List<PaymentBean>>() }
+    val couponBean: MutableLiveData<CouponBean> by lazy { MutableLiveData<CouponBean>() }
 
     fun checkLoginStat() {
         RequestHandler.request({
@@ -151,11 +153,12 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    fun validateCoupon(couponCode: String, plan: SubsProductBean) {
+    fun validateCoupon(couponCode: String, plan: SubsProductBean, onSucc: (CouponBean) -> Unit) {
         RequestHandler.request({
             PaymentApi.checkCoupon(couponCode, plan.id)
         }, {
-            //subsOrderId.value = it
+            //couponBean.value = it
+            onSucc(it)
         }, { code, msg ->
             Global.application.toast(msg)
         })
