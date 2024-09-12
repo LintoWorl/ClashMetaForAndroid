@@ -18,7 +18,7 @@ class AppStore(context: Context) {
     var authData: String by store.string("user_auth_data", "")
     var tosAddress: String by store.string("user_tos_url", "https://fenghuolun.xyz/privacy.html")
     var ppAddress: String by store.string("user_pripol_url", "https://fenghuolun.xyz/privacy.html")
-    var appWebsite: String by store.string("app_official_web", "https://x.8jiasu.com")
+    var appWebsite: String by store.string("app_official_web", "https://www.fenghuolun.xyz")
 
     companion object {
         private const val FILE_NAME = "app"

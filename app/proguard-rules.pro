@@ -89,6 +89,25 @@
 }
 
 
+#remove log
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** i(...);
+    public static *** w(...);
+    public static *** e(...);
+    public static *** v(...);
+    public static *** println(...);
+    public static *** wtf(...);
+}
+
+#remove assert
+-assumenosideeffects class junit.framework.Assert {
+    public static *** assertTrue(...);
+    public static *** assertFalse(...);
+    public static *** assertNull(...);
+    public static *** assertNotNull(...);
+}
+
 
 -keepclassmembers class **.R$* {
     public static <fields>;

@@ -134,7 +134,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
             activity.showModalProgressBar {
                 configure {
                     isIndeterminate = true
-                    text = "加载数据..."
+                    text = "加载套餐数据..."
                 }
                 viewModel.fetchSubsPlan(!appStore.hasLoginApp) { onResult() }
             }

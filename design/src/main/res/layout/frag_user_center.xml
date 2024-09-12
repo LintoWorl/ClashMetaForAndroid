@@ -232,7 +232,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingVertical="12dp"
-                    android:text="进入电报群"
+                    android:text="官方电报群"
                     android:textColor="@color/black"
                     android:textSize="14sp"
                     app:drawableEndCompat="@drawable/ic_baseline_arrow_enter" />

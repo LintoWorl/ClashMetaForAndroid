@@ -74,6 +74,8 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
         super.onHiddenChanged(hidden)
         if (!hidden && reqrdRefresh) {
             initView()
+        }
+        if (!hidden) {
             viewModel.fetchSubscribeInfo()
             viewModel.updateUserInfo()
         }
@@ -90,7 +92,6 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.btnLogout.show()
             binding.btnResetPwd.show()
             binding.llSubsInfo.show()
-            reqrdRefresh = true
         } else {
             binding.tvAccountEmail.text = "尚未登录，马上登录 >>"
             binding.tvAccountEmail.isClickable = true
@@ -112,8 +113,8 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.itemAppLogs.hide()
             binding.dividerAboveLogs.hide()
         }
-        binding.itemTgGroup.hide()
-        binding.dividerUnderTg.hide()
+        //binding.itemTgGroup.hide()
+        //binding.dividerUnderTg.hide()
     }
 
     private fun initEvents() {
@@ -190,7 +191,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
     @SuppressLint("SetTextI18n")
     private fun initObserver() {
         viewModel.subsInfo.observe(viewLifecycleOwner) {
-            if (!reqrdRefresh || it.plan == null || it.expired_at <= 0) {
+            if (!viewModel.userHasLogin || it.plan == null || it.expired_at <= 0) {
                 binding.llSubsInfo.hide()
                 return@observe
             }
@@ -199,7 +200,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             binding.tvSubsTitle.text = subsPlan.name
         }
         viewModel.userInfo.observe(viewLifecycleOwner) {
-            if (!reqrdRefresh) return@observe
+            if (!viewModel.userHasLogin) return@observe
             binding.tvAccountEmail.text = it.email
             if (it.expired_at > 0) {
                 binding.tvSubsDesc.text =

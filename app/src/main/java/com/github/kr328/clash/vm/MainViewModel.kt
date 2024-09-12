@@ -116,7 +116,7 @@ class MainViewModel : ViewModel() {
             userInfo.value = it
             finished()
         }, { code, msg ->
-            Global.application.toast(msg)
+            //Global.application.toast(msg)
             finished()
         })
     }
