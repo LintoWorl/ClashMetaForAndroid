@@ -184,6 +184,10 @@ class MainViewModel : ViewModel() {
                     Global.application.toast("支付订单失败！请重试")
                     return@request
                 }
+                if (it == "true") {
+                    Global.application.toast("订单支付成功！")
+                    return@request
+                }
                 val actionIntent = Intent(Intent.ACTION_VIEW, Uri.parse(it))
                 actionIntent.addFlags(FLAG_ACTIVITY_NEW_TASK)
                 Global.application.startActivity(actionIntent)

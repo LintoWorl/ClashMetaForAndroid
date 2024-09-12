@@ -305,7 +305,7 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         } else {
             tvCoupon.text = coupon.name
             tvOffer.text = when (coupon.type) {
-                1 -> (it - coupon.value).formatPrice()
+                1 -> (it - coupon.value / 100f).formatPrice()
                 2 -> (it * (1.0f - coupon.value / 100f)).formatPrice()
                 else -> it.formatPrice()
             }

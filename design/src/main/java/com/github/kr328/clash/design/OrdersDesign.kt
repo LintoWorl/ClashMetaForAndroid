@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.hw.network.api.PaymentApi
 import app.hw.network.handler.RequestHandler
+import app.hw.network.model.CouponBean
 import app.hw.network.model.OrderBean
 import app.hw.network.model.SubsProductBean
 import app.hw.network.util.NetworkUtil
@@ -105,10 +106,15 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         val binding = DialogOrderConfirmBinding
             .inflate(context.layoutInflater, dialog.window?.decorView as ViewGroup?, false)
         binding.tvOrderDesc.text = plan?.name
+        binding.tvPlanTraffic.text = "${plan?.transfer_enable}GB"
         binding.tvOrderNo.text = order.trade_no
         binding.tvOrderTime.text = TimeFormat.millis2String(order.created_at * 1000L)
+        binding.tvOrderMoney.text = (order.total_amount / 100f).formatPrice()
+        binding.tvOrderCoupon.text = (order.discount_amount / 100f).formatPrice()
+        binding.tvCouponLabel.text = "优惠金额："
         plan?.apply {
-            getPlanPrice(this, binding.tvOrderPrice)
+            //getPlanPrice(this, binding.tvOrderPrice)
+            setPlanPrice(this, binding.tvPlanPeriod, binding.tvOrderPrice)
         }
 
         val paymentAdapter = PayMethodAdapter(context) { _ -> }
@@ -180,7 +186,7 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         binding.tvOrderNo.text = orderBean.trade_no
         binding.tvOrderTime.text = TimeFormat.millis2String(orderBean.created_at * 1000L)
         plan?.apply {
-            getPlanPrice(plan, binding.tvOrderPrice)
+            setPlanPrice(plan, tvPrice = binding.tvOrderPrice)
         }
 
         binding.root.let { dialog.setContentView(it) }
@@ -188,12 +194,16 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun getPlanPrice(subsPlan: SubsProductBean, binding: TextView) {
-        //val df = DecimalFormat("#.00")
+    private fun setPlanPrice(
+        subsPlan: SubsProductBean,
+        tvPeriod: TextView? = null,
+        tvPrice: TextView
+    ) {
         var subsPrice = subsPlan.month_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                tvPeriod?.text = "1个月"
+                tvPrice.text = it.formatPrice()
                 return
             }
         }
@@ -201,7 +211,8 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         subsPrice = subsPlan.quarter_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                tvPeriod?.text = "1季度"
+                tvPrice.text = it.formatPrice()
                 return
             }
         }
@@ -209,7 +220,8 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         subsPrice = subsPlan.half_year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                tvPeriod?.text = "半年（6个月）"
+                tvPrice.text = it.formatPrice()
                 return
             }
         }
@@ -217,7 +229,8 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         subsPrice = subsPlan.year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                tvPeriod?.text = "1年"
+                tvPrice.text = it.formatPrice()
                 return
             }
         }
@@ -225,7 +238,8 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         subsPrice = subsPlan.two_year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                tvPeriod?.text = "2年"
+                tvPrice.text = it.formatPrice()
                 return
             }
         }
@@ -233,7 +247,8 @@ class OrdersDesign(context: Activity) : Design<Unit>(context) {
         subsPrice = subsPlan.three_year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                tvPeriod?.text = "3年"
+                tvPrice.text = it.formatPrice()
                 return
             }
         }

@@ -41,7 +41,7 @@ data class OrderBean(
     var trade_no: String = "",
     var callback_no: String? = null,
     var total_amount: Int = 0,
-    var discount_amount: Int? = null,
+    var discount_amount: Int = 0,
     var surplus_amount: Int? = null,
     var refund_amount: Int? = null,
     var balance_amount: Int? = null,
