@@ -66,7 +66,7 @@ data class SubsProductBean(
     var show: Int = 0,
     var sort: String? = "",
     var renew: Int = 0,
-    var content: String = "",//套餐描述
+    var content: String? = "",//套餐描述
     var month_price: Long? = 0,
     var quarter_price: Long? = null,
     var half_year_price: Long? = null,

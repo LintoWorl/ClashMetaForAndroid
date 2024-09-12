@@ -31,21 +31,27 @@ class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean, S
         val payPeriod = getPlanPrice(plan, holder.binding)
         holder.binding.tvPlanTitle.text = plan.name
         holder.binding.tvPlanIntro.text = "${plan.transfer_enable}GB 流量"
-        holder.binding.tvPlanDesc.text = plan.content
-        holder.binding.btnPlanMore.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                holder.binding.tvPlanDesc.show()
-                holder.binding.divider.show()
-                holder.binding.btnPlanMore.text = "收起"
-            } else {
-                holder.binding.tvPlanDesc.hide()
-                holder.binding.divider.hide()
-                holder.binding.btnPlanMore.text = "详情"
+        if (plan.content.isNullOrEmpty()) {
+            holder.binding.btnPlanMore.hide()
+            holder.binding.tvPlanDesc.hide()
+        } else {
+            holder.binding.btnPlanMore.show()
+            holder.binding.tvPlanDesc.show()
+            holder.binding.tvPlanDesc.text = plan.content
+            holder.binding.btnPlanMore.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) {
+                    holder.binding.tvPlanDesc.show()
+                    holder.binding.divider.show()
+                    holder.binding.btnPlanMore.text = "收起"
+                } else {
+                    holder.binding.tvPlanDesc.hide()
+                    holder.binding.divider.hide()
+                    holder.binding.btnPlanMore.text = "详情"
+                }
             }
         }
-        holder.binding.btnPlanBuy.onClickNew {
-            subsPlan(plan, payPeriod)
-        }
+        holder.binding.root.onClickNew { subsPlan(plan, payPeriod) }
+        holder.binding.btnPlanBuy.onClickNew { subsPlan(plan, payPeriod) }
     }
 
     private fun getPlanPrice(
