@@ -89,7 +89,10 @@ class EditableDialog() : DialogFragment() {
         binding.dialogBtnPositive.onClickNew {
             dlgListener ?: dismiss()
             dlgListener?.apply {
-                onPositiveClick(this@EditableDialog, binding.dialogContent.editableText.toString())
+                onPositiveClick(
+                    this@EditableDialog,
+                    binding.dialogContent.editableText.toString().trim()
+                )
             }
         }
         binding.dialogBtnNegative.onClickNew {
