@@ -1,6 +1,7 @@
 import com.android.build.gradle.AppExtension
 import com.android.build.gradle.BaseExtension
 import java.net.URL
+import java.text.SimpleDateFormat
 import java.util.*
 
 buildscript {
@@ -38,8 +39,9 @@ subprojects {
             minSdk = 21
             targetSdk = 34
 
-            versionName = "v1.0.0"
-            versionCode = 1010000
+            versionName =
+                "v1.1.0_g" + SimpleDateFormat("yyMMdd").format(Date())
+            versionCode = 1010100
 
             resValue("string", "release_name", "v$versionName")
             resValue("integer", "release_code", "$versionCode")
