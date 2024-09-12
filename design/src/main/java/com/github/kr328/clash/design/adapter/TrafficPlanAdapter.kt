@@ -36,7 +36,6 @@ class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean, S
             holder.binding.tvPlanDesc.hide()
         } else {
             holder.binding.btnPlanMore.show()
-            holder.binding.tvPlanDesc.show()
             holder.binding.tvPlanDesc.text = plan.content
             holder.binding.btnPlanMore.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) {

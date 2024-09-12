@@ -27,13 +27,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tv_label_payway" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="1dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5" />
     <TextView
-        android:id="@+id/tv_label_order"
+        android:id="@+id/tv_label_product"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        android:text="订单信息"
+        android:text="商品信息"
         android:textColor="@color/black"
         android:textSize="14sp"
         android:textStyle="bold"
@@ -46,21 +52,20 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        android:text="套餐描述："
+        android:text="套餐名称："
         android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_label_order" />
+        app:layout_constraintTop_toBottomOf="@id/tv_label_product" />
     <TextView
         android:id="@+id/tv_order_desc"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="10dp"
         android:textColor="@color/color_333"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/tv_desc_label"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_desc_label"
         app:layout_constraintTop_toTopOf="@id/tv_desc_label"
         tools:text="8.8元月套餐" />
 
@@ -70,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
-        android:text="订单价格："
+        android:text="套餐价格："
         android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -79,15 +84,121 @@
         android:id="@+id/tv_order_price"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="10dp"
         android:textColor="@color/black"
-        android:textSize="15sp"
+        android:textSize="14sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/tv_price_label"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_price_label"
         app:layout_constraintTop_toTopOf="@id/tv_price_label"
-        tools:text="¥8.80" />
+        tools:text="¥ 8.80元" />
+
+    <TextView
+        android:id="@+id/tv_traffic_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginVertical="10dp"
+        android:text="套餐流量："
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/tv_label_product" />
+    <TextView
+        android:id="@+id/tv_plan_traffic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/tv_traffic_label"
+        app:layout_constraintStart_toEndOf="@id/tv_traffic_label"
+        app:layout_constraintTop_toTopOf="@id/tv_traffic_label"
+        tools:text="80GB" />
+
+    <TextView
+        android:id="@+id/tv_period_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginVertical="10dp"
+        android:text="有效周期："
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/tv_traffic_label" />
+    <TextView
+        android:id="@+id/tv_plan_period"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_period_label"
+        app:layout_constraintStart_toEndOf="@id/tv_period_label"
+        app:layout_constraintTop_toTopOf="@id/tv_period_label"
+        tools:text="一个月" />
+
+    <TextView
+        android:id="@+id/tv_label_order"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="10dp"
+        android:text="订单信息"
+        android:textColor="@color/black"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_period_label" />
+
+    <TextView
+        android:id="@+id/tv_coupon_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginVertical="10dp"
+        android:text="优惠说明："
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_label_order" />
+    <TextView
+        android:id="@+id/tv_order_coupon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:textColor="@color/color_333"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_coupon_label"
+        app:layout_constraintStart_toEndOf="@id/tv_coupon_label"
+        app:layout_constraintTop_toTopOf="@id/tv_coupon_label"
+        tools:text="apdG6" />
+
+    <TextView
+        android:id="@+id/tv_order_money_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginVertical="10dp"
+        android:text="订单金额："
+        android:textColor="@color/black"
+        android:textSize="12sp"
+        app:layout_constraintStart_toEndOf="@id/guideline"
+        app:layout_constraintTop_toBottomOf="@id/tv_label_order" />
+    <TextView
+        android:id="@+id/tv_order_money"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:textColor="@color/color_clash_dark"
+        android:textSize="16sp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="@id/tv_order_money_label"
+        app:layout_constraintStart_toEndOf="@id/tv_order_money_label"
+        app:layout_constraintTop_toTopOf="@id/tv_order_money_label"
+        tools:text="$ 8.00元" />
 
     <TextView
         android:id="@+id/tv_orderno_label"
@@ -99,17 +210,16 @@
         android:textColor="@color/black"
         android:textSize="12sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_price_label" />
+        app:layout_constraintTop_toBottomOf="@id/tv_coupon_label" />
     <TextView
         android:id="@+id/tv_order_no"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="10dp"
         android:textColor="@color/color_333"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/tv_orderno_label"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_orderno_label"
         app:layout_constraintTop_toTopOf="@id/tv_orderno_label"
         tools:text="202408271108268787人文7565443" />
 
@@ -117,8 +227,8 @@
         android:id="@+id/tv_time_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
         android:layout_marginVertical="10dp"
+        android:layout_marginStart="20dp"
         android:text="创建时间："
         android:textColor="@color/black"
         android:textSize="12sp"
@@ -128,12 +238,11 @@
         android:id="@+id/tv_order_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        android:layout_marginVertical="10dp"
+        android:layout_marginHorizontal="10dp"
         android:textColor="@color/color_333"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@id/tv_time_label"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_time_label"
         app:layout_constraintTop_toTopOf="@id/tv_time_label"
         tools:text="2024-08-27 11:17:28" />
 

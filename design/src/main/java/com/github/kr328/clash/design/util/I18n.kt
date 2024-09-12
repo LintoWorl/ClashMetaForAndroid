@@ -87,7 +87,9 @@ fun Long.toBytesString(): String {
 
 fun Float.formatPrice(): String {
     val df = PRICE_FORMAT //?: DecimalFormat("#.00")
-    return "¥ " + if (this < 1.0f) "0${df.format(this)}元" else "${df.format(this)}元"
+    return "¥ " + if (this < 0) "0元"
+    else if (this < 1.0f) "0${df.format(this)}元"
+    else "${df.format(this)}元"
 }
 
 fun Double.toProgress(): Int {

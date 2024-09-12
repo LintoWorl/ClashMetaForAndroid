@@ -90,7 +90,7 @@ data class CouponBean(
     var id: Int,
     var code: String,
     var name: String,
-    var type: Int,
+    var type: Int,//1:优惠具体金额数，2:按比例优惠
     var value: Int,
     var show: Int,
     var limit_use: Int,

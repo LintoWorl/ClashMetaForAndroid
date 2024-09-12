@@ -11,6 +11,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import app.hw.network.api.PaymentApi
 import app.hw.network.handler.RequestHandler
+import app.hw.network.model.CouponBean
 import app.hw.network.model.PaymentBean
 import app.hw.network.model.SubsProductBean
 import app.hw.network.util.NetworkUtil
@@ -164,25 +165,25 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
                         return
                     }
                     viewModel.validateCoupon(editContent, plan) {
-                        questOrder(plan, period, it.code)
                         dialog.dismiss()
+                        questOrder(plan, period, it)
                     }
                 }
 
                 override fun onNegativeClick(dialog: EditableDialog) {
-                    questOrder(plan, period, "")
                     dialog.dismiss()
+                    questOrder(plan, period, null)
                 }
             }
         }
     }
 
-    private fun questOrder(plan: SubsProductBean, period: String, coupon: String) {
+    private fun questOrder(plan: SubsProductBean, period: String, coupon: CouponBean?) {
         RequestHandler.request({
-            PaymentApi.createOrder(period, plan.id, coupon)
+            PaymentApi.createOrder(period, plan.id, coupon?.code)
         }, {
             viewModel.subsOrderId = it
-            createSubsOrder(plan)
+            createSubsOrder(plan, coupon)
         }, { code, msg ->
             Global.application.toast(msg)
             startActivity(OrderListActivity::class.intent)
@@ -190,25 +191,26 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun createSubsOrder(plan: SubsProductBean) {
+    private fun createSubsOrder(plan: SubsProductBean, coupon: CouponBean?) {
         val dialog = AppBottomSheetDialog(activity)
 
         val binding = DialogOrderConfirmBinding
             .inflate(activity.layoutInflater, dialog.window?.decorView as ViewGroup?, false)
-        binding.tvOrderDesc.text = plan.name
         binding.tvOrderNo.text = viewModel.subsOrderId
         binding.tvOrderTime.text = TimeFormat.millis2String(System.currentTimeMillis())
         //binding.tvOrderPrice.text = "¥ " + df.format(plan.month_price / 100f)
-        setPlanPrice(plan, binding.tvOrderPrice)
+        setPlanPrice(plan, coupon, binding)
+        binding.tvOrderDesc.text = plan.name
+        binding.tvPlanTraffic.text = "${plan.transfer_enable}GB"
         binding.tvOrderPay.onClickNew {
             chosenPayment?.apply {
-                viewModel.commitSubsOrder(this)
                 dialog.dismiss()
+                viewModel.commitSubsOrder(this)
             }
         }
         binding.tvOrderCancel.onClickNew {
-            viewModel.cancelSubsOrder()
             dialog.dismiss()
+            viewModel.cancelSubsOrder()
         }
 
         val paymentAdapter = PayMethodAdapter(activity) { payment ->
@@ -230,12 +232,17 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     @SuppressLint("SetTextI18n")
-    private fun setPlanPrice(subsPlan: SubsProductBean, binding: TextView) {
-        //val df = DecimalFormat("#.00")
+    private fun setPlanPrice(
+        subsPlan: SubsProductBean,
+        coupon: CouponBean?,
+        binding: DialogOrderConfirmBinding
+    ) {
+        val tvPeriod = binding.tvPlanPeriod
         var subsPrice = subsPlan.month_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                tvPeriod.text = "1个月"
+                calcOrderPrice(it, coupon, binding)
                 return
             }
         }
@@ -243,7 +250,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         subsPrice = subsPlan.quarter_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                calcOrderPrice(it, coupon, binding)
+                tvPeriod.text = "1季度"
                 return
             }
         }
@@ -251,7 +259,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         subsPrice = subsPlan.half_year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                calcOrderPrice(it, coupon, binding)
+                tvPeriod.text = "半年（6个月）"
                 return
             }
         }
@@ -259,7 +268,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         subsPrice = subsPlan.year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                calcOrderPrice(it, coupon, binding)
+                tvPeriod.text = "1年"
                 return
             }
         }
@@ -267,7 +277,8 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         subsPrice = subsPlan.two_year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                calcOrderPrice(it, coupon, binding)
+                tvPeriod.text = "2年"
                 return
             }
         }
@@ -275,8 +286,28 @@ class StoreFragment : Fragment(), CoroutineScope by MainScope() {
         subsPrice = subsPlan.three_year_price?.let { it / 100f }
         subsPrice?.let {
             if (it > 0f) {
-                binding.text = it.formatPrice()
+                calcOrderPrice(it, coupon, binding)
+                tvPeriod.text = "3年"
                 return
+            }
+        }
+    }
+
+    private fun calcOrderPrice(it: Float, coupon: CouponBean?, binding: DialogOrderConfirmBinding) {
+        val tvPrice = binding.tvOrderPrice
+        val tvOffer = binding.tvOrderMoney
+        val tvCoupon = binding.tvOrderCoupon
+        //val tvPeriod = binding.tvPlanPeriod
+        tvPrice.text = it.formatPrice()
+        if (coupon == null) {
+            tvCoupon.text = "无优惠"
+            tvOffer.text = it.formatPrice()
+        } else {
+            tvCoupon.text = coupon.name
+            tvOffer.text = when (coupon.type) {
+                1 -> (it - coupon.value).formatPrice()
+                2 -> (it * (1.0f - coupon.value / 100f)).formatPrice()
+                else -> it.formatPrice()
             }
         }
     }
