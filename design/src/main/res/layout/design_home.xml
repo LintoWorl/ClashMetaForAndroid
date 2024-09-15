@@ -111,7 +111,7 @@
             android:visibility="@{clashRunning ? View.VISIBLE : View.GONE}"
             app:icon="@drawable/ic_baseline_apps"
             app:layout_constraintTop_toBottomOf="@id/ll_start_vpn"
-            app:subtext="@{clashRunning ? @string/format_proxy_connect(proxyName) : @string/no_proxy_connect}"
+            app:subtext="@{clashRunning ? proxyName : @string/no_proxy_connect}"
             app:text="@string/proxy" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

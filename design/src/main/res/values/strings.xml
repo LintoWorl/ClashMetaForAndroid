@@ -9,7 +9,7 @@
     <string name="format_proxy_connect">%s Connected</string>
     <string name="no_proxy_connect">No proxy Connected</string>
 
-    <string name="proxy">Proxy</string>
+    <string name="proxy">Currently connected to</string>
     <string name="direct_mode">Direct Mode</string>
     <string name="rule_mode">Rule Mode</string>
     <string name="global_mode">Global Mode</string>
