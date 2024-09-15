@@ -15,6 +15,7 @@ import com.github.kr328.clash.design.databinding.DesignProxyBinding
 import com.github.kr328.clash.design.model.ProxyState
 import com.github.kr328.clash.design.store.UiStore
 import com.github.kr328.clash.design.util.applyFrom
+import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.layoutInflater
 import com.github.kr328.clash.design.util.resolveThemedColor
 import com.github.kr328.clash.design.util.root
@@ -98,11 +99,12 @@ class ProxyDesign(
             menu.show()
         }
 
+        binding.tabLayoutView.hide()
         if (groupNames.isEmpty()) {
             binding.emptyView.visibility = View.VISIBLE
 
             binding.urlTestView.visibility = View.GONE
-            binding.tabLayoutView.visibility = View.GONE
+            //binding.tabLayoutView.visibility = View.GONE
             binding.elevationView.visibility = View.GONE
             binding.pagesView.visibility = View.GONE
             binding.urlTestFloatView.visibility = View.GONE
@@ -138,9 +140,9 @@ class ProxyDesign(
                 })
             }
 
-            TabLayoutMediator(binding.tabLayoutView, binding.pagesView) { tab, index ->
-                tab.text = groupNames[index]
-            }.attach()
+//            TabLayoutMediator(binding.tabLayoutView, binding.pagesView) { tab, index ->
+//                tab.text = groupNames[index]
+//            }.attach()
 
             val initialPosition = groupNames.indexOf(uiStore.proxyLastGroup)
 

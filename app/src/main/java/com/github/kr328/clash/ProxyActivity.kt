@@ -18,17 +18,14 @@ import kotlinx.coroutines.withContext
 class ProxyActivity : BaseActivity<ProxyDesign>() {
     override suspend fun main() {
         val mode = withClash { queryOverride(Clash.OverrideSlot.Session).mode }
-        val names = withClash { queryProxyGroupNames(uiStore.proxyExcludeNotSelectable) }
-        val states = List(names.size) { ProxyState("?") }
+        val groups = withClash { queryProxyGroupNames(true) }
+        val names = if (groups.size > 1) groups.dropLast(groups.size - 1) else groups
+        //val states = List(names.size) { ProxyState("?") }
+        val states = List(1) { ProxyState("?") }
         val unorderedStates = names.indices.map { names[it] to states[it] }.toMap()
         val reloadLock = Semaphore(10)
 
-        val design = ProxyDesign(
-            this,
-            mode,
-            names,
-            uiStore
-        )
+        val design = ProxyDesign(this, mode, names, uiStore)
 
         setContentDesign(design)
 
@@ -40,7 +37,7 @@ class ProxyActivity : BaseActivity<ProxyDesign>() {
                     when (it) {
                         Event.ProfileLoaded -> {
                             val newNames = withClash {
-                                queryProxyGroupNames(uiStore.proxyExcludeNotSelectable)
+                                queryProxyGroupNames(true)
                             }
 
                             if (newNames != names) {

@@ -18,6 +18,7 @@ import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.core.Clash
 import com.github.kr328.clash.core.model.FetchStatus
+import com.github.kr328.clash.core.model.ProxySort
 import com.github.kr328.clash.core.model.TunnelState
 import com.github.kr328.clash.design.HomeDesign
 import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
@@ -35,9 +36,11 @@ import com.github.kr328.clash.vm.ViewModelManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.sync.withPermit
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -62,7 +65,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //Remote.broadcasts.addObserver(this)
         return design.root
     }
 
@@ -141,6 +143,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         }
         design.setMode(mode)
         context?.toast(R.string.mode_switch_tips)
+        delay(600)
     }
 
     private fun initObserver() {
@@ -164,7 +167,10 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
         ViewModelManager.appVM.selectProxyName.observe(viewLifecycleOwner) {
             if (it.isNullOrBlank()) return@observe
-            launch { design.setProxyName(it) }//TODO
+            launch {
+                design.setProxyName(it)
+                Logger.i("Update node to:${it}")
+            }
         }
 
     }
@@ -293,6 +299,22 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         setMode(state.mode)
         setHasProviders(providers.isNotEmpty())
 
+        if (clashRunning) {
+            val groups = withClash { queryProxyGroupNames(true) }
+            groups.takeIf { it.isNotEmpty() }?.let {
+                val group = withClash {
+                    queryProxyGroup(it[0], ProxySort.Default)
+                }
+                var currNodeName = group.now
+                Logger.i("current mode is:${state.mode.name}, Node initialized to:${currNodeName}")
+                if (currNodeName.isEmpty() && group.proxies.size > 1) {
+                    val proxy = group.proxies[group.proxies.size / 2]
+                    currNodeName = proxy.name
+                    withClash { patchSelector(groups[0], proxy.name) }
+                }
+                ViewModelManager.appVM.selectProxyName.value = currNodeName
+            }
+        }
         withProfile {
             setProfileName(queryActive()?.name)
         }
