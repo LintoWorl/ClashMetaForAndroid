@@ -34,7 +34,7 @@ class RegisterFragment : Fragment() {
     private lateinit var activity: MainV2Activity
     private var mailSuffix: String = "@gmail.com"
     private var tosUrl: String = ""
-    private var checkMailAddr: Boolean = false
+    private var dontCheckMail: Boolean = true
     private var needInvite: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -56,14 +56,18 @@ class RegisterFragment : Fragment() {
         initView()
         viewModel.appConfig.observe(viewLifecycleOwner) {
             it ?: return@observe
-            checkMailAddr = it.is_email_verify == 1
+            dontCheckMail = it.is_email_verify == 0
             needInvite = it.is_invite_force == 1
             val mailList = it.email_whitelist_suffix
-            if (checkMailAddr) {
+            if (!dontCheckMail) {
                 binding.mailList.show()
                 binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
+                binding.labelCheckMail.show()
+                binding.llCheckMail.show()
             } else {
                 binding.mailList.hide()
+                binding.labelCheckMail.hide()
+                binding.llCheckMail.hide()
             }
             binding.tvInviteLabel.text = if (needInvite) "邀请码" else "邀请码（选填）"
 
@@ -101,21 +105,23 @@ class RegisterFragment : Fragment() {
                 return@onClickNew
             }
 
-            if (checkMailAddr && binding.editVerifyCode.checkEmpty("请输入验证码")) {
+            if (!dontCheckMail && binding.editVerifyCode.checkEmpty("请输入验证码")) {
                 return@onClickNew
             }
             if (needInvite && binding.editInviteCode.checkEmpty("请输入邀请码")) {
                 return@onClickNew
             }
             it.hideKeyboard()
-            val mailAddress = if (checkMailAddr) {
+            val mailAddress = if (!dontCheckMail) {
                 binding.editEmail.text.toString() + mailSuffix
             } else {
                 binding.editEmail.text.toString()
             }
             val password = binding.editPassword.text.toString()
             val mailCode = binding.editVerifyCode.text.toString()
-            val inviteCode = binding.editInviteCode.text.toString()
+            val inviteCode = if (dontCheckMail) "" else {
+                binding.editInviteCode.text.toString()
+            }
 
             CoroutineScope(Dispatchers.Main).launch {
                 requireContext().showModalProgressBar {

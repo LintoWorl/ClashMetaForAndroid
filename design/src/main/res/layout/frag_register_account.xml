@@ -41,20 +41,26 @@
             android:id="@+id/mail_list"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:visibility="gone"
-            android:layout_weight="0.3" />
+            android:layout_weight="0.3"
+            android:visibility="gone" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <TextView
+        android:id="@+id/label_check_mail"
         style="@style/CommonTextLabel"
         android:layout_marginTop="16dp"
-        android:text="邮箱验证码" />
+        android:text="邮箱验证码"
+        android:visibility="gone"
+        tools:visibility="visible" />
     <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/ll_check_mail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="4dp"
-        android:background="@drawable/bg_edit_text">
+        android:background="@drawable/bg_edit_text"
+        android:visibility="gone"
+        tools:visibility="visible">
         <androidx.appcompat.widget.AppCompatEditText
             android:id="@+id/edit_verify_code"
             android:layout_width="0dp"
