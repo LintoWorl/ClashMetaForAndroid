@@ -1,11 +1,19 @@
 package com.github.kr328.clash
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.os.Build
-import android.os.Looper
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.method.LinkMovementMethod
+import android.text.style.ClickableSpan
+import android.text.style.ForegroundColorSpan
+import android.view.View
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -20,14 +28,12 @@ import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.fragment.ChangePwdFragment
 import com.github.kr328.clash.fragment.HomeFragment
 import com.github.kr328.clash.fragment.LoginFragment
-import com.github.kr328.clash.fragment.ProductFragment
 import com.github.kr328.clash.fragment.RegisterFragment
 import com.github.kr328.clash.fragment.ResetPwdFragment
 import com.github.kr328.clash.fragment.StoreFragment
 import com.github.kr328.clash.fragment.UserFragment
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
-import java.util.*
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
 
@@ -244,6 +250,55 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
             else -> null
         }
+    }
+
+    fun setPrivacyTerms(tvTerms: TextView) {
+        val tosTitle = getString(com.github.kr328.clash.R.string.privacy_statement_tos)
+        val ppTitle = getString(com.github.kr328.clash.R.string.privacy_statement_pp)
+        val spannableStringBuilder = SpannableStringBuilder()
+        val spannableString1 = SpannableString(getString(com.github.kr328.clash.R.string.privacy_statement) + " ")
+        spannableStringBuilder.append(spannableString1)
+        spannableStringBuilder.append(
+            setColorAndLink(1, tosTitle)
+        )
+        spannableStringBuilder.append(" " + getString(com.github.kr328.clash.R.string.privacy_statement_link) + " ")
+        spannableStringBuilder.append(
+            setColorAndLink(2, ppTitle)
+        )
+
+        //val tvTerms = binding.tvPpTos
+        tvTerms.movementMethod = LinkMovementMethod.getInstance()
+        tvTerms.highlightColor = Color.TRANSPARENT
+        tvTerms.text = spannableStringBuilder
+    }
+
+    private fun setColorAndLink(tag: Int, string: String): SpannableString {
+        val spannable = SpannableString(string)
+        val appStore = AppStore(this)
+        spannable.setSpan(object : ClickableSpan() {
+            override fun onClick(view: View) {
+                if (1 == tag) {
+                    //context?.toast("点击了用户协议")
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(appStore.tosAddress)))
+                } else {
+                    //context?.toast("点击了隐私协议")
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(appStore.ppAddress)))
+                }
+            }
+        }, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            spannable.setSpan(
+                ForegroundColorSpan(resources.getColor(com.github.kr328.clash.R.color.app_color, null)),
+                0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        } else {
+            spannable.setSpan(
+                ForegroundColorSpan(resources.getColor(com.github.kr328.clash.R.color.app_color)),
+                0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        return spannable
     }
 
 }

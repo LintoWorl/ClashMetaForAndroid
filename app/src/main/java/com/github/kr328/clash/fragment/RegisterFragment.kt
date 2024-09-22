@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import app.hw.network.api.UserAccountApi
 import app.hw.network.handler.RequestHandler
+import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.common.compat.checkEmpty
 import com.github.kr328.clash.common.constants.Authorities
 import com.github.kr328.clash.common.log.Logger
@@ -30,10 +31,16 @@ import kotlinx.coroutines.launch
 class RegisterFragment : Fragment() {
     private lateinit var binding: FragRegisterAccountBinding
     private val viewModel by activityViewModels<MainViewModel>()
+    private lateinit var activity: MainV2Activity
     private var mailSuffix: String = "@gmail.com"
     private var tosUrl: String = ""
     private var checkMailAddr: Boolean = false
     private var needInvite: Boolean = false
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        activity = requireActivity() as MainV2Activity
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,6 +77,7 @@ class RegisterFragment : Fragment() {
     }
 
     private fun initView() {
+        activity.setPrivacyTerms(binding.tvPpTos)
         binding.titleBar.titleBarText.text = "注册"
         binding.root.onClickNew { it.hideKeyboard() }
         binding.mailList.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {

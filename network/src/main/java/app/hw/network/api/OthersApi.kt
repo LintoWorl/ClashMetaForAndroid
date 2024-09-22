@@ -35,4 +35,12 @@ object OthersApi {
         }
         return service.fetchNotice()
     }
+
+    suspend fun checkVersion(userToken: String): ResponseData<String> {
+        return if (NetworkUtil.isVpnRunning(Global.application)) {
+            service2.checkAppVer(userToken)
+        } else {
+            service.checkAppVer(userToken)
+        }
+    }
 }
