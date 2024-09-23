@@ -33,6 +33,7 @@ class NoticeMsgAdapter(
         holder.binding.tvNoticeContent.text = notice.content
         holder.binding.root.onClickNew {
             CommonDialog.show((context as AppCompatActivity).supportFragmentManager) {
+                onlyConfirm = true
                 content = notice.content
             }
         }

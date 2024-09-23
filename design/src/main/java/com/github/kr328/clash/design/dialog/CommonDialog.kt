@@ -1,6 +1,8 @@
 package com.github.kr328.clash.design.dialog
 
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -93,7 +95,12 @@ open class CommonDialog() : DialogFragment() {
             if (title == null || title?.isEmpty() == true) {
                 getString(R.string.launch_name)
             } else title
-        markwon.setMarkdown(binding.dialogTvContent, message)
+        val contentTxt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Html.fromHtml(message, 0).toString()
+        } else {
+            Html.fromHtml(message).toString()
+        }
+        markwon.setMarkdown(binding.dialogTvContent, contentTxt)
 
         if (singleBtn) binding.dialogBtnNegative.hide()
         else binding.dialogBtnNegative.show()
