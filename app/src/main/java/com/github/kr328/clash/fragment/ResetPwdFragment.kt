@@ -49,8 +49,14 @@ class ResetPwdFragment : Fragment() {
 
             it.hideKeyboard()
             //调重置用户密码的API
-            val mailAddress = binding.editEmail.text.toString()
             val password = binding.editNewPwd.text.toString()
+            val confirmPwd = binding.confirmNewPwd.text.toString()
+            if (password != confirmPwd) {
+                context?.toast("请确认两次输入的密码内容相同")
+                return@onClickNew
+            }
+
+            val mailAddress = binding.editEmail.text.toString()
             val mailCode = binding.editVerifyCode.text.toString()
             RequestHandler.request({
                 UserAccountApi.forgetAccount(mailAddress, password, mailCode)
