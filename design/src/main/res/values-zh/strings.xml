@@ -264,7 +264,7 @@
     <string name="title_register">注册</string>
     <string name="send_mail_code">发送</string>
     <string name="privacy_statement_tos">用户协议</string>
-    <string name="privacy_statement_pp">隐私协议</string>
+    <string name="privacy_statement_pp">隐私政策</string>
     <string name="privacy_statement">请阅读并同意</string>
     <string name="privacy_statement_link">及</string>
     <string name="proxy_mode">加速模式</string>

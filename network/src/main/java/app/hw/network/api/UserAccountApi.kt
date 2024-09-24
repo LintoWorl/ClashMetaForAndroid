@@ -27,7 +27,11 @@ object UserAccountApi {
     }
 
     suspend fun appConfig(): ResponseData<AppConfig> {
-        return service.getAppConfig()
+        return if (NetworkUtil.isVpnRunning(Global.application)) {
+            service2.getAppConfig()
+        } else {
+            service.getAppConfig()
+        }
     }
 
     suspend fun checkLogin(): ResponseData<CheckStat> {
@@ -49,7 +53,11 @@ object UserAccountApi {
         val reqBody = RequestParam.Builder().apply {
             put("email", mail)
         }.build().requestBody
-        return service.sendEMC(reqBody)
+        return if (NetworkUtil.isVpnRunning(Global.application)) {
+            service2.sendEMC(reqBody)
+        } else {
+            service.sendEMC(reqBody)
+        }
     }
 
     /**
@@ -76,7 +84,11 @@ object UserAccountApi {
             put("invite_code", inviteCode)
             put("recaptcha_data", verifyCode)
         }.build().requestBody
-        return service.authRegister(reqBody)
+        return if (NetworkUtil.isVpnRunning(Global.application)) {
+            service2.authRegister(reqBody)
+        } else {
+            service.authRegister(reqBody)
+        }
     }
 
     suspend fun forgetAccount(
@@ -89,7 +101,11 @@ object UserAccountApi {
             put("password", pwd)
             put("email_code", mailCode)
         }.build().requestBody
-        return service.authForget(reqBody)
+        return if (NetworkUtil.isVpnRunning(Global.application)) {
+            service2.authForget(reqBody)
+        } else {
+            service.authForget(reqBody)
+        }
     }
 
     suspend fun logout(): ResponseData<Boolean> {
@@ -150,9 +166,6 @@ object UserAccountApi {
     }
 
     suspend fun getTrafficLog(): ResponseData<List<TrafficBean>> {
-        val reqBody = RequestParam.Builder().apply {
-
-        }.build().requestBody
         if (NetworkUtil.isVpnRunning(Global.application)) {
             return service2.trafficRecord()
         }
