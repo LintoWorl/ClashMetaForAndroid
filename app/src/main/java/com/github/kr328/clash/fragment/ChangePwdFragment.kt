@@ -9,6 +9,7 @@ import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.github.kr328.clash.common.compat.checkEmpty
+import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.databinding.FragChangePasswordBinding
 import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
@@ -50,6 +51,10 @@ class ChangePwdFragment : Fragment() {
             //调重置用户密码的API
             val oldPwd = binding.editOldPwd.text.toString()
             val newPwd = binding.editNewPwd.text.toString()
+            if (oldPwd != newPwd) {
+                context?.toast("请确认两次输入的密码内容相同")
+                return@onClickNew
+            }
             CoroutineScope(Dispatchers.Main).launch {
                 viewModel.modifyUserPwd(requireContext(), oldPwd, newPwd)
             }
