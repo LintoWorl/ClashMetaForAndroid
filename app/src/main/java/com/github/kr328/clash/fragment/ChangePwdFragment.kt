@@ -51,7 +51,8 @@ class ChangePwdFragment : Fragment() {
             //调重置用户密码的API
             val oldPwd = binding.editOldPwd.text.toString()
             val newPwd = binding.editNewPwd.text.toString()
-            if (oldPwd != newPwd) {
+            val confPwd = binding.confirmNewPwd.text.toString()
+            if (confPwd != newPwd) {
                 context?.toast("请确认两次输入的密码内容相同")
                 return@onClickNew
             }
