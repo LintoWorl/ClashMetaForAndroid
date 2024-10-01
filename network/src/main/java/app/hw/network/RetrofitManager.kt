@@ -2,6 +2,7 @@ package app.hw.network
 
 import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.contant.Constant.DM_DIRECT
+import app.hw.network.contant.Constant.DN_SECOND
 import app.hw.network.contant.Constant.PROTOCOL_HTTPS
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
@@ -34,6 +35,7 @@ object RetrofitManager {
     internal lateinit var baseInfo: INetworkBaseInfo
     private var strIp: String = ""
     private var dnFirst: String = ""
+    private var dnSecond: String = ""
 
     /**
      * 网络库模块对外暴露的初始化方法
@@ -41,11 +43,15 @@ object RetrofitManager {
     fun init(networkInfo: INetworkBaseInfo) {
         baseInfo = networkInfo
         dnFirst = parseInetAddress(DM_DIRECT)
+        dnSecond = parseInetAddress(DN_SECOND)
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
-            Logger.d("init network, request the Ip")
-            strIp = DnsUtil().getIpByHost(networkInfo.getAppContext(), dnFirst)
+            Logger.d("init network, request the Ip of:$dnSecond")
+            val dnsUtil = DnsUtil()
+            strIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnSecond)
             Logger.d("init network, receive the Ip: $strIp")
+            val firstIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnFirst)
+            Logger.d("init network, receive the Ip of first DN: $firstIp")
         }
     }
 
@@ -59,7 +65,7 @@ object RetrofitManager {
         override fun lookup(hostname: String): List<InetAddress> {
             android.util.Log.d(Logger.TAG_HTTP, "lookup hostname:$hostname, the parsedIp is:$strIp")
             if (strIp.isEmpty()) {
-                strIp = DnsUtil().getIpByHost(Global.application, dnFirst)
+                strIp = DnsUtil().getIpByHost(Global.application, dnSecond)
                 android.util.Log.d(Logger.TAG_HTTP, "got the hostname's ip:$strIp")
             }
             val ipList: List<InetAddress>
@@ -67,7 +73,7 @@ object RetrofitManager {
                 ipList = ArrayList()
                 ipList.add(InetAddress.getByName(strIp))
             } else {
-                ipList = Dns.SYSTEM.lookup(dnFirst)
+                ipList = Dns.SYSTEM.lookup(dnSecond)
             }
             return ipList
         }
@@ -91,8 +97,9 @@ object RetrofitManager {
     }
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(logging)
         .connectionSpecs(connectionSpecs)
+        .dns(myDns)
+        .addInterceptor(logging)
         .addInterceptor(RequestInterceptor())
         .addInterceptor(ResponseInterceptor())
         .connectTimeout(HTTP_TIMEOUT_CONNECT, TimeUnit.MILLISECONDS)
