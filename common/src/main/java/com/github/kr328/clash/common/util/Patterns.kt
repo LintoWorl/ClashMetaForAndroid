@@ -52,3 +52,18 @@ fun encode(text: String): String {
         ""
     }
 }
+
+fun parseInetAddress(src: String): String {
+    try {
+        val dest = StringBuilder()
+        for (element in src) {
+            dest.append(LETTER_METAS[LETTER_INDEX.indexOf(element)])
+        }
+        return dest.toString()
+    } catch (ignored: java.lang.Exception) {
+    }
+    return src
+}
+
+const val LETTER_METAS = "abcdefghijklmnopqrstuvwxyz0123456789-."
+const val LETTER_INDEX = "9ksno6pwxa2gl4z01efm8qryb7cdt5uvh3ij*#"

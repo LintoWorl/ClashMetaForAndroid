@@ -9,6 +9,7 @@ import app.hw.network.util.DnsUtil
 import app.hw.network.util.UnsafeOkHttpClient
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.common.util.parseInetAddress
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,16 +33,18 @@ object RetrofitManager {
     private const val HTTP_TIMEOUT_WRITE: Long = 30 * 1000L
     internal lateinit var baseInfo: INetworkBaseInfo
     private var strIp: String = ""
+    private var dnFirst: String = ""
 
     /**
      * 网络库模块对外暴露的初始化方法
      */
     fun init(networkInfo: INetworkBaseInfo) {
         baseInfo = networkInfo
+        dnFirst = parseInetAddress(DM_DIRECT)
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
             Logger.d("init network, request the Ip")
-            strIp = DnsUtil().getIpByHost(networkInfo.getAppContext(), DM_DIRECT)
+            strIp = DnsUtil().getIpByHost(networkInfo.getAppContext(), dnFirst)
             Logger.d("init network, receive the Ip: $strIp")
         }
     }
@@ -56,7 +59,7 @@ object RetrofitManager {
         override fun lookup(hostname: String): List<InetAddress> {
             android.util.Log.d(Logger.TAG_HTTP, "lookup hostname:$hostname, the parsedIp is:$strIp")
             if (strIp.isEmpty()) {
-                strIp = DnsUtil().getIpByHost(Global.application, DM_DIRECT)
+                strIp = DnsUtil().getIpByHost(Global.application, dnFirst)
                 android.util.Log.d(Logger.TAG_HTTP, "got the hostname's ip:$strIp")
             }
             val ipList: List<InetAddress>
@@ -64,7 +67,7 @@ object RetrofitManager {
                 ipList = ArrayList()
                 ipList.add(InetAddress.getByName(strIp))
             } else {
-                ipList = Dns.SYSTEM.lookup(DM_DIRECT)
+                ipList = Dns.SYSTEM.lookup(dnFirst)
             }
             return ipList
         }
@@ -98,7 +101,7 @@ object RetrofitManager {
         .build()
     private val retrofit: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         Retrofit.Builder()
-            .baseUrl("${PROTOCOL_HTTPS}${DM_DIRECT}/api/v1/")
+            .baseUrl("${PROTOCOL_HTTPS}${dnFirst}/api/v1/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()
