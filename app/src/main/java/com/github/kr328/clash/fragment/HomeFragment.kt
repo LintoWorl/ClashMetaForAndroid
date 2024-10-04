@@ -12,6 +12,7 @@ import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
+import com.github.kr328.clash.design.R as designR
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.common.util.intent
@@ -26,6 +27,7 @@ import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
+import com.github.kr328.clash.service.store.ServiceStore
 import com.github.kr328.clash.store.TipsStore
 import com.github.kr328.clash.util.startClashService
 import com.github.kr328.clash.util.stopClashService
@@ -178,24 +180,31 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private fun fetchProfile(url: String) {
         launch {
             withProfile {
+                val serviceStore = ServiceStore(activity)
                 val savedProf = queryActive()
                 if (savedProf == null) {
-                    val name = getString(com.github.kr328.clash.design.R.string.new_profile)
-                    //val name = "default_profile"
+                    val name = getString(designR.string.new_profile)
                     val uuid: UUID = create(Profile.Type.Url, name)
 
                     val originProf = queryByUUID(uuid) ?: return@withProfile
                     val profile = originProf.copy(source = url)
                     load(profile)
+                    serviceStore.dynamicSubsUrl = url
                     activity.defer {
                         release(uuid)
                     }
                 } else {
-                    val store = TipsStore(activity)
-                    val last = store.updateProfTime
-                    if (System.currentTimeMillis() - last > 30 * 60 * 1000) {
-                        update(savedProf.uuid)
-                        store.updateProfTime = System.currentTimeMillis()
+                    if (url == serviceStore.dynamicSubsUrl) {
+                        val store = TipsStore(activity)
+                        val last = store.updateProfTime
+                        if (System.currentTimeMillis() - last > 10 * 60 * 1000) {
+                            update(savedProf.uuid)
+                            store.updateProfTime = System.currentTimeMillis()
+                        }
+                    } else {
+                        val updateProf = savedProf.copy(source = url)
+                        load(updateProf)
+                        serviceStore.dynamicSubsUrl = url
                     }
                 }
                 Logger.i("fetchProfile savedProf:$savedProf")
@@ -239,7 +248,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                 activity.showModalProgressBar {
                     configure {
                         isIndeterminate = true
-                        text = getString(com.github.kr328.clash.design.R.string.initializing)
+                        text = getString(designR.string.initializing)
                     }
 
                     executeTask {
@@ -261,15 +270,12 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private fun ModelProgressBarConfigure.applyFrom(status: FetchStatus) {
         when (status.action) {
             FetchStatus.Action.FetchConfiguration -> {
-                text = getString(
-                    com.github.kr328.clash.design.R.string.format_fetching_configuration
-                    //status.args[0]
-                )
+                text = getString(designR.string.format_fetching_configuration)
                 isIndeterminate = true
             }
 
             FetchStatus.Action.Verifying -> {
-                text = getString(com.github.kr328.clash.design.R.string.verifying)
+                text = getString(designR.string.verifying)
                 isIndeterminate = true
             }
 

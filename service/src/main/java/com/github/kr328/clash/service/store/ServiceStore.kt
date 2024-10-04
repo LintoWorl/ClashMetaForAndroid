@@ -60,4 +60,8 @@ class ServiceStore(context: Context) {
         key = "sideload_geoip",
         defaultValue = ""
     )
+
+    var dynamicSubsUrl by store.string(
+        key = "dynamic_update_subs", ""
+    )
 }
