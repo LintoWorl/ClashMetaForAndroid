@@ -194,6 +194,8 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                         release(uuid)
                     }
                 } else {
+                    Logger.d("fetchProfile given url:$url")
+                    Logger.d("fetchProfile dynamic url:${serviceStore.dynamicSubsUrl}")
                     if (url == serviceStore.dynamicSubsUrl) {
                         val store = TipsStore(activity)
                         val last = store.updateProfTime
