@@ -96,7 +96,7 @@ object RetrofitManager {
             .build()
     }
 
-    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+    private val okHttpClient: OkHttpClient = UnsafeOkHttpClient.getBuilder()
         .connectionSpecs(connectionSpecs)
         .dns(myDns)
         .addInterceptor(logging)
