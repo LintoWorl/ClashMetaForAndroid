@@ -1,14 +1,17 @@
 package com.github.kr328.clash
 
+import android.Manifest
 import android.app.PendingIntent
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
 import android.os.IInterface
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -151,7 +154,14 @@ class LogcatService : Service(), CoroutineScope by CoroutineScope(Dispatchers.De
             )
             .build()
 
-        startForeground(R.id.nf_logcat_status, notification)
+        //startForeground(R.id.nf_logcat_status, notification)
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+        NotificationManagerCompat.from(applicationContext).notify(R.id.nf_logcat_status, notification)
     }
 
     companion object {

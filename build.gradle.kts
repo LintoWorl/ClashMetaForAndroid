@@ -41,7 +41,7 @@ subprojects {
 
             versionName =
                 "v1.1.1_g" + SimpleDateFormat("yyMMdd").format(Date())
-            versionCode = 1010101
+            versionCode = 1010102
 
             resValue("string", "release_name", "v$versionName")
             resValue("integer", "release_code", "$versionCode")

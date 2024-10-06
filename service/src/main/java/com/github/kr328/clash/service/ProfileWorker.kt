@@ -1,7 +1,6 @@
 package com.github.kr328.clash.service
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -117,7 +116,6 @@ class ProfileWorker : BaseService() {
         )
     }
 
-    @SuppressLint("ForegroundServiceType")
     private fun foreground() {
         val notification = NotificationCompat.Builder(this, SERVICE_CHANNEL)
             .setContentTitle(getString(R.string.profile_updater))
