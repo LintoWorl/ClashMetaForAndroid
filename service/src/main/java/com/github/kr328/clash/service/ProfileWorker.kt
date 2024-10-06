@@ -1,9 +1,13 @@
 package com.github.kr328.clash.service
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -90,7 +94,7 @@ class ProfileWorker : BaseService() {
 
             ProfileReceiver.scheduleNext(this, imported)
         } catch (e: Exception) {
-            failed(imported.uuid, imported.name, e.message ?: "Unknown")
+            //failed(imported.uuid, imported.name, e.message ?: "Unknown")
         }
     }
 
@@ -113,6 +117,7 @@ class ProfileWorker : BaseService() {
         )
     }
 
+    @SuppressLint("ForegroundServiceType")
     private fun foreground() {
         val notification = NotificationCompat.Builder(this, SERVICE_CHANNEL)
             .setContentTitle(getString(R.string.profile_updater))
@@ -139,6 +144,12 @@ class ProfileWorker : BaseService() {
             .setGroup(STATUS_CHANNEL)
             .build()
 
+        if (ActivityCompat.checkSelfPermission(
+                this, Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         NotificationManagerCompat.from(applicationContext).notify(id, notification)
         try {
             block()
@@ -174,6 +185,13 @@ class ProfileWorker : BaseService() {
             .setContentText(getString(R.string.format_update_complete, name))
             .build()
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         NotificationManagerCompat.from(this)
             .notify(id, notification)
 
@@ -191,6 +209,13 @@ class ProfileWorker : BaseService() {
             .setStyle(NotificationCompat.BigTextStyle().bigText(content))
             .build()
 
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
         NotificationManagerCompat.from(this)
             .notify(id, notification)
 
