@@ -52,6 +52,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private val viewModel by activityViewModels<MainViewModel>()
     private lateinit var activity: MainV2Activity
     private var refreshSubsInfo: Boolean = false
+    private var hasReqInitMsg: Boolean = false
 
     val clashRunning: Boolean
         get() = Remote.broadcasts.clashRunning
@@ -74,9 +75,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         super.onViewCreated(view, savedInstanceState)
         initObserver()
         observeClashStat()
-        if (viewModel.lgnState.value != true) {
-            viewModel.fetchSubscribeInfo()
+        if (!hasReqInitMsg) {
             viewModel.fetchNoticeInfo()
+            viewModel.fetchSubscribeInfo()
         }
     }
 
@@ -152,6 +153,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         viewModel.lgnState.observe(viewLifecycleOwner) {
             refreshSubsInfo = true
             if (it) {
+                hasReqInitMsg = true
                 viewModel.fetchSubscribeInfo()
                 viewModel.fetchNoticeInfo()
             }

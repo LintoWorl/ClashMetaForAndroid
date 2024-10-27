@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModel
 import app.hw.network.api.OthersApi
 import app.hw.network.api.PaymentApi
 import app.hw.network.api.UserAccountApi
+import app.hw.network.handler.ErrorType.SERVER_STATE_FORBIDDEN
+import app.hw.network.handler.ErrorType.SERVER_STATE_UNAUTHORIZED
 import app.hw.network.handler.RequestHandler
 import app.hw.network.model.AppConfig
 import app.hw.network.model.CouponBean
@@ -55,7 +57,9 @@ class MainViewModel : ViewModel() {
     fun checkLoginStat() {
         RequestHandler.request({
             UserAccountApi.checkLogin()
-        }, {}, { code, msg ->
+        }, {
+           Logger.d("login status:${it.is_login}")
+        }, { code, msg ->
             Logger.e("checkLoginStat fail:$msg")
         })
     }
@@ -127,6 +131,12 @@ class MainViewModel : ViewModel() {
         }, {
             subsInfo.value = it
         }, { code, msg ->
+            //token已失效，需要跳转登录页面重新登入
+            if (SERVER_STATE_FORBIDDEN == code || SERVER_STATE_UNAUTHORIZED == code) {
+                Global.application.toast(msg)
+                lgnState.postValue(false)
+                fragIndex.postValue(IDX_FRAG_LOGIN)
+            }
             Logger.e("fetchSubscribeInfo fail:$msg")
         })
     }

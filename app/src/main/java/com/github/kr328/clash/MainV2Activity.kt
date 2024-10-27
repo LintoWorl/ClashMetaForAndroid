@@ -1,8 +1,12 @@
 package com.github.kr328.clash
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.ConnectivityManager.NetworkCallback
+import android.net.Network
 import android.net.Uri
 import android.os.Build
 import android.text.Spannable
@@ -13,12 +17,15 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.TextView
+import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.common.constants.Authorities
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DesignMainV2Binding
@@ -34,6 +41,8 @@ import com.github.kr328.clash.fragment.StoreFragment
 import com.github.kr328.clash.fragment.UserFragment
 import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
 
@@ -97,42 +106,80 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
     override suspend fun main() {
         binding = DesignMainV2Binding.inflate(layoutInflater)
+        onBackPressedDispatcher.addCallback(this, pressBackListener)
         setContentView(binding.root)
-        if (!NetworkUtil.isNetConnected(this)) {
-            CommonDialog.show(supportFragmentManager) {
-                title = "提示"
-                content = "网络连接失败，请检查网络设置！"
-                rightButton = "重试"
-                listener = object : CommonDialog.OnClickListener{
-                    override fun onPositiveClick(dialog: CommonDialog, clue: String) {
-                        if (NetworkUtil.isNetConnected(this@MainV2Activity)) {
+        val connMgr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getSystemService(ConnectivityManager::class.java)
+        } else {
+            getSystemService(Context.CONNECTIVITY_SERVICE)
+        } as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Logger.d("is Network active:${connMgr.isActiveNetworkMetered}")
+            connMgr.registerDefaultNetworkCallback(object : NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    super.onAvailable(network)
+                    Logger.e("Network is available.")
+                    init()
+                }
+
+                override fun onLost(network: Network) {
+                    super.onLost(network)
+                    Logger.e("Network is lost.")
+                }
+
+                override fun onUnavailable() {
+                    super.onUnavailable()
+                    Logger.e("Network is unavailable.")
+                }
+            })
+        } else {
+            if (!NetworkUtil.isNetConnected(this)) {
+                Logger.e("Network connect failed.")
+                CommonDialog.show(supportFragmentManager) {
+                    title = "提示"
+                    content = "网络连接异常，请检查网络设置！"
+                    rightButton = "重试"
+                    listener = object : CommonDialog.OnClickListener {
+                        override fun onPositiveClick(dialog: CommonDialog, clue: String) {
+                            if (NetworkUtil.isNetConnected(this@MainV2Activity)) {
+                                init()
+                                dialog.dismiss()
+                            }
+                        }
+
+                        override fun onNegativeClick(dialog: CommonDialog) {
                             dialog.dismiss()
+                            if (!NetworkUtil.isNetConnected(this@MainV2Activity)) {
+                                finish()
+                            }
                         }
                     }
-
-                    override fun onNegativeClick(dialog: CommonDialog) {
-                        dialog.dismiss()
-                    }
                 }
+            } else {
+                init()
             }
         }
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        appStore = AppStore(this)
-        if (!appStore.hasLoginApp && !appStore.enteredHome) {
-            viewModel.initConfigs(this)
-        }
-        onBackPressedDispatcher.addCallback(this, pressBackListener)
+    }
 
-        // 根据登录状态确定初始状态应该跳转到什么页面
-        if (appStore.enteredHome) {
-            showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
-            viewModel.userHasLogin = appStore.hasLoginApp
-        } else {
-            showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
-        }
+    private fun init() {
+        launch(Dispatchers.Main) {
+            viewModel = ViewModelProvider(this@MainV2Activity)[MainViewModel::class.java]
+            appStore = AppStore(this@MainV2Activity)
+            if (!appStore.hasLoginApp && !appStore.enteredHome) {
+                viewModel.initConfigs(this@MainV2Activity)
+            }
 
-        initTabEvents()
-        initObserver()
+            // 根据登录状态确定初始状态应该跳转到什么页面
+            if (appStore.enteredHome) {
+                showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
+                viewModel.userHasLogin = appStore.hasLoginApp
+            } else {
+                showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
+            }
+
+            initTabEvents()
+            initObserver()
+        }
     }
 
     private fun initTabEvents() {
@@ -256,7 +303,8 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         val tosTitle = getString(com.github.kr328.clash.R.string.privacy_statement_tos)
         val ppTitle = getString(com.github.kr328.clash.R.string.privacy_statement_pp)
         val spannableStringBuilder = SpannableStringBuilder()
-        val spannableString1 = SpannableString(getString(com.github.kr328.clash.R.string.privacy_statement) + " ")
+        val spannableString1 =
+            SpannableString(getString(com.github.kr328.clash.R.string.privacy_statement) + " ")
         spannableStringBuilder.append(spannableString1)
         spannableStringBuilder.append(
             setColorAndLink(1, tosTitle)
@@ -288,7 +336,12 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         }, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             spannable.setSpan(
-                ForegroundColorSpan(resources.getColor(com.github.kr328.clash.R.color.app_color, null)),
+                ForegroundColorSpan(
+                    resources.getColor(
+                        com.github.kr328.clash.R.color.app_color,
+                        null
+                    )
+                ),
                 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
             )
         } else {

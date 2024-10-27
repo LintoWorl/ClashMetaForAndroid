@@ -59,9 +59,9 @@ class RegisterFragment : Fragment() {
             dontCheckMail = it.is_email_verify == 0
             needInvite = it.is_invite_force == 1
             val mailList = it.email_whitelist_suffix
-            if (!dontCheckMail) {
+            if (!dontCheckMail && mailList != null && mailList is List<*>) {
                 binding.mailList.show()
-                binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList)
+                binding.mailList.adapter = MailAddressAdapter(requireContext(), mailList as List<String>)
                 binding.labelCheckMail.show()
                 binding.llCheckMail.show()
             } else {

@@ -18,7 +18,7 @@ class AppConfig {
     var tos_url: String? = ""
     var is_email_verify: Int = 0
     var is_invite_force: Int = 0
-    var email_whitelist_suffix = emptyList<String>()
+    var email_whitelist_suffix: Any? = null//emptyList<String>()
     var is_recaptcha: Int = 0
     var recaptcha_site_key: String = ""
     var app_description: String = ""
