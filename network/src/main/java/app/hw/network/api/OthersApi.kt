@@ -31,9 +31,16 @@ object OthersApi {
 
     suspend fun getNoticeMsg(): ResponseData<List<NoticeBean>> {
         if (NetworkUtil.isVpnRunning(Global.application)) {
-            return service2.fetchNotice()
+            return service2.fetchMemberNotice()
         }
-        return service.fetchNotice()
+        return service.fetchMemberNotice()
+    }
+
+    suspend fun getNonmemberNotice(xyz: String): ResponseData<List<NoticeBean>> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.fetchNotice(xyz)
+        }
+        return service.fetchNotice(xyz)
     }
 
     suspend fun checkVersion(userToken: String): ResponseData<String> {

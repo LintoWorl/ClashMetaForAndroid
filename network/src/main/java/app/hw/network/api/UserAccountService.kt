@@ -10,6 +10,7 @@ import okhttp3.RequestBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 /**
  * @Time : created on 2024/4/22 10:00
@@ -68,6 +69,8 @@ internal interface UserAccountService {
      */
     @GET("user/getSubscribe")
     suspend fun getSubscribe(): ResponseData<ProductSubsInfo>
+    @GET("fhl/subscribe/{xyz}")
+    suspend fun getNonmemberSubs(@Path("xyz") xyz: String): ResponseData<ProductSubsInfo>
 
     /**
      * 重置订阅链接，返回一条新的订阅连接

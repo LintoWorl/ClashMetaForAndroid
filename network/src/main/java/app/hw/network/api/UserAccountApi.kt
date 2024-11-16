@@ -129,6 +129,13 @@ object UserAccountApi {
         return service.getSubscribe()
     }
 
+    suspend fun getSubsInfo(xyz: String): ResponseData<ProductSubsInfo> {
+        if (NetworkUtil.isVpnRunning(Global.application)) {
+            return service2.getNonmemberSubs(xyz)
+        }
+        return service.getNonmemberSubs(xyz)
+    }
+
     suspend fun resetSubsLink(): ResponseData<String> {
         if (NetworkUtil.isVpnRunning(Global.application)) {
             return service2.resetSubsLink()

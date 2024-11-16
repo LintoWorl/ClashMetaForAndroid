@@ -43,7 +43,7 @@ object RetrofitManager {
     fun init(networkInfo: INetworkBaseInfo) {
         baseInfo = networkInfo
         dnFirst = parseInetAddress(DM_DIRECT)
-        dnSecond = parseInetAddress(DN_SECOND)
+        dnSecond = parseInetAddress(DM_DIRECT)
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
             Logger.d("init network, request the Ip of:$dnSecond")
@@ -96,7 +96,7 @@ object RetrofitManager {
             .build()
     }
 
-    private val okHttpClient: OkHttpClient = UnsafeOkHttpClient.getBuilder()
+    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
         .connectionSpecs(connectionSpecs)
         .dns(myDns)
         .addInterceptor(logging)
