@@ -25,6 +25,7 @@ import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
+import com.github.kr328.clash.util.appFeatSign
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -127,7 +128,11 @@ class MainViewModel : ViewModel() {
 
     fun fetchSubscribeInfo() {
         RequestHandler.request({
-            UserAccountApi.getSubscribeInfo()
+            if (userHasLogin) {
+                UserAccountApi.getSubscribeInfo()
+            } else {
+                UserAccountApi.getSubsInfo(appFeatSign())
+            }
         }, {
             subsInfo.value = it
         }, { code, msg ->
@@ -143,7 +148,11 @@ class MainViewModel : ViewModel() {
 
     fun fetchNoticeInfo() {
         RequestHandler.request({
-            OthersApi.getNoticeMsg()
+            if (userHasLogin) {
+                OthersApi.getNoticeMsg()
+            } else {
+                OthersApi.getNonmemberNotice(appFeatSign())
+            }
         }, {
             noticeMsgList.value = it
         }, { code, msg ->

@@ -5,8 +5,12 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import com.github.kr328.clash.BuildConfig
 import java.io.File
+import java.math.BigInteger
+import java.security.MessageDigest
 import java.util.zip.ZipFile
+import kotlin.math.pow
 
 object ApplicationObserver {
     private val _createdActivities: MutableSet<Activity> = mutableSetOf()
@@ -82,4 +86,20 @@ fun Context.verifyApk(): Boolean {
     } catch (e: Exception) {
         false
     }
+}
+
+fun appFeatSign(): String {
+    val tokenVal = BuildConfig.VERSION_CODE + 10.0.pow(5.0) + 10.0.pow(4) + 10.0.pow(3) + 1000 + 10 + 1
+    return getMd5ByByteArray(tokenVal.toString().toByteArray())
+}
+
+private fun getMd5ByByteArray(byteArray: ByteArray): String {
+    try {
+        val md5 = MessageDigest.getInstance("MD5")
+        md5.update(byteArray)
+        val bi = BigInteger(1, md5.digest())
+        return bi.toString(16)
+    } catch (ignore: Exception) {
+    }
+    return ""
 }
