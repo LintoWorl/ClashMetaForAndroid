@@ -130,13 +130,13 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                     binding.editPassword.text.toString(),
                     { lgn ->
                         onResult()
+                        viewModel.userHasLogin = true
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                         val appStore = AppStore(requireContext())
                         appStore.userToken = lgn.token
                         appStore.authData = lgn.auth_data
                         Authorities.authData = lgn.auth_data
                         appStore.hasLoginApp = true
-                        viewModel.userHasLogin = true
                     },
                     { msg ->
                         onResult()

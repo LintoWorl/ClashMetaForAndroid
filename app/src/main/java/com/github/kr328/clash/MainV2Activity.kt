@@ -171,8 +171,8 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
             // 根据登录状态确定初始状态应该跳转到什么页面
             if (appStore.enteredHome) {
-                showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
                 viewModel.userHasLogin = appStore.hasLoginApp
+                showFragmentByIndex(MainViewModel.IDX_FRAG_HOME)
             } else {
                 showFragmentByIndex(MainViewModel.IDX_FRAG_LOGIN)
             }

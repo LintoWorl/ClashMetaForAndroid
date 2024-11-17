@@ -43,7 +43,7 @@ object RetrofitManager {
     fun init(networkInfo: INetworkBaseInfo) {
         baseInfo = networkInfo
         dnFirst = parseInetAddress(DM_DIRECT)
-        dnSecond = parseInetAddress(DM_DIRECT)
+        dnSecond = parseInetAddress(DN_SECOND)
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
             Logger.d("init network, request the Ip of:$dnSecond")
