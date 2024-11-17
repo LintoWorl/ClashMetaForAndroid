@@ -71,7 +71,7 @@ class MainApplication : Application() {
             }
 
             override fun baseServerUrl(): String {
-                return "${PROTOCOL_HTTPS}${DM_BACKUP}/api/v1/"
+                return "${PROTOCOL_HTTPS}${DM_BACKUP}"
             }
 
             override fun appVerCode(): String {

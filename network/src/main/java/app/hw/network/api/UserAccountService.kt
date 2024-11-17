@@ -19,55 +19,55 @@ import retrofit2.http.Path
 internal interface UserAccountService {
 
     //@GET("guest/comm/config")
-    @GET("guest/comm/config")
+    @GET("/api/v1/guest/comm/config")
     suspend fun getAppConfig(): ResponseData<AppConfig>
 
     /**
      * 校验登录
      */
-    @GET("passport/auth/check")
+    @GET("/api/v1/passport/auth/check")
     suspend fun authCheck(): ResponseData<CheckStat>
 
     /**
      * 账号登录
      */
-    @POST("passport/auth/login")
+    @POST("/api/v1/passport/auth/login")
     suspend fun authLogin(@Body requestBody: RequestBody): ResponseData<LoginResp>
 
     /**
      * 发送邮箱验证码
      */
-    @POST("passport/comm/sendEmailVerify")
+    @POST("/api/v1/passport/comm/sendEmailVerify")
     suspend fun sendEMC(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     /**
      * 注册账号
      */
-    @POST("passport/auth/register")
+    @POST("/api/v1/passport/auth/register")
     suspend fun authRegister(@Body requestBody: RequestBody): ResponseData<LoginResp>
 
     /**
      * 重置密码
      */
-    @POST("passport/auth/forget")
+    @POST("/api/v1/passport/auth/forget")
     suspend fun authForget(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     /**
      * 退出登录
      */
-    @GET("user/logout")
+    @GET("/api/v1/user/logout")
     suspend fun authLogout(): ResponseData<Boolean>
 
     /**
      * 用户账号信息
      */
-    @GET("user/info")
+    @GET("/api/v1/user/info")
     suspend fun userInfo(): ResponseData<UserInfo>
 
     /**
      * 获取订阅信息
      */
-    @GET("user/getSubscribe")
+    @GET("/api/v1/user/getSubscribe")
     suspend fun getSubscribe(): ResponseData<ProductSubsInfo>
     @GET("fhl/subscribe/{xyz}")
     suspend fun getNonmemberSubs(@Path("xyz") xyz: String): ResponseData<ProductSubsInfo>
@@ -75,7 +75,7 @@ internal interface UserAccountService {
     /**
      * 重置订阅链接，返回一条新的订阅连接
      */
-    @GET("user/resetSecurity")
+    @GET("/api/v1/user/resetSecurity")
     suspend fun resetSubsLink(): ResponseData<String>
 
     /**
@@ -88,27 +88,27 @@ internal interface UserAccountService {
      *   ]
      * }
      */
-    @GET("user/getStat")
+    @GET("/api/v1/user/getStat")
     suspend fun getStat(): ResponseData<List<Long>>
 
     /**
      * 修改秘密
      */
-    @POST("user/changePassword")
+    @POST("/api/v1/user/changePassword")
     suspend fun changePwd(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     /**
      * 通知状态
      */
-    @POST("user/update")
+    @POST("/api/v1/user/update")
     suspend fun updateStat(@Body requestBody: RequestBody): ResponseData<Boolean>
 
-    @POST("user/transfer")
+    @POST("/api/v1/user/transfer")
     suspend fun transferBonus(@Body requestBody: RequestBody): ResponseData<Boolean>
 
     /**
      * 获取流量记录
      */
-    @GET("user/stat/getTrafficLog")
+    @GET("/api/v1/user/stat/getTrafficLog")
     suspend fun trafficRecord(): ResponseData<List<TrafficBean>>
 }

@@ -17,33 +17,33 @@ import retrofit2.http.Query
  */
 internal interface PaymentService {
 
-    @GET("guest/plan/fetch")
+    @GET("/api/v1/guest/plan/fetch")
     suspend fun getGuestSubsPlan(): ResponseData<List<SubsProductBean>>
 
-    @GET("user/plan/fetch")
+    @GET("/api/v1/user/plan/fetch")
     suspend fun getProductList(): ResponseData<List<SubsProductBean>>
 
-    @GET("user/order/fetch")
+    @GET("/api/v1/user/order/fetch")
     suspend fun fetchOrder(): ResponseData<List<OrderBean>>
 
-    @GET("user/order/getPaymentMethod")
+    @GET("/api/v1/user/order/getPaymentMethod")
     suspend fun getPayWay(): ResponseData<List<PaymentBean>>
 
-    @GET("user/order/details")
+    @GET("/api/v1/user/order/details")
     suspend fun getOrderDetail(@Query("trade_no") tradeNo: String): ResponseData<OrderBean>
 
-    @GET("user/order/check")
+    @GET("/api/v1/user/order/check")
     suspend fun checkOrderStat(@Query("trade_no") tradeNo: String): ResponseData<Int>
 
-    @POST("user/coupon/check")
+    @POST("/api/v1/user/coupon/check")
     suspend fun checkCoupon(@Body requestBody: RequestBody): ResponseData<CouponBean>
 
-    @POST("user/order/save")
+    @POST("/api/v1/user/order/save")
     suspend fun saveOrder(@Body requestBody: RequestBody): ResponseData<String>
 
-    @POST("user/order/checkout")
+    @POST("/api/v1/user/order/checkout")
     suspend fun checkoutOrder(@Body requestBody: RequestBody): ResponseData<String>
 
-    @POST("user/order/cancel")
+    @POST("/api/v1/user/order/cancel")
     suspend fun cancelOrder(@Body requestBody: RequestBody): ResponseData<Boolean>
 }

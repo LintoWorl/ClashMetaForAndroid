@@ -108,7 +108,7 @@ object RetrofitManager {
         .build()
     private val retrofit: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         Retrofit.Builder()
-            .baseUrl("${PROTOCOL_HTTPS}${dnFirst}/api/v1/")
+            .baseUrl("${PROTOCOL_HTTPS}${dnFirst}")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
             .build()

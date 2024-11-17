@@ -62,7 +62,10 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
 
         binding.btnEnterTourist.onClickNew {
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
-            viewModel.loginApp("peterpan168@qq.com", "pass.jsb.8812",
+            viewModel.userHasLogin = false
+            val appStore = AppStore(requireContext())
+            appStore.hasLoginApp = false
+            /*viewModel.loginApp("peterpan168@qq.com", "pass.jsb.8812",
                 onSucc = { lgn ->
                     val appStore = AppStore(requireContext())
                     appStore.userToken = lgn.token
@@ -70,7 +73,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                     Authorities.authData = lgn.auth_data
                     appStore.hasLoginApp = false
                     viewModel.userHasLogin = false
-                }, onFail = {})
+                }, onFail = {})*/
         }
 
         binding.btnEnterRegister.onClickNew {
