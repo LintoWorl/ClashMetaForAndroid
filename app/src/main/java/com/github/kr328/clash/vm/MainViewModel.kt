@@ -131,7 +131,9 @@ class MainViewModel : ViewModel() {
             if (userHasLogin) {
                 UserAccountApi.getSubscribeInfo()
             } else {
-                UserAccountApi.getSubsInfo(appFeatSign())
+                val appInfo = appConfig.value
+                val appVer = appInfo?.app_ver ?: 0
+                UserAccountApi.getSubsInfo(appFeatSign(appVer))
             }
         }, {
             subsInfo.value = it
@@ -151,7 +153,9 @@ class MainViewModel : ViewModel() {
             if (userHasLogin) {
                 OthersApi.getNoticeMsg()
             } else {
-                OthersApi.getNonmemberNotice(appFeatSign())
+                val appInfo = appConfig.value
+                val appVer = appInfo?.app_ver ?: 0
+                OthersApi.getNonmemberNotice(appFeatSign(appVer))
             }
         }, {
             noticeMsgList.value = it

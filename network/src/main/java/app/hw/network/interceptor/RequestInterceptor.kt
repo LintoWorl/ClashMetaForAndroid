@@ -32,7 +32,6 @@ class RequestInterceptor : Interceptor {
         builder.addHeader("clientTime", Date().time.toString())
         builder.addHeader("timezone", TimeZone.getDefault().id)
         builder.addHeader("language", Locale.getDefault().language)
-        builder.addHeader("app_ver", baseInfo.appVerCode())
         val netCountryCode = getNetWorkCountryISO(baseInfo.getAppContext())
         val localeCountry = Locale.getDefault().country
         builder.addHeader("loc", "${netCountryCode}_$localeCountry")

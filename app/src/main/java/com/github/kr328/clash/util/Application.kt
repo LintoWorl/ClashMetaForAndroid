@@ -5,7 +5,9 @@ import android.app.Application
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
+import android.util.Patterns
 import com.github.kr328.clash.BuildConfig
+import com.github.kr328.clash.common.util.encode
 import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
@@ -88,9 +90,9 @@ fun Context.verifyApk(): Boolean {
     }
 }
 
-fun appFeatSign(): String {
-    val tokenVal = BuildConfig.VERSION_CODE + 10.0.pow(5.0) + 10.0.pow(4) + 10.0.pow(3) + 1000 + 10 + 1
-    return getMd5ByByteArray(tokenVal.toString().toByteArray())
+fun appFeatSign(key: Int): String {
+    val tokenVal = key + (10.0.pow(5.0) + 10.0.pow(4) + 10.0.pow(3)).toInt()+ 100 + 10 + 1
+    return encode(tokenVal.toString())
 }
 
 private fun getMd5ByByteArray(byteArray: ByteArray): String {

@@ -24,4 +24,5 @@ class AppConfig {
     var app_description: String = ""
     var app_url: String = ""
     var logo: String = ""
+    var app_ver: Int = 0
 }
