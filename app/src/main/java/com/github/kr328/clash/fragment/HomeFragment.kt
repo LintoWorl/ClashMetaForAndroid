@@ -42,7 +42,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
-import kotlinx.coroutines.sync.withPermit
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -164,6 +163,12 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             }
             fetchProfile(it.subscribe_url)
             refreshSubsInfo = false
+        }
+        viewModel.appConfig.observe(viewLifecycleOwner) {
+            if (!viewModel.userHasLogin) {
+                viewModel.fetchSubscribeInfo()
+                viewModel.fetchNoticeInfo()
+            }
         }
         viewModel.noticeMsgList.observe(viewLifecycleOwner) {
             design.initNoticeView(it)

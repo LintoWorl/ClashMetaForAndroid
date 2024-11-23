@@ -17,9 +17,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.view.View
 import android.widget.TextView
-import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
-import androidx.core.content.getSystemService
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
@@ -164,10 +162,8 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
     private fun init() {
         launch(Dispatchers.Main) {
             viewModel = ViewModelProvider(this@MainV2Activity)[MainViewModel::class.java]
+            viewModel.initConfigs(this@MainV2Activity)
             appStore = AppStore(this@MainV2Activity)
-            if (!appStore.hasLoginApp && !appStore.enteredHome) {
-                viewModel.initConfigs(this@MainV2Activity)
-            }
 
             // 根据登录状态确定初始状态应该跳转到什么页面
             if (appStore.enteredHome) {

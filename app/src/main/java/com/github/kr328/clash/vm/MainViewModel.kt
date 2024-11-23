@@ -65,7 +65,18 @@ class MainViewModel : ViewModel() {
         })
     }
 
-    fun initConfigs(scope: Activity) {
+    fun initConfigs(scope: Activity, showProgress: Boolean = false) {
+        if (!showProgress) {
+            RequestHandler.request({
+                UserAccountApi.appConfig()
+            }, { config ->
+                Logger.d("got guest config data.")
+                appConfig.value = config
+            }, { _, msg ->
+                Logger.e("initData fail: $msg")
+            })
+            return
+        }
         CoroutineScope(Dispatchers.Main).launch {
             scope.showModalProgressBar {
                 configure {

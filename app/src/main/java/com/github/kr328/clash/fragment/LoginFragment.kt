@@ -78,7 +78,7 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
 
         binding.btnEnterRegister.onClickNew {
             if (viewModel.appConfig.value == null) {
-                viewModel.initConfigs(requireActivity())
+                viewModel.initConfigs(requireActivity(), true)
             }
             viewModel.fragIndex.value = MainViewModel.IDX_FRAG_REGST
         }
