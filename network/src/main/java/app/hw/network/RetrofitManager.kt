@@ -79,6 +79,7 @@ object RetrofitManager {
         }
     }
     private val client: OkHttpClient = UnsafeOkHttpClient.getBuilder()
+        //.proxy(Proxy.NO_PROXY)
         .connectionSpecs(connectionSpecs)
         .dns(myDns)
         .addInterceptor(logging)
@@ -97,8 +98,9 @@ object RetrofitManager {
     }
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+        //.proxy(Proxy.NO_PROXY)
         .connectionSpecs(connectionSpecs)
-        .dns(myDns)
+        //.dns(myDns)
         .addInterceptor(logging)
         .addInterceptor(RequestInterceptor())
         .addInterceptor(ResponseInterceptor())
