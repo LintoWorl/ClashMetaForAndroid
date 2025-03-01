@@ -14,7 +14,7 @@ object Constant {
     const val DNS_AGENT3 = "1.12.12.12/dns-query"
     const val DNS_V6_AGENT1 = "[2606:4700:4700::1111]/dns-query"
     const val DNS_V6_AGENT2 = "[2400:3200::1]/resolve"
-    const val DM_DIRECT = "p9mo#6o4pw8zg84#yb7"//"lx#lxq04#9gat//"
+    const val DM_DIRECT = "6wg#kx4pzdcc#0ez"//"fhl.bingo100.pro//"
     const val DM_BACKUP = "www.ifeng.com"
-    const val DN_SECOND = "om9p#6o4pw8zg84#yb7"
+    const val DN_SECOND = "6wg#kx4pzdcc#0ez"
 }

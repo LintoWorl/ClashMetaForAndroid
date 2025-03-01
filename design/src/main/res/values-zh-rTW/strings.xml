@@ -45,7 +45,7 @@
     <string name="import_from_url">從 URL 匯入</string>
     <string name="interface_">介面</string>
     <string name="invalid_url">無效 URL</string>
-    <string name="launch_name">风火轮加速器</string>
+    <string name="launch_name">Bingo VPN</string>
     <string name="logcat">Logcat</string>
     <string name="logs">日誌</string>
     <string name="mode">模式</string>
@@ -215,7 +215,7 @@
     <string name="name_server_policy">Name Server 政策</string>
     <string name="block_loopback">攔截本地回送</string>
     <string name="block_loopback_summary">攔截本地回送連結</string>
-    <string name="clash_meta_for_android">MiBoxer</string>
+    <string name="clash_meta_for_android">Bingo VPN</string>
     <string name="clash_meta_wiki">Clash Meta Wiki</string>
     <string name="meta_features">Meta Features</string>
     <string name="unified_delay">Unified Delay</string>

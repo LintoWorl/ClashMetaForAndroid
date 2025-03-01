@@ -33,15 +33,15 @@ subprojects {
     extensions.configure<BaseExtension> {
         defaultConfig {
             if (isApp) {
-                applicationId = "xyz.fenghuolun"
+                applicationId = "com.sbget.pro"
             }
 
             minSdk = 21
             targetSdk = 34
 
             versionName =
-                "v1.1.2_g" + SimpleDateFormat("yyMMdd").format(Date())
-            versionCode = 1010104
+                "v2.0.4_b" + SimpleDateFormat("yyMMdd").format(Date())
+            versionCode = 2020004
 
             resValue("string", "release_name", "v$versionName")
             resValue("integer", "release_code", "$versionCode")
