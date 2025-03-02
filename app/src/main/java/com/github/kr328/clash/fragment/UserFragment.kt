@@ -209,13 +209,13 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
                 binding.llSubsInfo.hide()
             }
             //val lastLgnTime = if (it.last_login_at > 0) it.last_login_at else it.created_at
-            if (it.last_login_at > 0) {
+            /*if (it.last_login_at > 0) {
                 binding.tvLastLogin.show()
                 binding.tvLastLogin.text =
                     "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
             } else {
                 binding.tvLastLogin.hide()
-            }
+            }*/
         }
         viewModel.lgnState.observe(viewLifecycleOwner) {
             reqrdRefresh = true
@@ -224,7 +224,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun feedback() {
         val dataIntent = Intent(Intent.ACTION_SENDTO)
-        dataIntent.data = Uri.parse("mailto:joinmibox@pm.me")
+        dataIntent.data = Uri.parse("mailto:sbgetvpn@gmail.com")
         dataIntent.putExtra(Intent.EXTRA_SUBJECT, "反馈问题及建议")
         val version = "App版本: ${BuildConfig.VERSION_NAME}"
         val model = "手机型号: ${Build.MANUFACTURER}-${Build.MODEL}"

@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="PluralsCandidate">
-    <string name="launch_name">Hot Wheels</string>
-    <string name="application_name">Hot Wheels</string>
+    <string name="launch_name">Bingo VPN</string>
+    <string name="application_name">Bingo VPN</string>
 
     <string name="stopped">Stopped</string>
     <string name="tap_to_start">Tap to start</string>
@@ -340,5 +340,5 @@
     <string name="proxy_mode_global">Global Proxy</string>
     <string name="proxy_mode_smart">Smart  Proxy</string>
 
-    <string name="conn_us_tg" translatable="false">https://t.me/fhl_jiasu</string>
+    <string name="conn_us_tg" translatable="false">https://t.me/bingovpn</string>
 </resources>
