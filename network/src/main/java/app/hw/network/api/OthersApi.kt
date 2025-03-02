@@ -4,6 +4,7 @@ import app.hw.network.RetrofitManager
 import app.hw.network.model.InviteCodeResp
 import app.hw.network.model.InviteDetail
 import app.hw.network.model.NoticeBean
+import app.hw.network.model.VerInfo
 import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.common.Global
 
@@ -43,7 +44,7 @@ object OthersApi {
         return service.fetchNotice(xyz)
     }
 
-    suspend fun checkVersion(userToken: String): ResponseData<String> {
+    suspend fun checkVersion(userToken: String): ResponseData<VerInfo> {
         return if (NetworkUtil.isVpnRunning(Global.application)) {
             service2.checkAppVer(userToken)
         } else {

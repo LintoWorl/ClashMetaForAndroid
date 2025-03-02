@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import app.hw.network.api.OthersApi
+import app.hw.network.handler.RequestHandler
 import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.AppSettingsActivity
 import com.github.kr328.clash.BaseActivity
@@ -183,8 +185,18 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             startActivity(LogsActivity::class.intent)
         }
         binding.itemCheckVersion.onClickNew {
-            //
-            context?.toast("已是最新版本")
+            RequestHandler.request(
+                { OthersApi.checkVersion(appStore.userToken) },
+                { ver ->
+                    if (ver.android_version.isNullOrEmpty()) {
+                        context?.toast("已是最新版本")
+                    } else {
+                        ver.android_version?.let { context?.toast(it) }
+                    }
+                },
+                { code, msg ->
+                    context?.toast(msg)
+                })
         }
     }
 

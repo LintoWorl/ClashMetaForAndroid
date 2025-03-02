@@ -160,3 +160,13 @@ data class NoticeBean(
     var created_at: Long = 0,
     var updated_at: Long = 0
 )
+
+//{"windows_version":null,"windows_download_url":null,"macos_version":null,"macos_download_url":null,"android_version":null,"android_download_url":null}
+data class VerInfo(
+    var windows_version: String? = null,
+    var windows_download_url: String? = null,
+    var macos_version: String? = null,
+    var macos_download_url: String? = null,
+    var android_version: String? = null,
+    var android_download_url: String? = null
+)
