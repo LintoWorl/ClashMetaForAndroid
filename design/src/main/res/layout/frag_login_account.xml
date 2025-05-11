@@ -165,7 +165,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginVertical="50dp"
-        android:text="Copyright 2024 @ 风火轮"
+        android:text="Copyright 2025 © 风火轮"
         android:textColor="@color/color_666"
         android:textSize="12sp" />
 </LinearLayout>
