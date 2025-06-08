@@ -195,6 +195,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
                     val originProf = queryByUUID(uuid) ?: return@withProfile
                     val profile = originProf.copy(source = url)
+                    Logger.d("load profile of url:$url")
                     load(profile)
                     serviceStore.dynamicSubsUrl = url
                     activity.defer {
@@ -212,7 +213,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                         }
                     } else {
                         val updateProf = savedProf.copy(source = url)
-                        load(updateProf)
+                        load(updateProf, false)
                         serviceStore.dynamicSubsUrl = url
                     }
                 }
@@ -221,7 +222,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private fun load(profile: Profile) {
+    private fun load(profile: Profile, firstLoad: Boolean = true) {
         try {
             withProcessing { updateStatus ->
                 withProfile {
@@ -247,6 +248,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         } catch (e: Exception) {
+            Logger.e("load Profile exception:${e.message}")
             e.printStackTrace()
         }
     }
@@ -272,6 +274,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         } catch (e: Exception) {
+            Logger.e("load Profile exception:${e.message}")
             e.printStackTrace()
         }
     }
@@ -345,6 +348,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         val active = withProfile { queryActive() }
 
         if (active == null || !active.imported) {
+            Logger.e("startClash active:$active")
             activity.toast(R.string.no_profile_selected)
             return
         }

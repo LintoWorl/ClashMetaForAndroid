@@ -4,8 +4,10 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.github.kr328.clash.common.util.createListFromParcelSlice
 import com.github.kr328.clash.common.util.writeToParcelSlice
+import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 
+@InternalSerializationApi
 @Serializable
 data class ProxyGroup(
     val type: Proxy.Type,

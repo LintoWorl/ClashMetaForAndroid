@@ -4,8 +4,11 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.github.kr328.clash.common.util.createListFromParcelSlice
 import com.github.kr328.clash.common.util.writeToParcelSlice
+import kotlinx.serialization.InternalSerializationApi
 
-class ProviderList(data: List<Provider>) : List<Provider> by data, Parcelable {
+@OptIn(InternalSerializationApi::class)
+class ProviderList @OptIn(InternalSerializationApi::class) constructor(data: List<Provider>) :
+    List<Provider> by data, Parcelable {
     constructor(parcel: Parcel) : this(Provider.createListFromParcelSlice(parcel, 0, 20))
 
     override fun describeContents(): Int {
