@@ -72,6 +72,19 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (viewModel.appConfig.value == null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                activity.showModalProgressBar {
+                    configure {
+                        isIndeterminate = true
+                        text = "正在初始化网络环境，请稍等片刻..."
+                    }
+                    viewModel.appConfig.observe(viewLifecycleOwner) {
+                        onResult()
+                    }
+                }
+            }
+        }
         initObserver()
         observeClashStat()
         if (!hasReqInitMsg) {
@@ -213,7 +226,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                         }
                     } else {
                         val updateProf = savedProf.copy(source = url)
-                        load(updateProf, false)
+                        load(updateProf)
                         serviceStore.dynamicSubsUrl = url
                     }
                 }
@@ -222,7 +235,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         }
     }
 
-    private fun load(profile: Profile, firstLoad: Boolean = true) {
+    private fun load(profile: Profile) {
         try {
             withProcessing { updateStatus ->
                 withProfile {

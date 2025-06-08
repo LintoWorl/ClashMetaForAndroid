@@ -59,7 +59,7 @@ class MainViewModel : ViewModel() {
         RequestHandler.request({
             UserAccountApi.checkLogin()
         }, {
-           Logger.d("login status:${it.is_login}")
+            Logger.d("login status:${it.is_login}")
         }, { code, msg ->
             Logger.e("checkLoginStat fail:$msg")
         })
@@ -231,10 +231,10 @@ class MainViewModel : ViewModel() {
 
     fun cancelSubsOrder() {
         if (subsOrderId.isNotEmpty()) {
-            RequestHandler.request({ PaymentApi.cancelOrder(subsOrderId) },
-                {
-                    Global.application.toast(if (it) "取消成功" else "取消失败了")
-                }, { code, msg -> Global.application.toast(msg) })
+            RequestHandler.request(
+                { PaymentApi.cancelOrder(subsOrderId) },
+                { Global.application.toast(if (it) "取消成功" else "取消失败了") },
+                { code, msg -> Global.application.toast(msg) })
         }
     }
 
