@@ -6,13 +6,11 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.github.kr328.clash.core.util.DateSerializer
 import com.github.kr328.clash.core.util.Parcelizer
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 import java.util.*
 
-@InternalSerializationApi
 @Serializable
 data class LogMessage(
     val level: Level,

@@ -3,10 +3,8 @@ package com.github.kr328.clash.core.model
 import android.os.Parcel
 import android.os.Parcelable
 import com.github.kr328.clash.core.util.Parcelizer
-import kotlinx.serialization.InternalSerializationApi
 import kotlinx.serialization.Serializable
 
-@InternalSerializationApi
 @Serializable
 class UiConfiguration : Parcelable {
     override fun writeToParcel(parcel: Parcel, flags: Int) {
