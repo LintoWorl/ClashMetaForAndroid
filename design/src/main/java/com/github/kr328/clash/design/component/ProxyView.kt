@@ -18,7 +18,7 @@ class ProxyView(
     }
 
     var state: ProxyViewState? = null
-    constructor(context: Context) : this(context, ProxyViewConfig(context, 2))
+    constructor(context: Context) : this(context, ProxyViewConfig(context, 1))
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val state = state ?: return super.onMeasure(widthMeasureSpec, heightMeasureSpec)
 
@@ -74,9 +74,19 @@ class ProxyView(
         paint.style = Paint.Style.FILL
 
         // draw background
+        val verPadding = state.config.layoutPadding
+        val horPadding = state.config.layoutPadding * 4
         canvas.apply {
-            if (state.config.proxyLine==1) {
-                drawRect(0f, 0f, width, height, paint)
+            if (state.config.proxyLine == 1) {
+                //drawRect(0f, 0f, width, height, paint)
+                drawRoundRect(
+                    horPadding,
+                    verPadding,
+                    width - horPadding,
+                    height - verPadding,
+                    state.config.cardRadius,
+                    state.config.cardRadius,
+                    paint)
             } else {
                 val path = state.path
 
@@ -120,11 +130,12 @@ class ProxyView(
 
         paint.textSize = state.config.textSize
 
+        val horPadding = state.config.layoutPadding * 4
         // measure delay text bounds
         val delayCount = paint.breakText(
             state.delayText,
             false,
-            (width - state.config.layoutPadding * 2 - state.config.contentPadding * 2)
+            (width - horPadding * 2 - state.config.contentPadding * 2)
                 .coerceAtLeast(0f),
             null
         )
@@ -134,7 +145,7 @@ class ProxyView(
         val delayWidth = state.rect.width()
 
         val mainTextWidth = (width -
-                state.config.layoutPadding * 2 -
+                horPadding * 2 -
                 state.config.contentPadding * 2 -
                 delayWidth -
                 state.config.textMargin * 2
@@ -168,7 +179,7 @@ class ProxyView(
 
         // draw delay
         canvas.apply {
-            val x = width - state.config.layoutPadding - state.config.contentPadding - delayWidth
+            val x = width - horPadding - state.config.contentPadding - delayWidth
             val y = height / 2f - textOffset
 
             drawText(state.delayText, 0, delayCount, x, y, paint)
@@ -176,7 +187,7 @@ class ProxyView(
 
         // draw title
         canvas.apply {
-            val x = state.config.layoutPadding + state.config.contentPadding
+            val x = horPadding + state.config.contentPadding
             val y = state.config.layoutPadding +
                     (height - state.config.layoutPadding * 2) / 3f - textOffset
 
@@ -185,7 +196,7 @@ class ProxyView(
 
         // draw subtitle
         canvas.apply {
-            val x = state.config.layoutPadding + state.config.contentPadding
+            val x = horPadding + state.config.contentPadding
             val y = state.config.layoutPadding +
                     (height - state.config.layoutPadding * 2) / 3f * 2 - textOffset
 
