@@ -72,6 +72,19 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (viewModel.appConfig.value == null) {
+            CoroutineScope(Dispatchers.Main).launch {
+                activity.showModalProgressBar {
+                    configure {
+                        isIndeterminate = true
+                        text = "正在初始化网络环境，请稍等片刻..."
+                    }
+                    viewModel.appConfig.observe(viewLifecycleOwner) {
+                        onResult()
+                    }
+                }
+            }
+        }
         initObserver()
         observeClashStat()
         if (!hasReqInitMsg) {
@@ -195,6 +208,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
                     val originProf = queryByUUID(uuid) ?: return@withProfile
                     val profile = originProf.copy(source = url)
+                    Logger.d("load profile of url:$url")
                     load(profile)
                     serviceStore.dynamicSubsUrl = url
                     activity.defer {
@@ -247,6 +261,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         } catch (e: Exception) {
+            Logger.e("load Profile exception:${e.message}")
             e.printStackTrace()
         }
     }
@@ -272,6 +287,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                 }
             }
         } catch (e: Exception) {
+            Logger.e("load Profile exception:${e.message}")
             e.printStackTrace()
         }
     }
@@ -345,6 +361,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         val active = withProfile { queryActive() }
 
         if (active == null || !active.imported) {
+            Logger.e("startClash active:$active")
             activity.toast(R.string.no_profile_selected)
             return
         }

@@ -1,6 +1,7 @@
 package com.github.kr328.clash.service
 
 import android.content.Context
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.service.data.Database
 import com.github.kr328.clash.service.data.Imported
 import com.github.kr328.clash.service.data.ImportedDao
@@ -94,6 +95,7 @@ class ProfileManager(private val context: Context) : IProfileManager,
         val pending = PendingDao().queryByUUID(uuid)
 
         if (pending == null) {
+            Logger.e("patch Profile pending is null")
             val imported = ImportedDao().queryByUUID(uuid)
                 ?: throw FileNotFoundException("profile $uuid not found")
 

@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 class ProxyActivity : BaseActivity<ProxyDesign>() {
     override suspend fun main() {
         val mode = withClash { queryOverride(Clash.OverrideSlot.Session).mode }
-        val groups = withClash { queryProxyGroupNames(true) }
+        val groups = withClash { queryProxyGroupNames(false) }
         val names = if (groups.size > 1) groups.dropLast(groups.size - 1) else groups
         //val states = List(names.size) { ProxyState("?") }
         val states = List(1) { ProxyState("?") }
@@ -37,7 +37,7 @@ class ProxyActivity : BaseActivity<ProxyDesign>() {
                     when (it) {
                         Event.ProfileLoaded -> {
                             val newNames = withClash {
-                                queryProxyGroupNames(true)
+                                queryProxyGroupNames(false)
                             }
 
                             if (newNames != names) {
