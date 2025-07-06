@@ -40,8 +40,8 @@ subprojects {
             targetSdk = 34
 
             versionName =
-                "v2.0.4_b" + SimpleDateFormat("yyMMdd").format(Date())
-            versionCode = 2020004
+                "v2.0.5_b" + SimpleDateFormat("yyMMdd").format(Date())
+            versionCode = 2020005
 
             resValue("string", "release_name", "v$versionName")
             resValue("integer", "release_code", "$versionCode")
@@ -55,7 +55,7 @@ subprojects {
             if (!isApp) {
                 consumerProguardFiles("consumer-rules.pro")
             } else {
-                setProperty("archivesBaseName", "fhl-$versionName")
+                setProperty("archivesBaseName", "bingo-pro-$versionName")
             }
         }
 
