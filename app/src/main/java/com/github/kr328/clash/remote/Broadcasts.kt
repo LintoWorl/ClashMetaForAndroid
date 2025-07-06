@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import androidx.core.content.ContextCompat
 import com.github.kr328.clash.common.constants.Intents
 import com.github.kr328.clash.common.log.Logger
 import java.util.*
@@ -88,7 +89,7 @@ class Broadcasts(private val context: Application) {
             return
 
         try {
-            context.registerReceiver(broadcastReceiver, IntentFilter().apply {
+            ContextCompat.registerReceiver(context, broadcastReceiver, IntentFilter().apply {
                 addAction(Intents.ACTION_SERVICE_RECREATED)
                 addAction(Intents.ACTION_CLASH_STARTED)
                 addAction(Intents.ACTION_CLASH_STOPPED)
@@ -96,7 +97,7 @@ class Broadcasts(private val context: Application) {
                 addAction(Intents.ACTION_PROFILE_UPDATE_COMPLETED)
                 addAction(Intents.ACTION_PROFILE_UPDATE_FAILED)
                 addAction(Intents.ACTION_PROFILE_LOADED)
-            })
+            }, ContextCompat.RECEIVER_NOT_EXPORTED)
 
             clashRunning = StatusClient(context).currentProfile() != null
         } catch (e: Exception) {

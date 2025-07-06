@@ -9,6 +9,7 @@ import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import com.github.kr328.clash.common.constants.Intents
 import com.github.kr328.clash.common.constants.Permissions
 import com.github.kr328.clash.remote.StatusClient
@@ -33,6 +34,7 @@ class TileService : TileService() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onStartListening() {
         super.onStartListening()
 
@@ -45,7 +47,8 @@ class TileService : TileService() {
                 addAction(Intents.ACTION_SERVICE_RECREATED)
             },
             Permissions.RECEIVE_SELF_BROADCASTS,
-            null
+            null,
+            RECEIVER_NOT_EXPORTED
         )
 
         val name = StatusClient(this).currentProfile()
