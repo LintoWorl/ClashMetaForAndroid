@@ -16,6 +16,7 @@ class TipsStore(context: Context) {
         defaultValue = -1,
     )
     var updateProfTime: Long by store.long(key ="last_update_prof", -1)
+    var updateNetAdr: String by store.string(key = "last_update_adr", "")
 
     companion object {
 

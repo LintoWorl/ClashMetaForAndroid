@@ -47,11 +47,14 @@ object RetrofitManager {
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
             Logger.d("init network, request the Ip of:$dnSecond")
+            strIp = networkInfo.preNetAdr()
+            Logger.d("init network, get the preCachedIp:$strIp")
             val dnsUtil = DnsUtil()
             strIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnSecond)
             Logger.d("init network, receive the Ip: $strIp")
-            val firstIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnFirst)
-            Logger.d("init network, receive the Ip of first DN: $firstIp")
+            networkInfo.updateNetAdr(strIp)
+            //val firstIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnFirst)
+            //Logger.d("init network, receive the Ip of first DN: $firstIp")
         }
     }
 
@@ -63,10 +66,10 @@ object RetrofitManager {
         arrayListOf(ConnectionSpec.COMPATIBLE_TLS)
     private val myDns: Dns = object : Dns {
         override fun lookup(hostname: String): List<InetAddress> {
-            android.util.Log.d(Logger.TAG_HTTP, "lookup hostname:$hostname, the parsedIp is:$strIp")
+            Logger.d("lookup hostname:$hostname, the parsedIp is:$strIp")
             if (strIp.isEmpty()) {
                 strIp = DnsUtil().getIpByHost(Global.application, dnSecond)
-                android.util.Log.d(Logger.TAG_HTTP, "got the hostname's ip:$strIp")
+                Logger.d("lookup got the hostname's ip:$strIp")
             }
             val ipList: List<InetAddress>
             if (strIp.isNotEmpty()) {

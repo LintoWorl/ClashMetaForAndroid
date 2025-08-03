@@ -8,10 +8,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
+import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.design.R as designR
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
@@ -72,7 +74,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if (viewModel.appConfig.value == null) {
+        val runningVpn = NetworkUtil.isVpnRunning(activity)
+        Logger.d("onViewCreated in HomeFrag:$runningVpn")
+        if (viewModel.appConfig.value == null && !runningVpn) {
             CoroutineScope(Dispatchers.Main).launch {
                 activity.showModalProgressBar {
                     configure {

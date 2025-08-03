@@ -11,6 +11,7 @@ import com.github.kr328.clash.common.compat.currentProcessName
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.util.sendServiceRecreated
+import com.github.kr328.clash.store.TipsStore
 import com.github.kr328.clash.util.clashDir
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,6 +66,8 @@ class MainApplication : Application() {
     }
 
     private fun initNetwork() {
+        val tipsStore = TipsStore(this)
+        val netAdr = tipsStore.updateNetAdr
         RetrofitManager.init(object : INetworkBaseInfo {
             override fun getAppContext(): Application {
                 return this@MainApplication
@@ -80,6 +83,16 @@ class MainApplication : Application() {
 
             override fun appVerName(): String {
                 return BuildConfig.VERSION_NAME
+            }
+
+            override fun preNetAdr(): String {
+                return netAdr
+            }
+
+            override fun updateNetAdr(adr: String) {
+                if (adr.isNotEmpty() && adr != netAdr) {
+                    tipsStore.updateNetAdr = adr
+                }
             }
         })
         Global.commEvents.trySend("network_init_succ")
