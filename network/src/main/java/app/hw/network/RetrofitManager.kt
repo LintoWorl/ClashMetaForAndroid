@@ -10,6 +10,8 @@ import app.hw.network.util.DnsUtil
 import app.hw.network.util.UnsafeOkHttpClient
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.common.util.decode
+import com.github.kr328.clash.common.util.encode
 import com.github.kr328.clash.common.util.parseInetAddress
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -47,12 +49,14 @@ object RetrofitManager {
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
             Logger.d("init network, request the Ip of:$dnSecond")
-            strIp = networkInfo.preNetAdr()
+            strIp = decode(networkInfo.preNetAdr())
             Logger.d("init network, get the preCachedIp:$strIp")
             val dnsUtil = DnsUtil()
             strIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnSecond)
             Logger.d("init network, receive the Ip: $strIp")
-            networkInfo.updateNetAdr(strIp)
+            val encodedIp = encode(strIp)
+            Logger.d("init network, encode the Ip:$encodedIp")
+            networkInfo.updateNetAdr(encodedIp)
             //val firstIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnFirst)
             //Logger.d("init network, receive the Ip of first DN: $firstIp")
         }
