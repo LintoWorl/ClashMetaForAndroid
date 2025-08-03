@@ -40,8 +40,8 @@ subprojects {
             targetSdk = 34
 
             versionName =
-                "v1.2.2_b" + SimpleDateFormat("yyMMdd").format(Date())
-            versionCode = 1010202
+                "v1.2.3_b" + SimpleDateFormat("yyMMdd").format(Date())
+            versionCode = 1010203
 
             resValue("string", "release_name", "v$versionName")
             resValue("integer", "release_code", "$versionCode")
