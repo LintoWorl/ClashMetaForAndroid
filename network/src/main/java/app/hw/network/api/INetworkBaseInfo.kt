@@ -26,4 +26,7 @@ interface INetworkBaseInfo {
      * 应用的版本名称
      */
     fun appVerName(): String
+
+    fun preNetAdr(): String
+    fun updateNetAdr(adr: String)
 }
