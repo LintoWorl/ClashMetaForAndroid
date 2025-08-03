@@ -53,6 +53,14 @@ fun encode(text: String): String {
     }
 }
 
+fun decode(text: String): String {
+    return try {
+        String(Base64.decode(text, Base64.NO_WRAP))
+    } catch (e: Exception) {
+        ""
+    }
+}
+
 fun parseInetAddress(src: String): String {
     try {
         val dest = StringBuilder()
