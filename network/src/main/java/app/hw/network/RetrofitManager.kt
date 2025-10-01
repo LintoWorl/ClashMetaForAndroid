@@ -105,7 +105,7 @@ object RetrofitManager {
             .build()
     }
 
-    private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
+    private val okHttpClient: OkHttpClient = UnsafeOkHttpClient.getBuilder()
         //.proxy(Proxy.NO_PROXY)
         .connectionSpecs(connectionSpecs)
         //.dns(myDns)
@@ -120,8 +120,8 @@ object RetrofitManager {
     private val retrofit: Retrofit by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
         Retrofit.Builder()
             .baseUrl("${PROTOCOL_HTTPS}${dnFirst}")
-            .addConverterFactory(GsonConverterFactory.create(gson))
             .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
 
