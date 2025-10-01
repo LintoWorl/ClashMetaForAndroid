@@ -22,6 +22,7 @@ import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
 import app.hw.network.model.UserInfo
 import com.github.kr328.clash.common.Global
+import com.github.kr328.clash.common.datastore.DataRepository
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
@@ -73,7 +74,7 @@ class MainViewModel : ViewModel() {
                 Logger.d("got guest config data.")
                 appConfig.value = config
             }, { _, msg ->
-                Logger.e("initData fail: $msg")
+                Logger.e("initConfigs with noProgress fail: $msg")
             })
             return
         }
@@ -130,6 +131,7 @@ class MainViewModel : ViewModel() {
         }, {
             Logger.d("got userInfo:${it.email}, lastLgn:${it.last_login_at}")
             userInfo.value = it
+            DataRepository.globalDS().putValue("key_user_info", it)
             finished()
         }, { code, msg ->
             //Global.application.toast(msg)
@@ -148,6 +150,7 @@ class MainViewModel : ViewModel() {
             }
         }, {
             subsInfo.value = it
+            DataRepository.globalDS().putValue("key_subs_info", it)
         }, { code, msg ->
             //token已失效，需要跳转登录页面重新登入
             if (SERVER_STATE_FORBIDDEN == code || SERVER_STATE_UNAUTHORIZED == code) {

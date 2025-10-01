@@ -17,4 +17,5 @@ object Constant {
     const val DM_DIRECT = "p9mo#6o4pw8zg84#yb7"//"lx#lxq04#9gat//"
     const val DM_BACKUP = "www.ifeng.com"
     const val DN_SECOND = "om9p#6o4pw8zg84#yb7"
+    const val NET_EXPRESSION = "^(https?|ftp)://[^\\s/$.?#].\\S*$"
 }

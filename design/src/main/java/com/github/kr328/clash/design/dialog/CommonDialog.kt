@@ -1,5 +1,6 @@
 package com.github.kr328.clash.design.dialog
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.text.Html
@@ -8,15 +9,20 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
+import app.hw.network.contant.Constant
 import com.github.kr328.clash.common.Global
+import com.github.kr328.clash.common.log.Logger
+import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DialogCommomBaseBinding
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.show
 import io.noties.markwon.Markwon
+import java.util.regex.Pattern
 
 open class CommonDialog() : DialogFragment() {
     private lateinit var binding: DialogCommomBaseBinding
@@ -102,6 +108,15 @@ open class CommonDialog() : DialogFragment() {
         }
         markwon.setMarkdown(binding.dialogTvContent, contentTxt)
 
+        //val netAddrExp = "^(https?|ftp)://[^\\s/$.?#].\\S*$"
+        //if (contentTxt.startsWith(Constant.PROTOCOL_HTTPS)) {
+        if (Pattern.matches(Constant.NET_EXPRESSION, contentTxt)) {
+            binding.dialogTvContent.onClickNew {
+                //Logger.i("Clicked the office net address!")
+                startActivity(Intent(Intent.ACTION_VIEW, contentTxt.toUri()))
+                dismiss()
+            }
+        }
         if (singleBtn) binding.dialogBtnNegative.hide()
         else binding.dialogBtnNegative.show()
         binding.dialogBtnNegative.text =

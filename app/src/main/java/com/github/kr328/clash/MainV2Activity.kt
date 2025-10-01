@@ -1,13 +1,11 @@
 package com.github.kr328.clash
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
-import android.net.Uri
 import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
@@ -23,6 +21,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.common.constants.Authorities
+import com.github.kr328.clash.common.datastore.DataRepository
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.design.Design
 import com.github.kr328.clash.design.R
@@ -41,6 +40,7 @@ import com.github.kr328.clash.store.AppStore
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import androidx.core.net.toUri
 
 class MainV2Activity : BaseActivity<Design<Any>>() {
 
@@ -103,13 +103,15 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
 
     override suspend fun main() {
+        //viewModel = ViewModelProvider(this@MainV2Activity)[MainViewModel::class.java]
+        //appStore = AppStore(this@MainV2Activity)
         binding = DesignMainV2Binding.inflate(layoutInflater)
         onBackPressedDispatcher.addCallback(this, pressBackListener)
         setContentView(binding.root)
         val connMgr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             getSystemService(ConnectivityManager::class.java)
         } else {
-            getSystemService(Context.CONNECTIVITY_SERVICE)
+            getSystemService(CONNECTIVITY_SERVICE)
         } as ConnectivityManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Logger.d("is Network active:${connMgr.isActiveNetworkMetered}")
@@ -159,11 +161,20 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel = ViewModelProvider(this@MainV2Activity)[MainViewModel::class.java]
+        appStore = AppStore(this@MainV2Activity)
+        viewModel.userHasLogin = appStore.hasLoginApp
+        Logger.d("onResume(), hasLogin:${viewModel.userHasLogin}")
+        Logger.i("the previous login user:${viewModel.userInfo.value}")
+    }
+
     private fun init() {
         launch(Dispatchers.Main) {
-            viewModel = ViewModelProvider(this@MainV2Activity)[MainViewModel::class.java]
+            //viewModel = ViewModelProvider(this@MainV2Activity)[MainViewModel::class.java]
             viewModel.initConfigs(this@MainV2Activity)
-            appStore = AppStore(this@MainV2Activity)
+            //appStore = AppStore(this@MainV2Activity)
 
             // 根据登录状态确定初始状态应该跳转到什么页面
             if (appStore.enteredHome) {
@@ -175,6 +186,7 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
 
             initTabEvents()
             initObserver()
+            DataRepository.globalDS().init(applicationContext)
         }
     }
 
@@ -323,10 +335,10 @@ class MainV2Activity : BaseActivity<Design<Any>>() {
             override fun onClick(view: View) {
                 if (1 == tag) {
                     //context?.toast("点击了用户协议")
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(appStore.tosAddress)))
+                    startActivity(Intent(Intent.ACTION_VIEW, appStore.tosAddress.toUri()))
                 } else {
                     //context?.toast("点击了隐私协议")
-                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(appStore.ppAddress)))
+                    startActivity(Intent(Intent.ACTION_VIEW, appStore.ppAddress.toUri()))
                 }
             }
         }, 0, string.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)

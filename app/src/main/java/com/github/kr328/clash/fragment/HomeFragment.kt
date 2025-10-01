@@ -8,15 +8,18 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import app.hw.network.model.UserInfo
+import app.hw.network.util.GsonHelper
 import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
-import com.github.kr328.clash.common.Global
+import com.github.kr328.clash.common.datastore.DataRepository
 import com.github.kr328.clash.design.R as designR
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
+import com.github.kr328.clash.common.util.TimeFormat
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.core.Clash
@@ -24,9 +27,11 @@ import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.core.model.ProxySort
 import com.github.kr328.clash.core.model.TunnelState
 import com.github.kr328.clash.design.HomeDesign
+import com.github.kr328.clash.design.dialog.CommonDialog
 import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
 import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
+import com.github.kr328.clash.design.util.toDateStr
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.service.store.ServiceStore
@@ -41,6 +46,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
@@ -92,6 +98,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         initObserver()
         observeClashStat()
         if (!hasReqInitMsg) {
+            viewModel.updateUserInfo()
             viewModel.fetchNoticeInfo()
             viewModel.fetchSubscribeInfo()
         }
@@ -168,8 +175,10 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private fun initObserver() {
         viewModel.lgnState.observe(viewLifecycleOwner) {
             refreshSubsInfo = true
+            Logger.i("changed the login state:$it")
             if (it) {
                 hasReqInitMsg = true
+                viewModel.updateUserInfo()
                 viewModel.fetchSubscribeInfo()
                 viewModel.fetchNoticeInfo()
             }
@@ -203,23 +212,23 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     private fun fetchProfile(url: String) {
         launch {
+            Logger.i("fetchProfile->given url:$url")
             withProfile {
                 val serviceStore = ServiceStore(activity)
                 val savedProf = queryActive()
+                Logger.d("fetchProfile savedProf:$savedProf")
                 if (savedProf == null) {
                     val name = getString(designR.string.new_profile)
                     val uuid: UUID = create(Profile.Type.Url, name)
 
                     val originProf = queryByUUID(uuid) ?: return@withProfile
                     val profile = originProf.copy(source = url)
-                    Logger.d("load profile of url:$url")
                     load(profile)
                     serviceStore.dynamicSubsUrl = url
                     activity.defer {
                         release(uuid)
                     }
                 } else {
-                    Logger.d("fetchProfile given url:$url")
                     Logger.d("fetchProfile dynamic url:${serviceStore.dynamicSubsUrl}")
                     if (url == serviceStore.dynamicSubsUrl) {
                         val store = TipsStore(activity)
@@ -234,13 +243,13 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                         serviceStore.dynamicSubsUrl = url
                     }
                 }
-                Logger.i("fetchProfile savedProf:$savedProf")
             }
         }
     }
 
     private fun load(profile: Profile) {
         try {
+            Logger.d("load profile source:${profile.source}")
             withProcessing { updateStatus ->
                 withProfile {
                     patch(profile.uuid, profile.name, profile.source, profile.interval)
@@ -252,8 +261,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                         Logger.i("commit profile:${profile.uuid}, FetchStat progress:${it.progress}")
                     }
                     Logger.i("after commit:${profile.uuid}")
-
-                    Logger.i("setActive profile:${profile.uuid}")
                     updateStatus(
                         FetchStatus(
                             action = FetchStatus.Action.FetchProviders,
@@ -262,6 +269,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                     )
                     setActive(profile)
                     updateStatus(null)
+                    Logger.d("active profile source:${profile.source}")
                 }
             }
         } catch (e: Exception) {
@@ -362,6 +370,25 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     }
 
     private suspend fun startClash() {
+        //检查用户套餐是否已过期
+        val userInfo = DataRepository.globalDS().getValue("key_user_info", UserInfo::class)
+        userInfo.apply {
+            val usIf = first()
+            Logger.d("startClash->dataStore cache:${usIf.toString()}")
+            val userInfo = GsonHelper.parseBean(usIf.toString(), UserInfo::class.java)
+            Logger.i("startClash->dataStore user email:${userInfo?.email}, expireAt:${userInfo?.expired_at?.toDateStr()}")
+        }
+        Logger.i("startClash->current userInfo.value is:${viewModel.userInfo.value}")
+        viewModel.userInfo.value?.apply {
+            Logger.i("the current login user mail:$email, hasLogin:${viewModel.userHasLogin}, expireAt:${expired_at.toDateStr()}")
+            if (viewModel.userHasLogin && TimeFormat.isExpireAt(expired_at)) {
+                CommonDialog.show((context as AppCompatActivity).supportFragmentManager) {
+                    onlyConfirm = true
+                    content = "您的流量套餐已到期，请购买新的套餐后使用。"
+                }
+                return
+            }
+        }
         val active = withProfile { queryActive() }
 
         if (active == null || !active.imported) {
