@@ -23,6 +23,7 @@ import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.show
 import com.github.kr328.clash.store.AppStore
+import com.github.kr328.clash.util.stopClashService
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -140,6 +141,9 @@ class RegisterFragment : Fragment() {
                         appStore.authData = it.auth_data
                         Authorities.authData = it.auth_data
                         appStore.hasLoginApp = true
+                        if (viewModel.guestConnClash) {
+                            activity.stopClashService()
+                        }
                         viewModel.userHasLogin = true
                         viewModel.lgnState.postValue(true)
                         //TODO 提示用户注册成功，直接进入首页

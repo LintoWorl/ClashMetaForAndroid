@@ -46,6 +46,7 @@ class MainViewModel : ViewModel() {
 
     var userHasLogin: Boolean = false
     var prevFragIdx: Int = IDX_FRAG_LOGIN
+    var guestConnClash: Boolean = false
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }
     val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
     val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }
@@ -54,7 +55,7 @@ class MainViewModel : ViewModel() {
     val noticeMsgList: MutableLiveData<List<NoticeBean>> by lazy { MutableLiveData<List<NoticeBean>>() }
     var subsOrderId: String = ""//MutableLiveData<String> by lazy { MutableLiveData<String>() }
     val paymentMethodList: MutableLiveData<List<PaymentBean>> by lazy { MutableLiveData<List<PaymentBean>>() }
-    val couponBean: MutableLiveData<CouponBean> by lazy { MutableLiveData<CouponBean>() }
+    //val couponBean: MutableLiveData<CouponBean> by lazy { MutableLiveData<CouponBean>() }
 
     fun checkLoginStat() {
         RequestHandler.request({
@@ -116,6 +117,7 @@ class MainViewModel : ViewModel() {
     }
 
     suspend fun fetchUserAccountInfo(context: Context) {
+        if (userInfo.value != null) return
         context.showModalProgressBar {
             configure {
                 isIndeterminate = true
@@ -131,7 +133,7 @@ class MainViewModel : ViewModel() {
         }, {
             Logger.d("got userInfo:${it.email}, lastLgn:${it.last_login_at}")
             userInfo.value = it
-            DataRepository.globalDS().putValue("key_user_info", it)
+            //DataRepository.globalDS().putValue("key_user_info", it)
             finished()
         }, { code, msg ->
             //Global.application.toast(msg)

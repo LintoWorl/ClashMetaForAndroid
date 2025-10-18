@@ -16,6 +16,7 @@ import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.util.hideKeyboard
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.store.AppStore
+import com.github.kr328.clash.util.stopClashService
 import com.github.kr328.clash.vm.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
@@ -135,6 +136,9 @@ class LoginFragment : Fragment(), CoroutineScope by MainScope() {
                         appStore.authData = lgn.auth_data
                         Authorities.authData = lgn.auth_data
                         appStore.hasLoginApp = true
+                        if (viewModel.guestConnClash) {
+                            activity.stopClashService()
+                        }
                         viewModel.userHasLogin = true
                         viewModel.fragIndex.value = MainViewModel.IDX_FRAG_HOME
                     },

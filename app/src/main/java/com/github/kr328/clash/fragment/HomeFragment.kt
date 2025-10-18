@@ -81,7 +81,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val runningVpn = NetworkUtil.isVpnRunning(activity)
-        Logger.d("onViewCreated in HomeFrag:$runningVpn")
+        Logger.d("onViewCreated in HomeFrag, has running:$runningVpn, clashRunning=$clashRunning")
         if (viewModel.appConfig.value == null && !runningVpn) {
             CoroutineScope(Dispatchers.Main).launch {
                 activity.showModalProgressBar {
@@ -137,8 +137,24 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                     design.requests.onReceive {
                         when (it) {
                             HomeDesign.Request.ToggleStatus -> {
-                                if (clashRunning) activity.stopClashService()
-                                else startClash()
+                                if (clashRunning) {
+                                    activity.stopClashService()
+                                    viewModel.guestConnClash = false
+                                } else {
+                                    if (!viewModel.userHasLogin) {
+                                        startClash()
+                                        viewModel.guestConnClash = true
+                                    } else {
+                                        if (viewModel.guestConnClash) {
+                                            viewModel.updateUserInfo {
+                                                launch { startClash() }
+                                                viewModel.guestConnClash = false
+                                            }
+                                        } else {
+                                            startClash()
+                                        }
+                                    }
+                                }
                             }
 
                             HomeDesign.Request.OpenProxy ->
@@ -371,15 +387,15 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     private suspend fun startClash() {
         //检查用户套餐是否已过期
-        val userInfo = DataRepository.globalDS().getValue("key_user_info", UserInfo::class)
+        /*val userInfo = DataRepository.globalDS().getValue("key_user_info", UserInfo::class)
         userInfo.apply {
             val usIf = first()
             Logger.d("startClash->dataStore cache:${usIf.toString()}")
             val userInfo = GsonHelper.parseBean(usIf.toString(), UserInfo::class.java)
             Logger.i("startClash->dataStore user email:${userInfo?.email}, expireAt:${userInfo?.expired_at?.toDateStr()}")
-        }
+        }*/
         Logger.i("startClash->current userInfo.value is:${viewModel.userInfo.value}")
-        viewModel.userInfo.value?.apply {
+        /*viewModel.userInfo.value?.apply {
             Logger.i("the current login user mail:$email, hasLogin:${viewModel.userHasLogin}, expireAt:${expired_at.toDateStr()}")
             if (viewModel.userHasLogin && TimeFormat.isExpireAt(expired_at)) {
                 CommonDialog.show((context as AppCompatActivity).supportFragmentManager) {
@@ -388,7 +404,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                 }
                 return
             }
-        }
+        }*/
         val active = withProfile { queryActive() }
 
         if (active == null || !active.imported) {
