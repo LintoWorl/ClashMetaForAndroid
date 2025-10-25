@@ -8,18 +8,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import app.hw.network.model.UserInfo
-import app.hw.network.util.GsonHelper
 import app.hw.network.util.NetworkUtil
 import com.github.kr328.clash.BaseActivity
 import com.github.kr328.clash.MainV2Activity
 import com.github.kr328.clash.ProxyActivity
 import com.github.kr328.clash.R
-import com.github.kr328.clash.common.datastore.DataRepository
 import com.github.kr328.clash.design.R as designR
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
-import com.github.kr328.clash.common.util.TimeFormat
 import com.github.kr328.clash.common.util.intent
 import com.github.kr328.clash.common.util.ticker
 import com.github.kr328.clash.core.Clash
@@ -27,11 +23,9 @@ import com.github.kr328.clash.core.model.FetchStatus
 import com.github.kr328.clash.core.model.ProxySort
 import com.github.kr328.clash.core.model.TunnelState
 import com.github.kr328.clash.design.HomeDesign
-import com.github.kr328.clash.design.dialog.CommonDialog
 import com.github.kr328.clash.design.dialog.ModelProgressBarConfigure
 import com.github.kr328.clash.design.dialog.showModalProgressBar
 import com.github.kr328.clash.design.ui.ToastDuration
-import com.github.kr328.clash.design.util.toDateStr
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.model.Profile
 import com.github.kr328.clash.service.store.ServiceStore
@@ -46,10 +40,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -60,6 +54,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var activity: MainV2Activity
     private var refreshSubsInfo: Boolean = false
     private var hasReqInitMsg: Boolean = false
+    private var isHomFragHidden: Boolean = false
 
     val clashRunning: Boolean
         get() = Remote.broadcasts.clashRunning
@@ -106,6 +101,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
+        isHomFragHidden = hidden
         if (!hidden && refreshSubsInfo) {
             viewModel.fetchSubscribeInfo()
         }
@@ -127,7 +123,16 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                             BaseActivity.Event.ActivityStart, BaseActivity.Event.ServiceRecreated,
                             BaseActivity.Event.ClashStop, BaseActivity.Event.ClashStart,
                             BaseActivity.Event.ProfileLoaded, BaseActivity.Event.ProfileChanged -> {
-                                Logger.i("In HomeFrag, receive event:${it.name}")
+                                Logger.i("HomeFrag, receive event:${it.name}")
+                                if (it == BaseActivity.Event.ClashStop) {
+                                    withProfile {
+                                        val serviceStore = ServiceStore(activity)
+                                        serviceStore.activeProfile?.let {
+                                            release(it)
+                                            Logger.d("HomeFrag, released active profile:$it")
+                                        }
+                                    }
+                                }
                                 design.fetch()
                             }
 
@@ -203,7 +208,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             if (it == null || it.subscribe_url.isEmpty()) {
                 return@observe
             }
-            fetchProfile(it.subscribe_url)
+            fetchProfile(it.email, it.subscribe_url)
             refreshSubsInfo = false
         }
         viewModel.appConfig.observe(viewLifecycleOwner) {
@@ -226,38 +231,54 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     }
 
-    private fun fetchProfile(url: String) {
+    private fun fetchProfile(uName: String, url: String) {
         launch {
             Logger.i("fetchProfile->given url:$url")
             withProfile {
+                val isLogin = viewModel.userHasLogin
                 val serviceStore = ServiceStore(activity)
-                val savedProf = queryActive()
-                Logger.d("fetchProfile savedProf:$savedProf")
-                if (savedProf == null) {
-                    val name = getString(designR.string.new_profile)
-                    val uuid: UUID = create(Profile.Type.Url, name)
-
-                    val originProf = queryByUUID(uuid) ?: return@withProfile
-                    val profile = originProf.copy(source = url)
-                    load(profile)
-                    serviceStore.dynamicSubsUrl = url
-                    activity.defer {
-                        release(uuid)
+                Logger.d("fetchProfile->has user Login:$isLogin")
+                val profileUid = if (!isLogin) {
+                    var guestUid = serviceStore.activeUid4Guest
+                    Logger.d("fetchProfile->guestUid:$guestUid")
+                    if (guestUid == null) {
+                        val name = "游客配置"
+                        guestUid = create(Profile.Type.Url, name)
+                        serviceStore.activeUid4Guest = guestUid
                     }
+                    guestUid
                 } else {
-                    Logger.d("fetchProfile dynamic url:${serviceStore.dynamicSubsUrl}")
-                    if (url == serviceStore.dynamicSubsUrl) {
+                    var vuserUid: UUID? = null
+                    Logger.i("fetchProfile->vuserKey:${serviceStore.uidKey4Vuser}")
+                    val name = getString(designR.string.new_profile)
+                    if (uName != serviceStore.uidKey4Vuser) {//切换账号登录了
+                        serviceStore.uidKey4Vuser = uName
+                    } else {
+                        vuserUid = serviceStore.activeUid4Vuser
+                    }
+                    Logger.i("fetchProfile->vuserUid:$vuserUid")
+                    if (vuserUid == null) {
+                        vuserUid = create(Profile.Type.Url, name)
+                        serviceStore.activeUid4Vuser = vuserUid
+                    }
+                    vuserUid
+                }
+                val savedProf = queryByUUID(profileUid)
+                Logger.d("fetchProfile savedProf:$savedProf")
+                savedProf?.apply {
+                    /*if (url == serviceStore.dynamicSubsUrl) {
                         val store = TipsStore(activity)
                         val last = store.updateProfTime
-                        if (System.currentTimeMillis() - last > 10 * 60 * 1000) {
-                            update(savedProf.uuid)
+                        if (System.currentTimeMillis() - last < 3 * 60 * 1000) {
+                            Logger.d("fetchProfile updated profile")
                             store.updateProfTime = System.currentTimeMillis()
                         }
-                    } else {
-                        val updateProf = savedProf.copy(source = url)
-                        load(updateProf)
-                        serviceStore.dynamicSubsUrl = url
-                    }
+                    } else {*/
+                    val updateProf = copy(source = url)
+                    load(updateProf)
+                    serviceStore.dynamicSubsUrl = url
+                    //}
+                    serviceStore.activeProfile = profileUid
                 }
             }
         }
@@ -266,6 +287,17 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private fun load(profile: Profile) {
         try {
             Logger.d("load profile source:${profile.source}")
+            if (isHomFragHidden) {
+                launch {
+                    withProfile {
+                        patch(profile.uuid, profile.name, profile.source, profile.interval)
+                        commit(profile.uuid) {}
+                        setActive(profile)
+                        Logger.d("setActive when home is hidden:${profile.uuid}")
+                    }
+                }
+                return
+            }
             withProcessing { updateStatus ->
                 withProfile {
                     patch(profile.uuid, profile.name, profile.source, profile.interval)
@@ -394,7 +426,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             val userInfo = GsonHelper.parseBean(usIf.toString(), UserInfo::class.java)
             Logger.i("startClash->dataStore user email:${userInfo?.email}, expireAt:${userInfo?.expired_at?.toDateStr()}")
         }*/
-        Logger.i("startClash->current userInfo.value is:${viewModel.userInfo.value}")
+        //Logger.i("startClash->current userInfo.value is:${viewModel.userInfo.value}")
         /*viewModel.userInfo.value?.apply {
             Logger.i("the current login user mail:$email, hasLogin:${viewModel.userHasLogin}, expireAt:${expired_at.toDateStr()}")
             if (viewModel.userHasLogin && TimeFormat.isExpireAt(expired_at)) {
@@ -406,9 +438,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             }
         }*/
         val active = withProfile { queryActive() }
+        Logger.e("startClash active:$active")
 
         if (active == null || !active.imported) {
-            Logger.e("startClash active:$active")
             activity.toast(R.string.no_profile_selected)
             return
         }

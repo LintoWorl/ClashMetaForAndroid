@@ -57,6 +57,8 @@ class MainViewModel : ViewModel() {
     val paymentMethodList: MutableLiveData<List<PaymentBean>> by lazy { MutableLiveData<List<PaymentBean>>() }
     //val couponBean: MutableLiveData<CouponBean> by lazy { MutableLiveData<CouponBean>() }
 
+    private var requestingSubs: Boolean = false
+
     fun checkLoginStat() {
         RequestHandler.request({
             UserAccountApi.checkLogin()
@@ -72,7 +74,7 @@ class MainViewModel : ViewModel() {
             RequestHandler.request({
                 UserAccountApi.appConfig()
             }, { config ->
-                Logger.d("got guest config data.")
+                Logger.d("got config data.")
                 appConfig.value = config
             }, { _, msg ->
                 Logger.e("initConfigs with noProgress fail: $msg")
@@ -88,7 +90,7 @@ class MainViewModel : ViewModel() {
                 RequestHandler.request({
                     UserAccountApi.appConfig()
                 }, { config ->
-                    Logger.d("got guest config data.")
+                    Logger.d("got config data with progress.")
                     appConfig.value = config
                     onResult()
                 }, { _, msg ->
@@ -142,6 +144,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun fetchSubscribeInfo() {
+        if (requestingSubs) return
+        requestingSubs = true
+        Logger.d("fetchSubscribeInfo userHasLogin:$userHasLogin")
         RequestHandler.request({
             if (userHasLogin) {
                 UserAccountApi.getSubscribeInfo()
@@ -152,7 +157,9 @@ class MainViewModel : ViewModel() {
             }
         }, {
             subsInfo.value = it
+            Logger.i("fetchSubscribeInfo success:${it.email}, subsUrl:${it.subscribe_url}")
             DataRepository.globalDS().putValue("key_subs_info", it)
+            requestingSubs = false
         }, { code, msg ->
             //token已失效，需要跳转登录页面重新登入
             if (SERVER_STATE_FORBIDDEN == code || SERVER_STATE_UNAUTHORIZED == code) {
@@ -161,6 +168,7 @@ class MainViewModel : ViewModel() {
                 fragIndex.postValue(IDX_FRAG_LOGIN)
             }
             Logger.e("fetchSubscribeInfo fail:$msg")
+            requestingSubs = false
         })
     }
 

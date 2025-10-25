@@ -64,4 +64,20 @@ class ServiceStore(context: Context) {
     var dynamicSubsUrl by store.string(
         key = "dynamic_update_subs", ""
     )
+
+    var activeUid4Guest: UUID? by store.typedString(
+        key = "active_uuid_guest",
+        from = { if (it.isBlank()) null else UUID.fromString(it) },
+        to = { it?.toString() ?: "" }
+    )
+
+    var uidKey4Vuser by store.string(
+        key = "last_vuser_key", ""
+    )
+    var activeUid4Vuser: UUID? by store.typedString(
+        key = "active_uuid_subs_user",
+        //key = uidKey4Vuser,
+        from = { if (it.isBlank()) null else UUID.fromString(it) },
+        to = { it?.toString() ?: "" }
+    )
 }

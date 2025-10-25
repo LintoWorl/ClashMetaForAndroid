@@ -76,7 +76,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             initView()
         }
         if (!hidden) {
-            viewModel.fetchSubscribeInfo()
+            //viewModel.fetchSubscribeInfo()
             viewModel.updateUserInfo()
         }
     }
