@@ -287,17 +287,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private fun load(profile: Profile) {
         try {
             Logger.d("load profile source:${profile.source}")
-            if (isHomFragHidden) {
-                launch {
-                    withProfile {
-                        patch(profile.uuid, profile.name, profile.source, profile.interval)
-                        commit(profile.uuid) {}
-                        setActive(profile)
-                        Logger.d("setActive when home is hidden:${profile.uuid}")
-                    }
-                }
-                return
-            }
             withProcessing { updateStatus ->
                 withProfile {
                     patch(profile.uuid, profile.name, profile.source, profile.interval)
