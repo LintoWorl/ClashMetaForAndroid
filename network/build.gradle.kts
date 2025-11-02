@@ -15,6 +15,6 @@ dependencies {
     implementation(libs.retrofit.converter)
     implementation(libs.gson)
     implementation(libs.logging.interceptor)
-    implementation("com.google.firebase:firebase-crashlytics-buildtools:3.0.2")
+    //implementation("com.google.firebase:firebase-crashlytics-buildtools:3.0.3")
     //implementation("com.squareup.okhttp3:okhttp-dnsoverhttps:4.10.0")
 }

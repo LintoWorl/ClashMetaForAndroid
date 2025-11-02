@@ -78,7 +78,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             initView()
         }
         if (!hidden) {
-            viewModel.fetchSubscribeInfo()
+            //viewModel.fetchSubscribeInfo()
             viewModel.updateUserInfo()
         }
     }
@@ -224,7 +224,7 @@ class UserFragment : Fragment(), CoroutineScope by MainScope() {
             /*if (it.last_login_at > 0) {
                 binding.tvLastLogin.show()
                 binding.tvLastLogin.text =
-                    "上次登录时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
+                    "账号注册时间：${it.last_login_at.toDateStr(DATE_DATE_ONLY)}"
             } else {
                 binding.tvLastLogin.hide()
             }*/

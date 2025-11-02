@@ -1,7 +1,5 @@
 package app.hw.network.model
 
-import androidx.core.view.ContentInfoCompat.Flags
-
 /**
  * {
  *   "data": {

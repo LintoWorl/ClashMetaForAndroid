@@ -100,6 +100,13 @@ object TimeFormat {
         return today == lastDay
     }
 
+    @SuppressLint("SimpleDateFormat")
+    fun isExpireAt(time: Long): Boolean {
+        if (time == 0L) return false
+        val today = SimpleDateFormat(FORMAT_YYYYMMDD).format(Date(System.currentTimeMillis()))
+        val timeDay = SimpleDateFormat(FORMAT_YYYYMMDD).format(Date(time * 1000L))
+        return today > timeDay
+    }
 
     /**
      * 返回两个时间戳直接的日期间隔。

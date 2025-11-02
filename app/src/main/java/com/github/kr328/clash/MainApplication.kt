@@ -8,6 +8,7 @@ import app.hw.network.contant.Constant.DM_BACKUP
 import app.hw.network.contant.Constant.PROTOCOL_HTTPS
 import com.github.kr328.clash.common.Global
 import com.github.kr328.clash.common.compat.currentProcessName
+import com.github.kr328.clash.common.datastore.DataRepository
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.remote.Remote
 import com.github.kr328.clash.service.util.sendServiceRecreated
@@ -37,6 +38,7 @@ class MainApplication : Application() {
         if (processName == packageName) {
             Remote.launch()
             initNetwork()
+            DataRepository.initAppDataRepo(this)
         } else {
             sendServiceRecreated()
         }

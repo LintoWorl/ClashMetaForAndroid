@@ -44,6 +44,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.selects.select
+import kotlinx.coroutines.withContext
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -54,6 +55,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private lateinit var activity: MainV2Activity
     private var refreshSubsInfo: Boolean = false
     private var hasReqInitMsg: Boolean = false
+    private var isHomFragHidden: Boolean = false
 
     val clashRunning: Boolean
         get() = Remote.broadcasts.clashRunning
@@ -75,7 +77,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val runningVpn = NetworkUtil.isVpnRunning(activity)
-        Logger.d("onViewCreated in HomeFrag:$runningVpn")
+        Logger.d("onViewCreated in HomeFrag:$runningVpn, clashRunning=$clashRunning")
         if (viewModel.appConfig.value == null && !runningVpn) {
             CoroutineScope(Dispatchers.Main).launch {
                 activity.showModalProgressBar {
@@ -92,6 +94,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
         initObserver()
         observeClashStat()
         if (!hasReqInitMsg) {
+            viewModel.updateUserInfo()
             viewModel.fetchNoticeInfo()
             viewModel.fetchSubscribeInfo()
         }
@@ -99,6 +102,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     override fun onHiddenChanged(hidden: Boolean) {
         super.onHiddenChanged(hidden)
+        isHomFragHidden = hidden
         if (!hidden && refreshSubsInfo) {
             viewModel.fetchSubscribeInfo()
         }
@@ -120,7 +124,16 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                             BaseActivity.Event.ActivityStart, BaseActivity.Event.ServiceRecreated,
                             BaseActivity.Event.ClashStop, BaseActivity.Event.ClashStart,
                             BaseActivity.Event.ProfileLoaded, BaseActivity.Event.ProfileChanged -> {
-                                Logger.i("In HomeFrag, receive event:${it.name}")
+                                Logger.i("HomeFrag, receive event:${it.name}")
+                                if (it == BaseActivity.Event.ClashStop) {
+                                    withProfile {
+                                        val serviceStore = ServiceStore(activity)
+                                        serviceStore.activeProfile?.let {
+                                            release(it)
+                                            Logger.d("HomeFrag, released active profile:$it")
+                                        }
+                                    }
+                                }
                                 design.fetch()
                             }
 
@@ -130,8 +143,24 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                     design.requests.onReceive {
                         when (it) {
                             HomeDesign.Request.ToggleStatus -> {
-                                if (clashRunning) activity.stopClashService()
-                                else startClash()
+                                if (clashRunning) {
+                                    activity.stopClashService()
+                                    viewModel.guestConnClash = false
+                                } else {
+                                    if (!viewModel.userHasLogin) {
+                                        startClash()
+                                        viewModel.guestConnClash = true
+                                    } else {
+                                        if (viewModel.guestConnClash) {
+                                            viewModel.updateUserInfo {
+                                                launch { startClash() }
+                                                viewModel.guestConnClash = false
+                                            }
+                                        } else {
+                                            startClash()
+                                        }
+                                    }
+                                }
                             }
 
                             HomeDesign.Request.OpenProxy ->
@@ -168,8 +197,10 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
     private fun initObserver() {
         viewModel.lgnState.observe(viewLifecycleOwner) {
             refreshSubsInfo = true
+            Logger.i("changed the login state:$it")
             if (it) {
                 hasReqInitMsg = true
+                viewModel.updateUserInfo()
                 viewModel.fetchSubscribeInfo()
                 viewModel.fetchNoticeInfo()
             }
@@ -178,7 +209,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
             if (it == null || it.subscribe_url.isEmpty()) {
                 return@observe
             }
-            fetchProfile(it.subscribe_url)
+            fetchProfile(it.email, it.subscribe_url)
             refreshSubsInfo = false
         }
         viewModel.appConfig.observe(viewLifecycleOwner) {
@@ -201,46 +232,62 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     }
 
-    private fun fetchProfile(url: String) {
+    private fun fetchProfile(uName: String, url: String) {
         launch {
+            Logger.i("fetchProfile->given url:$url")
             withProfile {
+                val isLogin = viewModel.userHasLogin
                 val serviceStore = ServiceStore(activity)
-                val savedProf = queryActive()
-                if (savedProf == null) {
-                    val name = getString(designR.string.new_profile)
-                    val uuid: UUID = create(Profile.Type.Url, name)
-
-                    val originProf = queryByUUID(uuid) ?: return@withProfile
-                    val profile = originProf.copy(source = url)
-                    Logger.d("load profile of url:$url")
-                    load(profile)
-                    serviceStore.dynamicSubsUrl = url
-                    activity.defer {
-                        release(uuid)
+                Logger.d("fetchProfile->has user Login:$isLogin")
+                val profileUid = if (!isLogin) {
+                    var guestUid = serviceStore.activeUid4Guest
+                    Logger.d("fetchProfile->guestUid:$guestUid")
+                    if (guestUid == null) {
+                        val name = "游客配置"
+                        guestUid = create(Profile.Type.Url, name)
+                        serviceStore.activeUid4Guest = guestUid
                     }
+                    guestUid
                 } else {
-                    Logger.d("fetchProfile given url:$url")
-                    Logger.d("fetchProfile dynamic url:${serviceStore.dynamicSubsUrl}")
-                    if (url == serviceStore.dynamicSubsUrl) {
+                    var vuserUid: UUID? = null
+                    Logger.i("fetchProfile->vuserKey:${serviceStore.uidKey4Vuser}")
+                    val name = getString(designR.string.new_profile)
+                    if (uName != serviceStore.uidKey4Vuser) {//切换账号登录了
+                        serviceStore.uidKey4Vuser = uName
+                    } else {
+                        vuserUid = serviceStore.activeUid4Vuser
+                    }
+                    Logger.i("fetchProfile->vuserUid:$vuserUid")
+                    if (vuserUid == null) {
+                        vuserUid = create(Profile.Type.Url, name)
+                        serviceStore.activeUid4Vuser = vuserUid
+                    }
+                    vuserUid
+                }
+                val savedProf = queryByUUID(profileUid)
+                Logger.d("fetchProfile savedProf:$savedProf")
+                savedProf?.apply {
+                    /*if (url == serviceStore.dynamicSubsUrl) {
                         val store = TipsStore(activity)
                         val last = store.updateProfTime
-                        if (System.currentTimeMillis() - last > 10 * 60 * 1000) {
-                            update(savedProf.uuid)
+                        if (System.currentTimeMillis() - last < 3 * 60 * 1000) {
+                            Logger.d("fetchProfile updated profile")
                             store.updateProfTime = System.currentTimeMillis()
                         }
-                    } else {
-                        val updateProf = savedProf.copy(source = url)
-                        load(updateProf)
-                        serviceStore.dynamicSubsUrl = url
-                    }
+                    } else {*/
+                    val updateProf = copy(source = url)
+                    load(updateProf)
+                    serviceStore.dynamicSubsUrl = url
+                    //}
+                    serviceStore.activeProfile = profileUid
                 }
-                Logger.i("fetchProfile savedProf:$savedProf")
             }
         }
     }
 
     private fun load(profile: Profile) {
         try {
+            Logger.d("load profile source:${profile.source}")
             withProcessing { updateStatus ->
                 withProfile {
                     patch(profile.uuid, profile.name, profile.source, profile.interval)
@@ -252,8 +299,6 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                         Logger.i("commit profile:${profile.uuid}, FetchStat progress:${it.progress}")
                     }
                     Logger.i("after commit:${profile.uuid}")
-
-                    Logger.i("setActive profile:${profile.uuid}")
                     updateStatus(
                         FetchStatus(
                             action = FetchStatus.Action.FetchProviders,
@@ -262,6 +307,7 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
                     )
                     setActive(profile)
                     updateStatus(null)
+                    Logger.d("active profile source:${profile.source}")
                 }
             }
         } catch (e: Exception) {
@@ -363,9 +409,9 @@ class HomeFragment : Fragment(), CoroutineScope by MainScope() {
 
     private suspend fun startClash() {
         val active = withProfile { queryActive() }
+        Logger.e("startClash active:$active")
 
         if (active == null || !active.imported) {
-            Logger.e("startClash active:$active")
             activity.toast(R.string.no_profile_selected)
             return
         }

@@ -22,6 +22,7 @@ import app.hw.network.model.ProductSubsInfo
 import app.hw.network.model.SubsProductBean
 import app.hw.network.model.UserInfo
 import com.github.kr328.clash.common.Global
+import com.github.kr328.clash.common.datastore.DataRepository
 import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.dialog.showModalProgressBar
@@ -45,6 +46,7 @@ class MainViewModel : ViewModel() {
 
     var userHasLogin: Boolean = false
     var prevFragIdx: Int = IDX_FRAG_LOGIN
+    var guestConnClash: Boolean = false
     val appConfig: MutableLiveData<AppConfig> by lazy { MutableLiveData<AppConfig>() }
     val subsInfo: MutableLiveData<ProductSubsInfo> by lazy { MutableLiveData<ProductSubsInfo>() }
     val userInfo: MutableLiveData<UserInfo> by lazy { MutableLiveData<UserInfo>() }
@@ -53,7 +55,9 @@ class MainViewModel : ViewModel() {
     val noticeMsgList: MutableLiveData<List<NoticeBean>> by lazy { MutableLiveData<List<NoticeBean>>() }
     var subsOrderId: String = ""//MutableLiveData<String> by lazy { MutableLiveData<String>() }
     val paymentMethodList: MutableLiveData<List<PaymentBean>> by lazy { MutableLiveData<List<PaymentBean>>() }
-    val couponBean: MutableLiveData<CouponBean> by lazy { MutableLiveData<CouponBean>() }
+    //val couponBean: MutableLiveData<CouponBean> by lazy { MutableLiveData<CouponBean>() }
+
+    private var requestingSubs: Boolean = false
 
     fun checkLoginStat() {
         RequestHandler.request({
@@ -70,10 +74,10 @@ class MainViewModel : ViewModel() {
             RequestHandler.request({
                 UserAccountApi.appConfig()
             }, { config ->
-                Logger.d("got guest config data.")
+                Logger.d("got config data.")
                 appConfig.value = config
             }, { _, msg ->
-                Logger.e("initData fail: $msg")
+                Logger.e("initConfigs with noProgress fail: $msg")
             })
             return
         }
@@ -86,7 +90,7 @@ class MainViewModel : ViewModel() {
                 RequestHandler.request({
                     UserAccountApi.appConfig()
                 }, { config ->
-                    Logger.d("got guest config data.")
+                    Logger.d("got config data with progress.")
                     appConfig.value = config
                     onResult()
                 }, { _, msg ->
@@ -115,6 +119,7 @@ class MainViewModel : ViewModel() {
     }
 
     suspend fun fetchUserAccountInfo(context: Context) {
+        if (userInfo.value != null) return
         context.showModalProgressBar {
             configure {
                 isIndeterminate = true
@@ -130,6 +135,7 @@ class MainViewModel : ViewModel() {
         }, {
             Logger.d("got userInfo:${it.email}, lastLgn:${it.last_login_at}")
             userInfo.value = it
+            //DataRepository.globalDS().putValue("key_user_info", it)
             finished()
         }, { code, msg ->
             //Global.application.toast(msg)
@@ -138,6 +144,9 @@ class MainViewModel : ViewModel() {
     }
 
     fun fetchSubscribeInfo() {
+        if (requestingSubs) return
+        requestingSubs = true
+        Logger.d("fetchSubscribeInfo userHasLogin:$userHasLogin")
         RequestHandler.request({
             if (userHasLogin) {
                 UserAccountApi.getSubscribeInfo()
@@ -148,6 +157,9 @@ class MainViewModel : ViewModel() {
             }
         }, {
             subsInfo.value = it
+            Logger.i("fetchSubscribeInfo success:${it.email}, subsUrl:${it.subscribe_url}")
+            DataRepository.globalDS().putValue("key_subs_info", it)
+            requestingSubs = false
         }, { code, msg ->
             //token已失效，需要跳转登录页面重新登入
             if (SERVER_STATE_FORBIDDEN == code || SERVER_STATE_UNAUTHORIZED == code) {
@@ -156,6 +168,7 @@ class MainViewModel : ViewModel() {
                 fragIndex.postValue(IDX_FRAG_LOGIN)
             }
             Logger.e("fetchSubscribeInfo fail:$msg")
+            requestingSubs = false
         })
     }
 
