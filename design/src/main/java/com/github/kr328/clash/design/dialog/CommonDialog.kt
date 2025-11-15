@@ -95,25 +95,25 @@ open class CommonDialog() : DialogFragment() {
     }
 
     private fun initViews() {
-        val markwon = Markwon.create(Global.application)
+        //val markwon = Markwon.create(Global.application)
         binding.dialogTvTitle.show()
         binding.dialogTvTitle.text =
             if (title == null || title?.isEmpty() == true) {
                 getString(R.string.launch_name)
             } else title
-        val contentTxt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        /*val contentTxt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Html.fromHtml(message, 0).toString()
         } else {
             Html.fromHtml(message).toString()
-        }
-        markwon.setMarkdown(binding.dialogTvContent, contentTxt)
+        }*/
+        //markwon.setMarkdown(binding.dialogTvContent, contentTxt)
 
         //val netAddrExp = "^(https?|ftp)://[^\\s/$.?#].\\S*$"
         //if (contentTxt.startsWith(Constant.PROTOCOL_HTTPS)) {
-        if (Pattern.matches(Constant.NET_EXPRESSION, contentTxt)) {
+        if (Pattern.matches(Constant.NET_EXPRESSION, message)) {
             binding.dialogTvContent.onClickNew {
                 //Logger.i("Clicked the office net address!")
-                startActivity(Intent(Intent.ACTION_VIEW, contentTxt.toUri()))
+                startActivity(Intent(Intent.ACTION_VIEW, message.toUri()))
                 dismiss()
             }
         }
