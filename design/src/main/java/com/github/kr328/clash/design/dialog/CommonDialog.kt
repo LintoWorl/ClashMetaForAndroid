@@ -101,6 +101,7 @@ open class CommonDialog() : DialogFragment() {
             if (title == null || title?.isEmpty() == true) {
                 getString(R.string.launch_name)
             } else title
+        binding.dialogTvContent.text = message
         /*val contentTxt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Html.fromHtml(message, 0).toString()
         } else {
