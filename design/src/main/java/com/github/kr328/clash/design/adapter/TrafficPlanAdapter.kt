@@ -2,6 +2,8 @@ package com.github.kr328.clash.design.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
+import android.text.Html
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import app.hw.network.model.SubsProductBean
@@ -36,7 +38,12 @@ class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean, S
             holder.binding.tvPlanDesc.hide()
         } else {
             holder.binding.btnPlanMore.show()
-            holder.binding.tvPlanDesc.text = plan.content
+            val contentTxt = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(plan.content, 0).toString()
+            } else {
+                Html.fromHtml(plan.content).toString()
+            }
+            holder.binding.tvPlanDesc.text = contentTxt
             holder.binding.btnPlanMore.setOnCheckedChangeListener { buttonView, isChecked ->
                 if (isChecked) {
                     holder.binding.tvPlanDesc.show()
