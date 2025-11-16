@@ -1,9 +1,7 @@
 package com.github.kr328.clash.design.dialog
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.util.DisplayMetrics
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -13,15 +11,11 @@ import androidx.core.net.toUri
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import app.hw.network.contant.Constant
-import com.github.kr328.clash.common.Global
-import com.github.kr328.clash.common.log.Logger
-import com.github.kr328.clash.common.log.toast
 import com.github.kr328.clash.design.R
 import com.github.kr328.clash.design.databinding.DialogCommomBaseBinding
 import com.github.kr328.clash.design.util.hide
 import com.github.kr328.clash.design.util.onClickNew
 import com.github.kr328.clash.design.util.show
-import io.noties.markwon.Markwon
 import java.util.regex.Pattern
 
 open class CommonDialog() : DialogFragment() {
@@ -108,6 +102,7 @@ open class CommonDialog() : DialogFragment() {
         }*/
         //markwon.setMarkdown(binding.dialogTvContent, message)
         binding.dialogTvContent.text = message
+        binding.dialogTvContent.movementMethod = CustomMovementMethod.getInstance(context)
 
         //val netAddrExp = "^(https?|ftp)://[^\\s/$.?#].\\S*$"
         //if (contentTxt.startsWith(Constant.PROTOCOL_HTTPS)) {
