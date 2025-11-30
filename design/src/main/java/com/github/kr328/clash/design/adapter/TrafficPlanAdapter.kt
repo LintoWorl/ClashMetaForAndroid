@@ -111,6 +111,13 @@ class TrafficPlanAdapter(val context: Context, val subsPlan: (SubsProductBean, S
                 return "three_year_price"
             }
         }
+        subsPrice = subsPlan.onetime_price?.let { it / 100f }
+        subsPrice?.let {
+            if (it > 0f) {
+                setPriceText(it, "", binding)
+                return "onetime_price"
+            }
+        }
         return "month_price"
     }
 
