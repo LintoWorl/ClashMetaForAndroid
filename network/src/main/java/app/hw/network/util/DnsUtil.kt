@@ -3,8 +3,10 @@ package app.hw.network.util
 import android.content.Context
 import android.util.Log
 import app.hw.network.contant.Constant
+import com.github.kr328.clash.common.log.Logger
 import com.github.kr328.clash.common.log.Logger.TAG_HTTP
 import org.json.JSONObject
+import org.xbill.DNS.*
 import java.net.URL
 import java.net.URLConnection
 
@@ -111,5 +113,28 @@ class DnsUtil {
         }
 
         return ""
+    }
+
+    fun lookupTxtRcd(dn: String): String {
+        var result = ""
+        try {
+            //Logger.d("init network, lookupTxtRcd of:$dn")
+            val lookup = Lookup(dn, Type.TXT)
+            lookup.run()
+            //Logger.d("init network, lookup instance is:$lookup\n---lookup.result is:${lookup.result}, lookup.answers are:${lookup.answers}")
+            if (lookup.result == Lookup.SUCCESSFUL) {
+                for (record in lookup.answers) {
+                    result = (record as TXTRecord).strings[0]
+                    result = result.replace("985", ".").replace("863", ".")
+                    Logger.i("the lookup result is:$result")
+                    break
+                }
+            }
+            Logger.d("the final lookup result is:$result")
+            return result
+        } catch (e: TextParseException) {
+            Logger.e("Got no lookup results!!! ${e.message}")
+        }
+        return result
     }
 }
