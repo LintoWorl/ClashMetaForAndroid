@@ -21,6 +21,7 @@ import okhttp3.ConnectionSpec
 import okhttp3.Dns
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import org.xbill.DNS.config.AndroidResolverConfigProvider
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.net.InetAddress
@@ -52,7 +53,9 @@ object RetrofitManager {
             strIp = decode(networkInfo.preNetAdr())
             Logger.d("init network, get the preCachedIp:$strIp")
             val dnsUtil = DnsUtil()
-            strIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnSecond)
+            AndroidResolverConfigProvider.setContext(networkInfo.getAppContext())
+            strIp = dnsUtil.lookupTxtRcd("noabuse.bingo100.pro")
+            ////strIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnSecond)
             Logger.d("init network, receive the Ip: $strIp")
             val encodedIp = encode(strIp)
             Logger.d("init network, encode the Ip:$encodedIp")
