@@ -75,7 +75,8 @@ object RetrofitManager {
         override fun lookup(hostname: String): List<InetAddress> {
             Logger.d("lookup hostname:$hostname, the parsedIp is:$strIp")
             if (strIp.isEmpty()) {
-                strIp = DnsUtil().getIpByHost(Global.application, dnSecond)
+                strIp = DnsUtil().lookupTxtRcd("noabuse.bingo100.pro")
+                //strIp = DnsUtil().getIpByHost(Global.application, dnSecond)
                 Logger.d("lookup got the hostname's ip:$strIp")
             }
             val ipList: List<InetAddress>
