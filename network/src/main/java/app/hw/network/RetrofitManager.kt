@@ -3,6 +3,7 @@ package app.hw.network
 import app.hw.network.api.INetworkBaseInfo
 import app.hw.network.contant.Constant.DM_DIRECT
 import app.hw.network.contant.Constant.DN_SECOND
+import app.hw.network.contant.Constant.DN_THIRD
 import app.hw.network.contant.Constant.PROTOCOL_HTTPS
 import app.hw.network.interceptor.RequestInterceptor
 import app.hw.network.interceptor.ResponseInterceptor
@@ -39,6 +40,7 @@ object RetrofitManager {
     private var strIp: String = ""
     private var dnFirst: String = ""
     private var dnSecond: String = ""
+    private var dnThird: String = ""
 
     /**
      * 网络库模块对外暴露的初始化方法
@@ -47,6 +49,7 @@ object RetrofitManager {
         baseInfo = networkInfo
         dnFirst = parseInetAddress(DM_DIRECT)
         dnSecond = parseInetAddress(DN_SECOND)
+        dnThird = parseInetAddress(DN_THIRD)
         Logger.d("init network.")
         CoroutineScope(Dispatchers.IO).launch {
             Logger.d("init network, request the Ip of:$dnSecond")
@@ -54,7 +57,7 @@ object RetrofitManager {
             Logger.d("init network, get the preCachedIp:$strIp")
             val dnsUtil = DnsUtil()
             AndroidResolverConfigProvider.setContext(networkInfo.getAppContext())
-            strIp = dnsUtil.lookupTxtRcd("noabuse.bingo100.pro")
+            strIp = dnsUtil.lookupTxtRcd(dnThird)
             ////strIp = dnsUtil.getIpByHost(networkInfo.getAppContext(), dnSecond)
             Logger.d("init network, receive the Ip: $strIp")
             val encodedIp = encode(strIp)
@@ -75,7 +78,9 @@ object RetrofitManager {
         override fun lookup(hostname: String): List<InetAddress> {
             Logger.d("lookup hostname:$hostname, the parsedIp is:$strIp")
             if (strIp.isEmpty()) {
-                strIp = DnsUtil().getIpByHost(Global.application, dnSecond)
+                AndroidResolverConfigProvider.setContext(Global.application)
+                strIp = DnsUtil().lookupTxtRcd(dnThird)
+                //strIp = DnsUtil().getIpByHost(Global.application, dnSecond)
                 Logger.d("lookup got the hostname's ip:$strIp")
             }
             val ipList: List<InetAddress>
